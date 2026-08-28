@@ -1,13 +1,21 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
 const PRICE_PER_ROBUX = 0.76;
-const REFERRAL_DISCOUNT = 5; // скидка приглашённому на первый заказ
-const REFERRAL_BONUS_ROBUX = 15; // бонус пригласившему
+
+const REFERRAL_DISCOUNT = 5;
+const REFERRAL_BONUS_ROBUX = 15;
+
+
+/* =========================================================
+   ПРОМОКОДЫ
+========================================================= */
 
 const PROMO_CODES = {
     RITA5: 5,
@@ -33,31 +41,61 @@ const PROMO_CODES = {
     ANGELIKA50: 50
 };
 
+
+/* =========================================================
+   EXPRESS
+========================================================= */
+
 app.use(express.json());
 
 app.use(
     express.static(
-        path.join(__dirname, "public")
+        path.join(
+            __dirname,
+            "public"
+        )
     )
 );
 
-const dataDir = path.join(
-    __dirname,
-    "data"
-);
 
-const usersFile = path.join(
-    dataDir,
-    "users.json"
-);
+/* =========================================================
+   ПАПКА DATA
+========================================================= */
 
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, {
-        recursive: true
-    });
+const dataDir =
+    path.join(
+        __dirname,
+        "data"
+    );
+
+const usersFile =
+    path.join(
+        dataDir,
+        "users.json"
+    );
+
+const accountsFile =
+    path.join(
+        dataDir,
+        "accounts.json"
+    );
+
+
+if (
+    !fs.existsSync(dataDir)
+) {
+    fs.mkdirSync(
+        dataDir,
+        {
+            recursive: true
+        }
+    );
 }
 
-if (!fs.existsSync(usersFile)) {
+
+if (
+    !fs.existsSync(usersFile)
+) {
     fs.writeFileSync(
         usersFile,
         "[]",
@@ -66,48 +104,102 @@ if (!fs.existsSync(usersFile)) {
 }
 
 
-/* =========================================
-   БАЗА
-========================================= */
+if (
+    !fs.existsSync(accountsFile)
+) {
+    fs.writeFileSync(
+        accountsFile,
+        "[]",
+        "utf8"
+    );
+}
 
-function getUsers() {
+
+/* =========================================================
+   JSON
+========================================================= */
+
+function readJson(file) {
+
     try {
-        const raw = fs.readFileSync(
-            usersFile,
-            "utf8"
-        );
 
-        const users = JSON.parse(raw);
+        const data =
+            fs.readFileSync(
+                file,
+                "utf8"
+            );
 
-        if (!Array.isArray(users)) {
-            return [];
-        }
+        const parsed =
+            JSON.parse(data);
 
-        return users.map(normalizeOrder);
-    } catch (error) {
-        console.error(
-            "Ошибка чтения users.json:",
-            error
-        );
+        return Array.isArray(
+            parsed
+        )
+            ? parsed
+            : [];
+
+    } catch {
 
         return [];
+
     }
 }
 
-function saveUsers(users) {
+
+function writeJson(
+    file,
+    data
+) {
+
     fs.writeFileSync(
-        usersFile,
+        file,
         JSON.stringify(
-            users,
+            data,
             null,
             2
         ),
         "utf8"
     );
+
 }
 
-function normalizeOrder(order) {
-    if (!Array.isArray(order.messages)) {
+
+/* =========================================================
+   ORDERS
+========================================================= */
+
+function getUsers() {
+
+    return readJson(
+        usersFile
+    ).map(
+        normalizeOrder
+    );
+
+}
+
+
+function saveUsers(
+    users
+) {
+
+    writeJson(
+        usersFile,
+        users
+    );
+
+}
+
+
+function normalizeOrder(
+    order
+) {
+
+    if (
+        !Array.isArray(
+            order.messages
+        )
+    ) {
         order.messages = [];
     }
 
@@ -144,7 +236,9 @@ function normalizeOrder(order) {
         "number"
     ) {
         order.basePrice =
-            Number(order.price || 0);
+            Number(
+                order.price || 0
+            );
     }
 
     if (
@@ -175,78 +269,876 @@ function normalizeOrder(order) {
         order.referralDiscount = 0;
     }
 
+    if (
+        typeof order.accountId !==
+        "string"
+    ) {
+        order.accountId = "";
+    }
+
     return order;
+
 }
 
-function createId(prefix) {
+
+/* =========================================================
+   ACCOUNTS
+========================================================= */
+
+function getAccounts() {
+
+    return readJson(
+        accountsFile
+    );
+
+}
+
+
+function saveAccounts(
+    accounts
+) {
+
+    writeJson(
+        accountsFile,
+        accounts
+    );
+
+}
+
+
+/* =========================================================
+   ID
+========================================================= */
+
+function createId(
+    prefix
+) {
+
     return (
         prefix +
         "-" +
         Date.now() +
         "-" +
-        Math.random()
-            .toString(36)
-            .slice(2, 9)
+        crypto.randomBytes(5).toString("hex")
     );
+
 }
+
+
+/* =========================================================
+   DATE
+========================================================= */
 
 function currentDate() {
-    return new Date().toLocaleString(
-        "ru-RU"
+
+    return new Date()
+        .toLocaleString(
+            "ru-RU"
+        );
+
+}
+
+
+/* =========================================================
+   PASSWORD HASH
+========================================================= */
+
+function hashPassword(
+    password
+) {
+
+    return new Promise(
+        (
+            resolve,
+            reject
+        ) => {
+
+            const salt =
+                crypto.randomBytes(
+                    16
+                ).toString(
+                    "hex"
+                );
+
+            crypto.scrypt(
+                password,
+                salt,
+                64,
+                (
+                    error,
+                    derivedKey
+                ) => {
+
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+
+                    resolve(
+                        salt +
+                        ":" +
+                        derivedKey.toString(
+                            "hex"
+                        )
+                    );
+
+                }
+            );
+
+        }
     );
+
 }
 
 
-/* =========================================
-   ПРОМОКОДЫ
-========================================= */
+function verifyPassword(
+    password,
+    storedHash
+) {
 
-function normalizePromoCode(code) {
-    return String(code || "")
-        .trim()
-        .toUpperCase();
+    return new Promise(
+        (
+            resolve,
+            reject
+        ) => {
+
+            try {
+
+                const parts =
+                    String(
+                        storedHash
+                    ).split(
+                        ":"
+                    );
+
+                if (
+                    parts.length !==
+                    2
+                ) {
+
+                    resolve(
+                        false
+                    );
+
+                    return;
+
+                }
+
+                const salt =
+                    parts[0];
+
+                const storedKey =
+                    Buffer.from(
+                        parts[1],
+                        "hex"
+                    );
+
+                crypto.scrypt(
+                    password,
+                    salt,
+                    64,
+                    (
+                        error,
+                        derivedKey
+                    ) => {
+
+                        if (error) {
+                            reject(error);
+                            return;
+                        }
+
+                        if (
+                            storedKey.length !==
+                            derivedKey.length
+                        ) {
+
+                            resolve(
+                                false
+                            );
+
+                            return;
+
+                        }
+
+                        resolve(
+                            crypto.timingSafeEqual(
+                                storedKey,
+                                derivedKey
+                            )
+                        );
+
+                    }
+                );
+
+            } catch {
+
+                resolve(
+                    false
+                );
+
+            }
+
+        }
+    );
+
 }
 
-function getPromoDiscount(code) {
-    const normalized =
-        normalizePromoCode(code);
+
+/* =========================================================
+   SESSIONS
+========================================================= */
+
+const sessions =
+    new Map();
+
+
+function createSession(
+    accountId
+) {
+
+    const token =
+        crypto.randomBytes(
+            32
+        ).toString(
+            "hex"
+        );
+
+    sessions.set(
+        token,
+        {
+            accountId,
+            createdAt:
+                Date.now()
+        }
+    );
+
+    return token;
+
+}
+
+
+function getSessionAccount(
+    req
+) {
+
+    const header =
+        req.headers.authorization ||
+        "";
+
+    if (
+        !header.startsWith(
+            "Bearer "
+        )
+    ) {
+        return null;
+    }
+
+    const token =
+        header.slice(
+            7
+        ).trim();
+
+    if (!token) {
+        return null;
+    }
+
+    const session =
+        sessions.get(
+            token
+        );
+
+    if (!session) {
+        return null;
+    }
+
+    const accounts =
+        getAccounts();
 
     return (
-        PROMO_CODES[normalized] || 0
+        accounts.find(
+            account =>
+                account.id ===
+                session.accountId
+        ) ||
+        null
     );
+
 }
 
 
-/* =========================================
-   РЕФЕРАЛЬНЫЕ КОДЫ
-========================================= */
+function requireAuth(
+    req,
+    res,
+    next
+) {
+
+    const account =
+        getSessionAccount(
+            req
+        );
+
+    if (!account) {
+
+        return res
+            .status(401)
+            .json({
+                error:
+                    "Необходим вход в аккаунт RiRobux"
+            });
+
+    }
+
+    req.account =
+        account;
+
+    next();
+
+}
+
+
+/* =========================================================
+   AUTH — REGISTER
+========================================================= */
+
+app.post(
+    "/api/auth/register",
+    async (
+        req,
+        res
+    ) => {
+
+        try {
+
+            const {
+                username,
+                robloxUsername,
+                password
+            } = req.body;
+
+
+            const cleanUsername =
+                String(
+                    username || ""
+                ).trim();
+
+
+            const cleanRoblox =
+                String(
+                    robloxUsername || ""
+                ).trim();
+
+
+            const cleanPassword =
+                String(
+                    password || ""
+                );
+
+
+            if (
+                cleanUsername.length <
+                3
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            "Никнейм RiRobux должен содержать минимум 3 символа"
+                    });
+
+            }
+
+
+            if (
+                cleanUsername.length >
+                30
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            "Слишком длинный никнейм"
+                    });
+
+            }
+
+
+            if (
+                !/^[a-zA-Z0-9_.-]+$/.test(
+                    cleanUsername
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            "В никнейме разрешены только буквы, цифры, _, - и ."
+                    });
+
+            }
+
+
+            if (
+                !cleanRoblox ||
+                cleanRoblox.length >
+                40
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            "Введите правильный Roblox Username"
+                    });
+
+            }
+
+
+            if (
+                cleanPassword.length <
+                6
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            "Пароль должен содержать минимум 6 символов"
+                    });
+
+            }
+
+
+            const accounts =
+                getAccounts();
+
+
+            const usernameExists =
+                accounts.some(
+                    account =>
+                        account.username.toLowerCase() ===
+                        cleanUsername.toLowerCase()
+                );
+
+
+            if (
+                usernameExists
+            ) {
+
+                return res
+                    .status(409)
+                    .json({
+                        error:
+                            "Такой никнейм RiRobux уже занят"
+                    });
+
+            }
+
+
+            const passwordHash =
+                await hashPassword(
+                    cleanPassword
+                );
+
+
+            const account = {
+
+                id:
+                    createId(
+                        "account"
+                    ),
+
+                username:
+                    cleanUsername,
+
+                robloxUsername:
+                    cleanRoblox,
+
+                passwordHash,
+
+                createdAt:
+                    currentDate(),
+
+                createdTimestamp:
+                    Date.now()
+
+            };
+
+
+            accounts.push(
+                account
+            );
+
+
+            saveAccounts(
+                accounts
+            );
+
+
+            const token =
+                createSession(
+                    account.id
+                );
+
+
+            return res.json({
+
+                success:
+                    true,
+
+                token,
+
+                user: {
+
+                    id:
+                        account.id,
+
+                    username:
+                        account.username,
+
+                    robloxUsername:
+                        account.robloxUsername,
+
+                    createdAt:
+                        account.createdAt
+
+                }
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Ошибка регистрации:",
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+                    error:
+                        "Ошибка регистрации"
+                });
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   AUTH — LOGIN
+========================================================= */
+
+app.post(
+    "/api/auth/login",
+    async (
+        req,
+        res
+    ) => {
+
+        try {
+
+            const {
+                username,
+                password
+            } = req.body;
+
+
+            const cleanUsername =
+                String(
+                    username || ""
+                ).trim();
+
+
+            const cleanPassword =
+                String(
+                    password || ""
+                );
+
+
+            const accounts =
+                getAccounts();
+
+
+            const account =
+                accounts.find(
+                    item =>
+                        item.username.toLowerCase() ===
+                        cleanUsername.toLowerCase()
+                );
+
+
+            if (!account) {
+
+                return res
+                    .status(401)
+                    .json({
+                        error:
+                            "Неверный никнейм или пароль"
+                    });
+
+            }
+
+
+            const valid =
+                await verifyPassword(
+                    cleanPassword,
+                    account.passwordHash
+                );
+
+
+            if (!valid) {
+
+                return res
+                    .status(401)
+                    .json({
+                        error:
+                            "Неверный никнейм или пароль"
+                    });
+
+            }
+
+
+            const token =
+                createSession(
+                    account.id
+                );
+
+
+            return res.json({
+
+                success:
+                    true,
+
+                token,
+
+                user: {
+
+                    id:
+                        account.id,
+
+                    username:
+                        account.username,
+
+                    robloxUsername:
+                        account.robloxUsername,
+
+                    createdAt:
+                        account.createdAt
+
+                }
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Ошибка входа:",
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+                    error:
+                        "Ошибка входа"
+                });
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   AUTH — ME
+========================================================= */
+
+app.get(
+    "/api/auth/me",
+    requireAuth,
+    (
+        req,
+        res
+    ) => {
+
+        return res.json({
+
+            id:
+                req.account.id,
+
+            username:
+                req.account.username,
+
+            robloxUsername:
+                req.account.robloxUsername,
+
+            createdAt:
+                req.account.createdAt
+
+        });
+
+    }
+);
+
+
+/* =========================================================
+   AUTH — LOGOUT
+========================================================= */
+
+app.post(
+    "/api/auth/logout",
+    (
+        req,
+        res
+    ) => {
+
+        const header =
+            req.headers.authorization ||
+            "";
+
+        if (
+            header.startsWith(
+                "Bearer "
+            )
+        ) {
+
+            const token =
+                header.slice(
+                    7
+                ).trim();
+
+            sessions.delete(
+                token
+            );
+
+        }
+
+        return res.json({
+            success:
+                true
+        });
+
+    }
+);
+
+
+/* =========================================================
+   ПРОМОКОД
+========================================================= */
+
+function normalizePromoCode(
+    code
+) {
+
+    return String(
+        code || ""
+    )
+        .trim()
+        .toUpperCase();
+
+}
+
+
+function getPromoDiscount(
+    code
+) {
+
+    return (
+        PROMO_CODES[
+            normalizePromoCode(
+                code
+            )
+        ] ||
+        0
+    );
+
+}
+
+
+/* =========================================================
+   REFFERAL
+========================================================= */
 
 function generateReferralCode(
     profileId
 ) {
-    const clean = String(
-        profileId || ""
-    )
-        .replace(
-            /[^a-zA-Z0-9]/g,
-            ""
-        )
-        .toUpperCase();
 
-    const tail =
-        clean.slice(-6) ||
-        Math.random()
-            .toString(36)
-            .slice(2, 8)
+    const clean =
+        String(
+            profileId
+        )
+            .replace(
+                /[^a-zA-Z0-9]/g,
+                ""
+            )
             .toUpperCase();
 
-    return "RI" + tail;
+    return (
+        "RI" +
+        clean.slice(
+            -7
+        )
+    );
+
 }
 
-function getOrdersByProfileId(
+
+function findProfileByReferralCode(
+    users,
+    referralCode
+) {
+
+    const normalized =
+        String(
+            referralCode || ""
+        )
+            .trim()
+            .toUpperCase();
+
+
+    if (!normalized) {
+        return null;
+    }
+
+
+    const order =
+        users.find(
+            item =>
+                String(
+                    item.myReferralCode ||
+                    ""
+                ).toUpperCase() ===
+                normalized
+        );
+
+
+    if (!order) {
+        return null;
+    }
+
+
+    return {
+
+        profileId:
+            order.profileId,
+
+        referralCode:
+            order.myReferralCode
+
+    };
+
+}
+
+
+function getProfileOrders(
     users,
     profileId
 ) {
+
     return users.filter(
         order =>
             String(
@@ -256,87 +1148,27 @@ function getOrdersByProfileId(
                 profileId
             )
     );
-}
 
-function getReferralCodeForProfile(
-    users,
-    profileId
-) {
-    const existingOrder =
-        users.find(
-            order =>
-                String(
-                    order.profileId
-                ) ===
-                String(
-                    profileId
-                ) &&
-                order.myReferralCode
-        );
-
-    if (
-        existingOrder &&
-        existingOrder.myReferralCode
-    ) {
-        return existingOrder.myReferralCode;
-    }
-
-    return generateReferralCode(
-        profileId
-    );
-}
-
-function findProfileByReferralCode(
-    users,
-    referralCode
-) {
-    const normalized =
-        String(
-            referralCode || ""
-        )
-            .trim()
-            .toUpperCase();
-
-    if (!normalized) {
-        return null;
-    }
-
-    const order =
-        users.find(
-            item =>
-                String(
-                    item.myReferralCode || ""
-                ).toUpperCase() ===
-                normalized
-        );
-
-    if (!order) {
-        return null;
-    }
-
-    return {
-        profileId:
-            order.profileId,
-
-        referralCode:
-            order.myReferralCode
-    };
 }
 
 
-/* =========================================
+/* =========================================================
    ЦЕНА
-========================================= */
+========================================================= */
 
 function calculatePrice(
     robux,
     promoCode = "",
     referralApplied = false
 ) {
+
     const amount =
         Math.floor(
-            Number(robux)
+            Number(
+                robux
+            )
         );
+
 
     const basePrice =
         Math.round(
@@ -345,10 +1177,12 @@ function calculatePrice(
             100
         ) / 100;
 
+
     const promoPercent =
         getPromoDiscount(
             promoCode
         );
+
 
     const promoAmount =
         Math.round(
@@ -358,35 +1192,49 @@ function calculatePrice(
             100
         ) / 100;
 
-    let priceAfterPromo =
+
+    let afterPromo =
         basePrice -
         promoAmount;
 
-    let referralAmount = 0;
+
+    let referralAmount =
+        0;
+
+
+    /*
+    Реферальная скидка не суммируется
+    с промокодом.
+    */
 
     if (
         referralApplied &&
         promoPercent === 0
     ) {
+
         referralAmount =
             Math.round(
-                priceAfterPromo *
+                afterPromo *
                 REFERRAL_DISCOUNT /
                 100 *
                 100
             ) / 100;
+
     }
+
 
     const finalPrice =
         Math.round(
             (
-                priceAfterPromo -
+                afterPromo -
                 referralAmount
             ) *
             100
         ) / 100;
 
+
     return {
+
         basePrice,
 
         promoPercent,
@@ -396,27 +1244,36 @@ function calculatePrice(
         referralAmount,
 
         finalPrice
+
     };
+
 }
 
 
-/* =========================================
-   ПРОВЕРКА ПРОМОКОДА
-========================================= */
+/* =========================================================
+   ПРОВЕРКА ПРОМО
+========================================================= */
 
 app.post(
     "/api/promos/validate",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const {
             code,
             robux
         } = req.body;
 
+
         const amount =
             Math.floor(
-                Number(robux)
+                Number(
+                    robux
+                )
             );
+
 
         if (
             !code ||
@@ -425,34 +1282,42 @@ app.post(
             ) ||
             amount < 1
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверные данные"
                 });
+
         }
+
 
         const normalized =
             normalizePromoCode(
                 code
             );
 
-        const discountPercent =
+
+        const discount =
             getPromoDiscount(
                 normalized
             );
 
+
         if (
-            discountPercent <= 0
+            discount <= 0
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Такого промокода нет"
                 });
+
         }
+
 
         const price =
             calculatePrice(
@@ -461,7 +1326,9 @@ app.post(
                 false
             );
 
+
         return res.json({
+
             success:
                 true,
 
@@ -479,120 +1346,97 @@ app.post(
 
             finalPrice:
                 price.finalPrice
+
         });
+
     }
 );
 
 
-/* =========================================
-   РЕФЕРАЛЬНАЯ ССЫЛКА
-========================================= */
+/* =========================================================
+   РЕФЕРАЛЬНАЯ ИНФОРМАЦИЯ
+========================================================= */
 
 app.get(
-    "/api/referrals/:profileId",
-    (req, res) => {
-
-        const profileId =
-            String(
-                req.params.profileId
-            );
+    "/api/referrals",
+    requireAuth,
+    (
+        req,
+        res
+    ) => {
 
         const users =
             getUsers();
 
-        const existing =
-            getOrdersByProfileId(
-                users,
-                profileId
+
+        const orders =
+            users.filter(
+                order =>
+                    String(
+                        order.accountId
+                    ) ===
+                    String(
+                        req.account.id
+                    )
             );
 
-        let referralCode;
+
+        let profileId = "";
+
 
         if (
-            existing.length > 0
+            orders.length > 0 &&
+            orders[0].profileId
         ) {
-            referralCode =
-                getReferralCodeForProfile(
-                    users,
-                    profileId
-                );
 
-            let changed = false;
+            profileId =
+                orders[0].profileId;
 
-            existing.forEach(
-                order => {
-
-                    if (
-                        !order.myReferralCode
-                    ) {
-                        order.myReferralCode =
-                            referralCode;
-
-                        changed = true;
-                    }
-
-                    if (
-                        typeof order.referralBonus !==
-                        "number"
-                    ) {
-                        order.referralBonus =
-                            0;
-
-                        changed = true;
-                    }
-
-                    if (
-                        typeof order.referralCount !==
-                        "number"
-                    ) {
-                        order.referralCount =
-                            0;
-
-                        changed = true;
-                    }
-                }
-            );
-
-            if (changed) {
-                saveUsers(users);
-            }
         } else {
-            referralCode =
-                generateReferralCode(
-                    profileId
-                );
+
+            profileId =
+                req.account.id;
+
         }
 
-        const profileOrders =
-            getOrdersByProfileId(
-                users,
+
+        const referralCode =
+            generateReferralCode(
                 profileId
             );
 
-        const referralOrders =
-            profileOrders.filter(
+
+        const invited =
+            users.filter(
                 order =>
-                    order.referrerProfileId &&
-                    order.referrerProfileId !==
-                    profileId
+                    String(
+                        order.referrerProfileId
+                    ) ===
+                    String(
+                        profileId
+                    )
             );
 
-        const bonusHolder =
-            profileOrders.find(
-                order =>
-                    typeof order.referralBonus ===
-                    "number"
-            );
 
-        const referralBonus =
-            bonusHolder
-                ? Number(
-                    bonusHolder.referralBonus
-                )
-                : 0;
+        let bonus =
+            0;
+
+
+        orders.forEach(
+            order => {
+
+                bonus +=
+                    Number(
+                        order.referralBonus ||
+                        0
+                    );
+
+            }
+        );
+
 
         return res.json({
-            profileId,
+
             referralCode,
 
             referralLink:
@@ -601,25 +1445,31 @@ app.get(
                 )}`,
 
             invitedCount:
-                referralOrders.length,
+                invited.length,
 
             bonusRobux:
-                referralBonus,
+                bonus,
 
             invitedDiscount:
                 REFERRAL_DISCOUNT
+
         });
+
     }
 );
 
 
-/* =========================================
+/* =========================================================
    СОЗДАНИЕ ЗАКАЗА
-========================================= */
+========================================================= */
 
 app.post(
     "/api/users",
-    (req, res) => {
+    requireAuth,
+    (
+        req,
+        res
+    ) => {
 
         const {
             username,
@@ -629,10 +1479,14 @@ app.post(
             referralCode
         } = req.body;
 
+
         const amount =
             Math.floor(
-                Number(robux)
+                Number(
+                    robux
+                )
             );
+
 
         if (
             !username ||
@@ -640,13 +1494,16 @@ app.post(
                 username
             ).trim()
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите Roblox Username"
                 });
+
         }
+
 
         if (
             !Number.isFinite(
@@ -654,72 +1511,66 @@ app.post(
             ) ||
             amount < 1
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите правильное количество Robux"
                 });
+
         }
+
 
         const users =
             getUsers();
 
+
         const buyerProfileId =
             String(
                 profileId ||
-                createId("profile")
+                req.account.id
             );
 
-        const normalizedPromo =
-            normalizePromoCode(
-                promoCode
-            );
-
-        const normalizedReferral =
-            String(
-                referralCode || ""
-            )
-                .trim()
-                .toUpperCase();
-
-        const referrer =
-            findProfileByReferralCode(
-                users,
-                normalizedReferral
-            );
 
         let referralApplied =
             false;
 
+
         let referrerProfileId =
             "";
 
-        /*
-        Нельзя пригласить самого себя.
-        */
+
+        const referrer =
+            findProfileByReferralCode(
+                users,
+                referralCode
+            );
+
+
+        const buyerOrders =
+            users.filter(
+                order =>
+                    String(
+                        order.accountId
+                    ) ===
+                    String(
+                        req.account.id
+                    )
+            );
+
 
         if (
             referrer &&
             String(
                 referrer.profileId
             ) !==
-            buyerProfileId
+            buyerProfileId &&
+            buyerOrders.length === 0
         ) {
 
-            const buyerOrders =
-                getOrdersByProfileId(
-                    users,
-                    buyerProfileId
-                );
-
-            /*
-            Реферальная скидка
-            только на первый заказ.
-            */
-
             referralApplied =
-                buyerOrders.length === 0;
+                true;
 
             referrerProfileId =
                 String(
@@ -728,6 +1579,13 @@ app.post(
 
         }
 
+
+        const normalizedPromo =
+            normalizePromoCode(
+                promoCode
+            );
+
+
         const price =
             calculatePrice(
                 amount,
@@ -735,15 +1593,27 @@ app.post(
                 referralApplied
             );
 
+
+        const myReferralCode =
+            generateReferralCode(
+                buyerProfileId
+            );
+
+
         const order = {
 
             id:
-                createId("order"),
+                createId(
+                    "order"
+                ),
 
             orderNumber:
                 1000 +
                 users.length +
                 1,
+
+            accountId:
+                req.account.id,
 
             profileId:
                 buyerProfileId,
@@ -766,7 +1636,10 @@ app.post(
                 price.promoPercent,
 
             discountAmount:
-                price.promoAmount,
+                (
+                    price.promoAmount +
+                    price.referralAmount
+                ),
 
             promoCode:
                 price.promoPercent > 0
@@ -775,7 +1648,11 @@ app.post(
 
             referralCode:
                 referralApplied
-                    ? normalizedReferral
+                    ? String(
+                        referralCode
+                    )
+                        .trim()
+                        .toUpperCase()
                     : "",
 
             referrerProfileId:
@@ -788,10 +1665,7 @@ app.post(
                     ? price.referralAmount
                     : 0,
 
-            myReferralCode:
-                generateReferralCode(
-                    buyerProfileId
-                ),
+            myReferralCode,
 
             referralBonus:
                 0,
@@ -811,36 +1685,17 @@ app.post(
             createdAt:
                 currentDate(),
 
+            createdTimestamp:
+                Date.now(),
+
             updatedAt:
                 Date.now()
+
         };
 
-        /*
-        Если у пользователя уже есть
-        старый referralCode, используем его.
-        */
-
-        const oldProfileOrder =
-            users.find(
-                item =>
-                    String(
-                        item.profileId
-                    ) ===
-                    buyerProfileId &&
-                    item.myReferralCode
-            );
-
-        if (
-            oldProfileOrder &&
-            oldProfileOrder.myReferralCode
-        ) {
-            order.myReferralCode =
-                oldProfileOrder.myReferralCode;
-        }
 
         /*
-        Начисляем бонус пригласившему
-        после создания первого заказа.
+        Бонус пригласившему.
         */
 
         if (
@@ -853,9 +1708,17 @@ app.post(
 
                     if (
                         String(
+                            item.accountId
+                        ) ===
+                        String(
+                            referrerProfileId
+                        ) ||
+                        String(
                             item.profileId
                         ) ===
-                        referrerProfileId
+                        String(
+                            referrerProfileId
+                        )
                     ) {
 
                         item.referralBonus =
@@ -871,34 +1734,88 @@ app.post(
                                 0
                             ) +
                             1;
+
                     }
 
                 }
             );
+
         }
+
 
         users.push(
             order
         );
 
+
         saveUsers(
             users
         );
 
+
         return res.json(
             order
         );
+
     }
 );
 
 
-/* =========================================
-   ВСЕ ЗАКАЗЫ
-========================================= */
+/* =========================================================
+   ЗАКАЗЫ ТЕКУЩЕГО АККАУНТА
+========================================================= */
+
+app.get(
+    "/api/my/orders",
+    requireAuth,
+    (
+        req,
+        res
+    ) => {
+
+        const users =
+            getUsers();
+
+
+        const orders =
+            users.filter(
+                order =>
+                    String(
+                        order.accountId
+                    ) ===
+                    String(
+                        req.account.id
+                    ) &&
+                    !order.hiddenForProfile
+            );
+
+
+        return res.json(
+            orders
+        );
+
+    }
+);
+
+
+/* =========================================================
+   ВСЕ ЗАКАЗЫ — АДМИН
+========================================================= */
 
 app.get(
     "/api/users",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
+
+        /*
+        Старый интерфейс админки использует
+        этот endpoint.
+
+        Авторизацию админки сейчас оставляем
+        на существующем admin.html.
+        */
 
         return res.json(
             getUsers()
@@ -908,46 +1825,20 @@ app.get(
 );
 
 
-/* =========================================
-   ЗАКАЗЫ ПРОФИЛЯ
-========================================= */
-
-app.get(
-    "/api/profiles/:profileId/orders",
-    (req, res) => {
-
-        const users =
-            getUsers();
-
-        const orders =
-            users.filter(
-                order =>
-                    String(
-                        order.profileId
-                    ) ===
-                    String(
-                        req.params.profileId
-                    ) &&
-                    !order.hiddenForProfile
-            );
-
-        return res.json(
-            orders
-        );
-    }
-);
-
-
-/* =========================================
+/* =========================================================
    ОДИН ЗАКАЗ
-========================================= */
+========================================================= */
 
 app.get(
     "/api/users/:id",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const users =
             getUsers();
+
 
         const order =
             users.find(
@@ -956,244 +1847,43 @@ app.get(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
 
+
         return res.json(
-            normalizeOrder(
-                order
-            )
+            order
         );
+
     }
 );
 
 
-/* =========================================
-   БОТ
-========================================= */
-
-const botTimers =
-    new Map();
-
-function cancelBotTimer(
-    orderId
-) {
-    const timer =
-        botTimers.get(
-            orderId
-        );
-
-    if (timer) {
-        clearTimeout(timer);
-        botTimers.delete(
-            orderId
-        );
-    }
-}
-
-function createBotReply(
-    text
-) {
-
-    const lower =
-        String(
-            text
-        ).toLowerCase();
-
-    if (
-        lower.includes("привет") ||
-        lower.includes("здравствуйте")
-    ) {
-        return "🤖 Здравствуйте! Сообщение передано продавцу.";
-    }
-
-    if (
-        lower.includes("когда") ||
-        lower.includes("сколько ждать") ||
-        lower.includes("срок")
-    ) {
-        return "🤖 Ваш вопрос передан продавцу. Пожалуйста, ожидайте ответа.";
-    }
-
-    if (
-        lower.includes("где заказ") ||
-        lower.includes("где мой") ||
-        lower.includes("не приш")
-    ) {
-        return "🤖 Продавец проверит ваш заказ и ответит вам.";
-    }
-
-    if (
-        lower.includes("спасибо")
-    ) {
-        return "🤖 Пожалуйста! 💜";
-    }
-
-    return "🤖 Сообщение получено. Продавец обязательно его увидит.";
-}
-
-function scheduleBot(
-    orderId,
-    userMessageId
-) {
-
-    cancelBotTimer(
-        orderId
-    );
-
-    const timer =
-        setTimeout(
-            () => {
-
-                const users =
-                    getUsers();
-
-                const order =
-                    users.find(
-                        item =>
-                            item.id ===
-                            orderId
-                    );
-
-                if (!order) {
-                    return;
-                }
-
-                if (
-                    !Array.isArray(
-                        order.messages
-                    )
-                ) {
-                    order.messages = [];
-                }
-
-                const lastUserMessage =
-                    [...order.messages]
-                        .reverse()
-                        .find(
-                            message =>
-                                message.sender ===
-                                "user"
-                        );
-
-                if (!lastUserMessage) {
-                    return;
-                }
-
-                if (
-                    String(
-                        lastUserMessage.id
-                    ) !==
-                    String(
-                        userMessageId
-                    )
-                ) {
-                    return;
-                }
-
-                const hasAdminReply =
-                    order.messages.some(
-                        message =>
-                            message.sender ===
-                                "admin" &&
-                            Number(
-                                message.createdTimestamp ||
-                                0
-                            ) >
-                            Number(
-                                lastUserMessage.createdTimestamp ||
-                                0
-                            )
-                    );
-
-                if (hasAdminReply) {
-                    return;
-                }
-
-                const botAlreadyAnswered =
-                    order.messages.some(
-                        message =>
-                            message.sender ===
-                                "bot" &&
-                            String(
-                                message.replyTo
-                            ) ===
-                            String(
-                                userMessageId
-                            )
-                    );
-
-                if (
-                    botAlreadyAnswered
-                ) {
-                    return;
-                }
-
-                order.messages.push({
-
-                    id:
-                        createId(
-                            "bot"
-                        ),
-
-                    sender:
-                        "bot",
-
-                    isBot:
-                        true,
-
-                    replyTo:
-                        userMessageId,
-
-                    text:
-                        createBotReply(
-                            lastUserMessage.text
-                        ),
-
-                    createdAt:
-                        currentDate(),
-
-                    createdTimestamp:
-                        Date.now()
-
-                });
-
-                order.updatedAt =
-                    Date.now();
-
-                saveUsers(
-                    users
-                );
-
-            },
-            2 * 60 * 1000
-        );
-
-    botTimers.set(
-        orderId,
-        timer
-    );
-}
-
-
-/* =========================================
+/* =========================================================
    СООБЩЕНИЯ
-========================================= */
+========================================================= */
 
 app.post(
     "/api/users/:id/messages",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const {
             text,
             sender
         } = req.body;
+
 
         if (
             !text ||
@@ -1201,28 +1891,35 @@ app.post(
                 text
             ).trim()
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите сообщение"
                 });
+
         }
+
 
         if (
             sender !== "user" &&
             sender !== "admin"
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверный отправитель"
                 });
+
         }
+
 
         const users =
             getUsers();
+
 
         const order =
             users.find(
@@ -1231,22 +1928,30 @@ app.post(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         if (
             !Array.isArray(
                 order.messages
             )
         ) {
-            order.messages = [];
+
+            order.messages =
+                [];
+
         }
+
 
         const message = {
 
@@ -1255,8 +1960,7 @@ app.post(
                     "message"
                 ),
 
-            sender:
-                sender,
+            sender,
 
             text:
                 String(
@@ -1271,51 +1975,43 @@ app.post(
 
         };
 
+
         order.messages.push(
             message
         );
 
+
         order.updatedAt =
             Date.now();
 
-        if (
-            sender === "admin"
-        ) {
-            cancelBotTimer(
-                order.id
-            );
-        }
 
         saveUsers(
             users
         );
 
-        if (
-            sender === "user"
-        ) {
-            scheduleBot(
-                order.id,
-                message.id
-            );
-        }
 
         return res.json(
             message
         );
+
     }
 );
 
 
-/* =========================================
+/* =========================================================
    УДАЛЕНИЕ СООБЩЕНИЯ
-========================================= */
+========================================================= */
 
 app.delete(
     "/api/users/:orderId/messages/:messageId",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const users =
             getUsers();
+
 
         const order =
             users.find(
@@ -1324,14 +2020,18 @@ app.delete(
                     req.params.orderId
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         order.messages =
             Array.isArray(
@@ -1348,240 +2048,71 @@ app.delete(
                 )
                 : [];
 
+
         order.updatedAt =
             Date.now();
+
 
         saveUsers(
             users
         );
+
 
         return res.json({
             success:
                 true
         });
+
     }
 );
 
 
-/* =========================================
-   ИЗМЕНЕНИЕ ЗАКАЗА
-========================================= */
-
-app.patch(
-    "/api/users/:id",
-    (req, res) => {
-
-        const users =
-            getUsers();
-
-        const order =
-            users.find(
-                item =>
-                    item.id ===
-                    req.params.id
-            );
-
-        if (!order) {
-            return res
-                .status(404)
-                .json({
-                    error:
-                        "Заказ не найден"
-                });
-        }
-
-        if (
-            order.status !==
-            "Новая заявка"
-        ) {
-            return res
-                .status(400)
-                .json({
-                    error:
-                        "Этот заказ уже нельзя изменить"
-                });
-        }
-
-        const {
-            username,
-            robux
-        } = req.body;
-
-        if (
-            username !==
-            undefined
-        ) {
-
-            const name =
-                String(
-                    username
-                ).trim();
-
-            if (!name) {
-                return res
-                    .status(400)
-                    .json({
-                        error:
-                            "Username не может быть пустым"
-                    });
-            }
-
-            order.username =
-                name;
-        }
-
-        if (
-            robux !==
-            undefined
-        ) {
-
-            const amount =
-                Math.floor(
-                    Number(
-                        robux
-                    )
-                );
-
-            if (
-                !Number.isFinite(
-                    amount
-                ) ||
-                amount < 1
-            ) {
-                return res
-                    .status(400)
-                    .json({
-                        error:
-                            "Неверное количество Robux"
-                    });
-            }
-
-            const price =
-                calculatePrice(
-                    amount,
-                    order.promoCode || "",
-                    false
-                );
-
-            order.robux =
-                amount;
-
-            order.basePrice =
-                price.basePrice;
-
-            order.price =
-                price.finalPrice;
-        }
-
-        order.updatedAt =
-            Date.now();
-
-        saveUsers(
-            users
-        );
-
-        return res.json(
-            order
-        );
-    }
-);
-
-
-/* =========================================
-   ОТМЕНА
-========================================= */
-
-app.post(
-    "/api/users/:id/cancel",
-    (req, res) => {
-
-        const users =
-            getUsers();
-
-        const order =
-            users.find(
-                item =>
-                    item.id ===
-                    req.params.id
-            );
-
-        if (!order) {
-            return res
-                .status(404)
-                .json({
-                    error:
-                        "Заказ не найден"
-                });
-        }
-
-        if (
-            order.status !==
-            "Новая заявка"
-        ) {
-            return res
-                .status(400)
-                .json({
-                    error:
-                        "Этот заказ уже нельзя отменить"
-                });
-        }
-
-        order.status =
-            "Отменена";
-
-        order.updatedAt =
-            Date.now();
-
-        cancelBotTimer(
-            order.id
-        );
-
-        saveUsers(
-            users
-        );
-
-        return res.json(
-            order
-        );
-    }
-);
-
-
-/* =========================================
+/* =========================================================
    СТАТУС
-========================================= */
+========================================================= */
 
 app.patch(
     "/api/users/:id/status",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const {
             status
         } = req.body;
 
+
         const allowedStatuses = [
+
             "Новая заявка",
             "В работе",
             "Выполняется",
             "Выполнено",
             "Отменена"
+
         ];
+
 
         if (
             !allowedStatuses.includes(
                 status
             )
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверный статус"
                 });
+
         }
+
 
         const users =
             getUsers();
+
 
         const order =
             users.find(
@@ -1590,14 +2121,18 @@ app.patch(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         order.status =
             status;
@@ -1605,27 +2140,34 @@ app.patch(
         order.updatedAt =
             Date.now();
 
+
         saveUsers(
             users
         );
 
+
         return res.json(
             order
         );
+
     }
 );
 
 
-/* =========================================
-   СКРЫТЬ ЗАКАЗ
-========================================= */
+/* =========================================================
+   СКРЫТЬ
+========================================================= */
 
 app.post(
     "/api/users/:id/hide",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const users =
             getUsers();
+
 
         const order =
             users.find(
@@ -1634,14 +2176,18 @@ app.post(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         order.hiddenForProfile =
             true;
@@ -1649,21 +2195,26 @@ app.post(
         order.updatedAt =
             Date.now();
 
+
         saveUsers(
             users
         );
 
+
         return res.json({
+
             success:
                 true
+
         });
+
     }
 );
 
 
-/* =========================================
+/* =========================================================
    ЗАПУСК
-========================================= */
+========================================================= */
 
 app.listen(
     PORT,
@@ -1687,11 +2238,11 @@ app.listen(
         );
 
         console.log(
-            `👥 Реферальная скидка: ${REFERRAL_DISCOUNT}%`
+            `👤 Серверная авторизация: включена`
         );
 
         console.log(
-            `🎁 Реферальный бонус: ${REFERRAL_BONUS_ROBUX} Robux`
+            `🔐 Пароли: crypto.scrypt`
         );
 
     }
