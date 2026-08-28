@@ -1,701 +1,1115 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Чат с продавцом — RiRobux</title>
+<title>RiRobux — Чат</title>
 
+<style>
 
-    <style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
 
-        * {
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+body{
 
+    min-height:100vh;
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            color: white;
-            overflow-x: hidden;
+    color:#fff;
 
-            background:
-                radial-gradient(
-                    circle at 15% 20%,
-                    rgba(124, 58, 237, 0.28),
-                    transparent 30%
-                ),
+    background:
 
-                radial-gradient(
-                    circle at 85% 70%,
-                    rgba(37, 99, 235, 0.22),
-                    transparent 35%
-                ),
+        radial-gradient(
+            circle at 15% 15%,
+            rgba(124,58,237,.30),
+            transparent 28%
+        ),
 
-                radial-gradient(
-                    circle at 50% 100%,
-                    rgba(168, 85, 247, 0.15),
-                    transparent 40%
-                ),
+        radial-gradient(
+            circle at 85% 75%,
+            rgba(37,99,235,.22),
+            transparent 30%
+        ),
 
-                linear-gradient(
-                    135deg,
-                    #050816,
-                    #101636,
-                    #09061a
-                );
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(168,85,247,.14),
+            transparent 35%
+        ),
 
-            background-attachment: fixed;
-        }
+        linear-gradient(
+            135deg,
+            #03040d,
+            #090d22 45%,
+            #070313
+        );
 
+    overflow-x:hidden;
+}
 
-        /* ЗВЁЗДЫ */
 
-        body::before {
-            content: "";
+/* =========================
+   ЗВЁЗДЫ
+========================= */
 
-            position: fixed;
+body::before{
 
-            inset: 0;
+    content:"";
 
-            pointer-events: none;
+    position:fixed;
 
-            background-image:
+    inset:0;
 
-                radial-gradient(
-                    circle,
-                    white 1px,
-                    transparent 1.5px
-                ),
+    z-index:-2;
 
-                radial-gradient(
-                    circle,
-                    rgba(196, 181, 253, 0.8) 1px,
-                    transparent 1.5px
-                );
+    pointer-events:none;
 
-            background-size:
-                80px 80px,
-                130px 130px;
+    background-image:
 
-            background-position:
-                0 0,
-                40px 60px;
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.9) 1px,
+            transparent 1.5px
+        ),
 
-            opacity: 0.45;
+        radial-gradient(
+            circle,
+            rgba(196,181,253,.7) 1px,
+            transparent 1.5px
+        ),
 
-            animation:
-                starsMove 25s linear infinite;
+        radial-gradient(
+            circle,
+            rgba(147,197,253,.6) 1px,
+            transparent 1.5px
+        );
 
-            z-index: -1;
-        }
+    background-size:
+        90px 90px,
+        150px 150px,
+        230px 230px;
 
+    background-position:
+        0 0,
+        40px 70px,
+        120px 30px;
 
-        @keyframes starsMove {
+    animation:
+        stars 35s linear infinite;
+}
 
-            from {
 
-                background-position:
-                    0 0,
-                    40px 60px;
+@keyframes stars{
 
-            }
+    from{
 
-            to {
+        background-position:
+            0 0,
+            40px 70px,
+            120px 30px;
 
-                background-position:
-                    80px 120px,
-                    120px 180px;
+    }
 
-            }
+    to{
 
-        }
+        background-position:
+            90px 150px,
+            190px 240px,
+            350px 190px;
 
+    }
 
-        /* ШАПКА */
+}
 
-        header {
 
-            padding: 16px 6%;
+/* =========================
+   HEADER
+========================= */
 
-            display: flex;
+header{
 
-            align-items: center;
+    position:sticky;
 
-            justify-content:
-                space-between;
+    top:0;
 
-            background:
-                rgba(8, 12, 35, 0.85);
+    z-index:100;
 
-            border-bottom:
-                1px solid
-                rgba(139, 92, 246, 0.35);
+    display:flex;
 
-            backdrop-filter:
-                blur(18px);
+    align-items:center;
 
-            position: sticky;
+    justify-content:space-between;
 
-            top: 0;
+    padding:
+        16px 6%;
 
-            z-index: 100;
+    background:
+        rgba(5,7,20,.78);
 
-        }
+    border-bottom:
+        1px solid
+        rgba(167,139,250,.18);
 
+    backdrop-filter:
+        blur(20px);
 
-        .logo {
+}
 
-            color: white;
 
-            text-decoration: none;
+.logo{
 
-            font-size: 28px;
+    color:#fff;
 
-            font-weight: bold;
+    text-decoration:none;
 
-            text-shadow:
-                0 0 20px
-                rgba(124, 58, 237, 0.5);
+    font-size:28px;
 
-        }
+    font-weight:900;
 
+}
 
-        .logo span {
 
-            color: #b57cff;
+.logo span{
 
-            text-shadow:
-                0 0 15px
-                #7c3aed;
+    color:#b57cff;
 
-        }
+    text-shadow:
+        0 0 25px
+        rgba(124,58,237,.8);
 
+}
 
-        .back {
 
-            padding: 11px 18px;
+.back-button{
 
-            border-radius: 14px;
+    padding:
+        10px 16px;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #7c3aed,
-                    #2563eb
-                );
+    border-radius:
+        12px;
 
-            color: white;
+    color:#dddff2;
 
-            text-decoration: none;
+    text-decoration:none;
 
-            font-weight: bold;
+    background:
+        rgba(255,255,255,.05);
 
-            transition:
-                transform 0.2s,
-                box-shadow 0.2s;
+    border:
+        1px solid
+        rgba(255,255,255,.10);
 
-        }
+    transition:.25s;
 
+}
 
-        .back:hover {
 
-            transform:
-                translateY(-2px);
+.back-button:hover{
 
-            box-shadow:
-                0 0 25px
-                rgba(124, 58, 237, 0.45);
+    color:#fff;
 
-        }
+    border-color:
+        rgba(167,139,250,.4);
 
+    box-shadow:
+        0 0 25px
+        rgba(124,58,237,.15);
 
-        /* ОСНОВНОЙ БЛОК */
+}
 
-        main {
 
-            max-width: 850px;
+/* =========================
+   CHAT
+========================= */
 
-            margin: 40px auto;
+.chat-wrapper{
 
-            padding: 20px;
+    width:
+        min(950px, calc(100% - 30px));
 
-        }
+    margin:
+        35px auto 50px;
 
+}
 
-        .chat-card {
 
-            padding: 28px;
+.chat-card{
 
-            border-radius: 26px;
+    overflow:hidden;
 
-            background:
-                rgba(16, 20, 55, 0.82);
+    border-radius:
+        28px;
 
-            border:
-                1px solid
-                rgba(139, 92, 246, 0.35);
+    background:
+        rgba(11,14,38,.88);
 
-            box-shadow:
+    border:
+        1px solid
+        rgba(139,92,246,.28);
 
-                0 0 40px
-                rgba(76, 29, 149, 0.18),
+    box-shadow:
 
-                0 30px 80px
-                rgba(0, 0, 0, 0.35);
+        0 35px 100px
+        rgba(0,0,0,.5),
 
-            backdrop-filter:
-                blur(18px);
+        0 0 70px
+        rgba(124,58,237,.10);
 
-        }
+    backdrop-filter:
+        blur(20px);
 
+}
 
-        /* ВЕРХ ЧАТА */
 
-        .chat-header {
+/* =========================
+   CHAT HEADER
+========================= */
 
-            display: flex;
+.chat-header{
 
-            align-items: center;
+    display:flex;
 
-            gap: 15px;
+    align-items:center;
 
-            padding-bottom: 20px;
+    justify-content:space-between;
 
-            border-bottom:
-                1px solid
-                rgba(255, 255, 255, 0.08);
+    gap:15px;
 
-        }
+    padding:
+        22px 25px;
 
+    background:
+        linear-gradient(
+            135deg,
+            rgba(124,58,237,.14),
+            rgba(37,99,235,.08)
+        );
 
-        .seller-avatar {
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.07);
 
-            width: 52px;
+}
 
-            height: 52px;
 
-            display: flex;
+.chat-title{
 
-            align-items: center;
+    display:flex;
 
-            justify-content: center;
+    align-items:center;
 
-            border-radius: 18px;
+    gap:12px;
 
-            font-size: 25px;
+}
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #7c3aed,
-                    #2563eb
-                );
 
-            box-shadow:
-                0 0 25px
-                rgba(124, 58, 237, 0.45);
+.chat-icon{
 
-        }
+    width:45px;
 
+    height:45px;
 
-        .seller-info {
+    display:flex;
 
-            flex: 1;
+    align-items:center;
 
-        }
+    justify-content:center;
 
+    border-radius:14px;
 
-        .seller-info h1 {
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #2563eb
+        );
 
-            margin: 0;
+    box-shadow:
+        0 0 30px
+        rgba(124,58,237,.4);
 
-            font-size: 21px;
+    font-size:21px;
 
-        }
+}
 
 
-        .seller-status {
+.chat-title h1{
 
-            margin-top: 5px;
+    font-size:21px;
 
-            color: #a8f0c6;
+}
 
-            font-size: 13px;
 
-        }
+.chat-title p{
 
+    margin-top:4px;
 
-        .order-info {
+    color:#7f88aa;
 
-            margin-top: 20px;
+    font-size:12px;
 
-            padding: 15px;
+}
 
-            border-radius: 16px;
 
-            color: #c7cce5;
+.order-info{
 
-            line-height: 1.7;
+    color:#aeb6d1;
 
-            background:
-                rgba(7, 10, 30, 0.5);
+    font-size:13px;
 
-            border:
-                1px solid
-                rgba(139, 92, 246, 0.18);
+}
 
-        }
 
+/* =========================
+   MESSAGES
+========================= */
 
-        .order-info b {
+.messages{
 
-            color: white;
+    height:
+        570px;
 
-        }
+    overflow-y:auto;
 
+    padding:
+        25px;
 
-        /* СООБЩЕНИЯ */
+    scroll-behavior:smooth;
 
-        #messages {
+}
 
-            height: 430px;
 
-            overflow-y: auto;
+.messages::-webkit-scrollbar{
 
-            margin-top: 20px;
+    width:7px;
 
-            padding: 18px;
+}
 
-            border-radius: 20px;
 
-            background:
-                rgba(7, 10, 30, 0.55);
+.messages::-webkit-scrollbar-track{
 
-            border:
-                1px solid
-                rgba(139, 92, 246, 0.2);
+    background:
+        rgba(255,255,255,.02);
 
-            scroll-behavior: smooth;
+}
 
-        }
 
+.messages::-webkit-scrollbar-thumb{
 
-        #messages::-webkit-scrollbar {
+    border-radius:20px;
 
-            width: 7px;
+    background:
+        rgba(139,92,246,.35);
 
-        }
+}
 
 
-        #messages::-webkit-scrollbar-thumb {
+.message-row{
 
-            border-radius: 20px;
+    display:flex;
 
-            background:
-                rgba(139, 92, 246, 0.5);
+    margin-bottom:18px;
 
-        }
+}
 
 
-        .message {
+.message-row.user{
 
-            max-width: 78%;
+    justify-content:flex-end;
 
-            width: fit-content;
+}
 
-            padding: 13px 16px;
 
-            margin: 10px 0;
+.message-row.admin{
 
-            border-radius: 18px;
+    justify-content:flex-start;
 
-            line-height: 1.5;
+}
 
-            word-break: break-word;
 
-            background:
-                rgba(37, 43, 85, 0.85);
+.message{
 
-            border:
-                1px solid
-                rgba(255, 255, 255, 0.06);
+    position:relative;
 
-        }
+    max-width:
+        min(650px, 78%);
 
+    padding:
+        15px 16px;
 
-        /* МОИ СООБЩЕНИЯ */
+    border-radius:
+        18px;
 
-        .user-message {
+    border:
+        1px solid
+        rgba(255,255,255,.07);
 
-            margin-left: auto;
+    background:
+        rgba(255,255,255,.045);
 
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(124, 58, 237, 0.85),
-                    rgba(37, 99, 235, 0.8)
-                );
+    box-shadow:
+        0 10px 30px
+        rgba(0,0,0,.15);
 
-            box-shadow:
-                0 5px 20px
-                rgba(124, 58, 237, 0.2);
+}
 
-        }
 
+.message-row.user .message{
 
-        /* СООБЩЕНИЯ ПРОДАВЦА */
+    border-bottom-right-radius:
+        6px;
 
-        .admin-message {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(124,58,237,.38),
+            rgba(37,99,235,.28)
+        );
 
-            margin-right: auto;
+    border-color:
+        rgba(167,139,250,.25);
 
-            background:
-                rgba(30, 36, 75, 0.9);
+}
 
-        }
 
+.message-row.admin .message{
 
-        .message-author {
+    border-bottom-left-radius:
+        6px;
 
-            display: block;
+    background:
+        rgba(20,24,56,.95);
 
-            margin-bottom: 5px;
+}
 
-            font-size: 12px;
 
-            font-weight: bold;
+.message-meta{
 
-            color: #c4b5fd;
+    display:flex;
 
-        }
+    align-items:center;
 
+    gap:8px;
 
-        .message-time {
+    margin-bottom:7px;
 
-            display: block;
+    color:#878faa;
 
-            margin-top: 7px;
+    font-size:11px;
 
-            font-size: 11px;
+}
 
-            opacity: 0.6;
 
-        }
+.message-author{
 
+    color:#cfc8ff;
 
-        /* ОТПРАВКА */
+    font-weight:bold;
 
-        .send-area {
+}
 
-            display: flex;
 
-            gap: 10px;
+.message-text{
 
-            margin-top: 18px;
+    color:#f2f3fa;
 
-        }
+    white-space:pre-wrap;
 
+    line-height:1.55;
 
-        #messageInput {
+    word-break:break-word;
 
-            flex: 1;
+}
 
-            padding: 15px 18px;
 
-            border-radius: 15px;
+.message-time{
 
-            border:
-                1px solid
-                rgba(139, 92, 246, 0.35);
+    margin-top:8px;
 
-            outline: none;
+    color:#737b99;
 
-            color: white;
+    font-size:10px;
 
-            font-size: 15px;
+}
 
-            background:
-                rgba(7, 10, 30, 0.7);
 
-            transition:
-                border 0.2s,
-                box-shadow 0.2s;
+/* =========================
+   КОСМИЧЕСКАЯ КНОПКА
+========================= */
 
-        }
+.cosmic-delete{
 
+    position:absolute;
 
-        #messageInput::placeholder {
+    top:8px;
 
-            color: #777b9c;
+    right:8px;
 
-        }
+    width:31px;
 
+    height:31px;
 
-        #messageInput:focus {
+    display:flex;
 
-            border-color:
-                #a78bfa;
+    align-items:center;
 
-            box-shadow:
-                0 0 20px
-                rgba(124, 58, 237, 0.25);
+    justify-content:center;
 
-        }
+    border:0;
 
+    border-radius:50%;
 
-        #sendButton {
+    color:#dcd5ff;
 
-            border: none;
+    background:
 
-            padding: 15px 22px;
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(255,255,255,.35),
+            transparent 20%
+        ),
 
-            border-radius: 15px;
+        radial-gradient(
+            circle,
+            rgba(124,58,237,.65),
+            rgba(18,9,45,.95) 70%
+        );
 
-            color: white;
+    cursor:pointer;
 
-            font-weight: bold;
+    opacity:0;
 
-            cursor: pointer;
+    transform:
+        scale(.75)
+        rotate(-15deg);
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #7c3aed,
-                    #2563eb
-                );
+    transition:.25s;
 
-            transition:
-                transform 0.2s,
-                box-shadow 0.2s;
+    box-shadow:
 
-        }
+        0 0 0
+        rgba(124,58,237,0),
 
+        inset 0 0 10px
+        rgba(255,255,255,.08);
 
-        #sendButton:hover {
+}
 
-            transform:
-                translateY(-2px);
 
-            box-shadow:
-                0 0 25px
-                rgba(124, 58, 237, 0.45);
+.message:hover
+.cosmic-delete{
 
-        }
+    opacity:1;
 
+    transform:
+        scale(1)
+        rotate(0deg);
 
-        #sendButton:disabled {
+}
 
-            opacity: 0.5;
 
-            cursor: not-allowed;
+.cosmic-delete:hover{
 
-            transform: none;
+    color:#fff;
 
-        }
+    transform:
+        scale(1.15)
+        rotate(12deg);
 
+    background:
 
-        /* ОШИБКА */
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(255,255,255,.55),
+            transparent 20%
+        ),
 
-        .error {
+        radial-gradient(
+            circle,
+            #8b5cf6,
+            #24104f 72%
+        );
 
-            padding: 30px;
+    box-shadow:
 
-            text-align: center;
+        0 0 10px
+        rgba(167,139,250,.8),
 
-            color: #fca5a5;
+        0 0 25px
+        rgba(124,58,237,.7),
 
-        }
+        0 0 45px
+        rgba(37,99,235,.35);
 
+}
 
-        .empty {
 
-            padding: 40px 20px;
+.cosmic-delete::after{
 
-            text-align: center;
+    content:"";
 
-            color: #a8adc9;
+    position:absolute;
 
-        }
+    width:5px;
 
+    height:5px;
 
-        /* МОБИЛЬНАЯ ВЕРСИЯ */
+    top:4px;
 
-        @media (max-width: 600px) {
+    left:6px;
 
-            header {
+    border-radius:50%;
 
-                padding: 15px 16px;
+    background:#fff;
 
-            }
+    box-shadow:
+        14px 3px 0 rgba(255,255,255,.7),
+        17px 18px 0 rgba(196,181,253,.8),
+        5px 21px 0 rgba(147,197,253,.6);
 
+    opacity:.8;
 
-            .logo {
+}
 
-                font-size: 22px;
 
-            }
+.cosmic-delete:hover::after{
 
+    animation:
+        starsButton .8s ease infinite alternate;
 
-            .back {
+}
 
-                padding: 10px 13px;
 
-                font-size: 13px;
+@keyframes starsButton{
 
-            }
+    from{
+        opacity:.4;
+        transform:scale(.8);
+    }
 
+    to{
+        opacity:1;
+        transform:scale(1.2);
+    }
 
-            main {
+}
 
-                margin: 20px auto;
 
-                padding: 12px;
+/* =========================
+   INPUT
+========================= */
 
-            }
+.chat-input{
 
+    display:flex;
 
-            .chat-card {
+    gap:10px;
 
-                padding: 17px;
+    padding:
+        18px;
 
-                border-radius: 22px;
+    background:
+        rgba(4,6,20,.55);
 
-            }
+    border-top:
+        1px solid
+        rgba(255,255,255,.07);
 
+}
 
-            #messages {
 
-                height: 55vh;
+.message-input{
 
-                min-height: 350px;
+    flex:1;
 
-            }
+    min-width:0;
 
+    resize:none;
 
-            .send-area {
+    height:52px;
 
-                flex-direction: column;
+    padding:
+        15px;
 
-            }
+    border-radius:
+        15px;
 
+    outline:none;
 
-            #sendButton {
+    color:#fff;
 
-                width: 100%;
+    background:
+        rgba(255,255,255,.04);
 
-            }
+    border:
+        1px solid
+        rgba(139,92,246,.25);
 
-        }
+    font-size:15px;
 
-    </style>
+}
+
+
+.message-input:focus{
+
+    border-color:
+        #a78bfa;
+
+    box-shadow:
+        0 0 30px
+        rgba(124,58,237,.15);
+
+}
+
+
+.send-button{
+
+    width:
+        58px;
+
+    height:
+        52px;
+
+    border:0;
+
+    border-radius:
+        15px;
+
+    color:#fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #2563eb
+        );
+
+    cursor:pointer;
+
+    font-size:19px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(124,58,237,.28);
+
+    transition:.25s;
+
+}
+
+
+.send-button:hover{
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 15px 40px
+        rgba(124,58,237,.45);
+
+}
+
+
+/* =========================
+   LOADING / EMPTY
+========================= */
+
+.center-message{
+
+    min-height:
+        350px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    color:#858da9;
+
+    line-height:1.7;
+
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:500;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(0,0,0,.72);
+
+    backdrop-filter:
+        blur(10px);
+
+}
+
+
+.modal.active{
+
+    display:flex;
+
+}
+
+
+.modal-box{
+
+    width:100%;
+
+    max-width:420px;
+
+    padding:27px;
+
+    text-align:center;
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #141842,
+            #090d28
+        );
+
+    border:
+        1px solid
+        rgba(167,139,250,.35);
+
+    box-shadow:
+
+        0 25px 80px
+        rgba(0,0,0,.6),
+
+        0 0 60px
+        rgba(124,58,237,.18);
+
+}
+
+
+.modal-icon{
+
+    width:60px;
+
+    height:60px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin:
+        0 auto 17px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #7c3aed,
+            #211040
+        );
+
+    box-shadow:
+        0 0 35px
+        rgba(124,58,237,.5);
+
+    font-size:25px;
+
+}
+
+
+.modal-box h2{
+
+    font-size:22px;
+
+}
+
+
+.modal-box p{
+
+    margin-top:9px;
+
+    color:#989fba;
+
+    line-height:1.55;
+
+}
+
+
+.modal-buttons{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:22px;
+
+}
+
+
+.modal-buttons button{
+
+    flex:1;
+
+    padding:13px;
+
+    border:0;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+}
+
+
+.modal-cancel{
+
+    color:#ddd;
+
+    background:
+        rgba(255,255,255,.07);
+
+}
+
+
+.modal-confirm{
+
+    color:#fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #2563eb
+        );
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:650px){
+
+    .chat-wrapper{
+
+        width:
+            calc(100% - 16px);
+
+        margin-top:16px;
+
+    }
+
+
+    header{
+
+        padding:
+            14px 16px;
+
+    }
+
+
+    .logo{
+
+        font-size:24px;
+
+    }
+
+
+    .chat-header{
+
+        padding:
+            17px;
+
+    }
+
+
+    .order-info{
+
+        display:none;
+
+    }
+
+
+    .messages{
+
+        height:
+            62vh;
+
+        padding:
+            17px 12px;
+
+    }
+
+
+    .message{
+
+        max-width:
+            88%;
+
+    }
+
+
+    .chat-input{
+
+        padding:
+            12px;
+
+    }
+
+
+    .message-input{
+
+        height:
+            48px;
+
+    }
+
+
+    .send-button{
+
+        width:
+            50px;
+
+        height:
+            48px;
+
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -715,131 +1129,593 @@
 
     <a
         href="profile.html"
-        class="back"
+        class="back-button"
     >
-        ← К профилю
+        ← Профиль
     </a>
 
 </header>
 
 
-<main>
-
+<main class="chat-wrapper">
 
     <div class="chat-card">
 
 
         <div class="chat-header">
 
-            <div class="seller-avatar">
-                🛸
-            </div>
+            <div class="chat-title">
 
+                <div class="chat-icon">
+                    💬
+                </div>
 
-            <div class="seller-info">
+                <div>
 
-                <h1>
-                    Чат с продавцом
-                </h1>
+                    <h1>
+                        Чат с продавцом
+                    </h1>
 
+                    <p>
+                        RiRobux Support
+                    </p>
 
-                <div class="seller-status">
-                    ● Продавец на связи
                 </div>
 
             </div>
 
+
+            <div
+                class="order-info"
+                id="orderInfo"
+            >
+                Заказ загружается...
+            </div>
+
         </div>
 
 
         <div
-            class="order-info"
-            id="orderInfo"
-        >
-            Загрузка информации о заказе...
-        </div>
-
-
-        <div
+            class="messages"
             id="messages"
         >
 
-            <div class="empty">
+            <div class="center-message">
                 Загрузка сообщений...
             </div>
 
         </div>
 
 
-        <div class="send-area">
+        <div class="chat-input">
 
-            <input
-                type="text"
+            <textarea
                 id="messageInput"
-                placeholder="Напишите сообщение продавцу..."
-                autocomplete="off"
-            >
+                class="message-input"
+                placeholder="Напишите сообщение..."
+            ></textarea>
 
 
             <button
                 id="sendButton"
+                class="send-button"
                 type="button"
             >
-                🚀 Отправить
+                🚀
             </button>
 
         </div>
 
-
     </div>
-
 
 </main>
 
 
+<!-- =========================
+     MODAL
+========================= -->
+
+<div
+    class="modal"
+    id="deleteModal"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-icon">
+            🌌
+        </div>
+
+        <h2>
+            Удалить сообщение?
+        </h2>
+
+        <p>
+            Сообщение исчезнет из этого чата.
+        </p>
+
+
+        <div class="modal-buttons">
+
+            <button
+                class="modal-cancel"
+                id="cancelDelete"
+            >
+                Отмена
+            </button>
+
+
+            <button
+                class="modal-confirm"
+                id="confirmDelete"
+            >
+                ✨ Удалить
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
 
-    let currentOrder = null;
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
 
-    let lastMessagesJson = "";
+
+const orderId =
+    params.get("order");
 
 
-    /* ПОЛУЧАЕМ ID ЗАКАЗА ИЗ ССЫЛКИ */
+const isAdmin =
+    params.get("admin") === "true";
 
-    function getOrderId() {
 
-        const params =
-            new URLSearchParams(
-                window.location.search
+const userToken =
+    localStorage.getItem(
+        "rirobuxAuthToken"
+    );
+
+
+const adminToken =
+    localStorage.getItem(
+        "rirobuxAdminToken"
+    );
+
+
+const token =
+    isAdmin
+        ? adminToken
+        : userToken;
+
+
+const messagesBox =
+    document.getElementById(
+        "messages"
+    );
+
+
+const input =
+    document.getElementById(
+        "messageInput"
+    );
+
+
+const sendButton =
+    document.getElementById(
+        "sendButton"
+    );
+
+
+const orderInfo =
+    document.getElementById(
+        "orderInfo"
+    );
+
+
+const deleteModal =
+    document.getElementById(
+        "deleteModal"
+    );
+
+
+const cancelDelete =
+    document.getElementById(
+        "cancelDelete"
+    );
+
+
+const confirmDelete =
+    document.getElementById(
+        "confirmDelete"
+    );
+
+
+let messageToDelete =
+    null;
+
+
+let currentOrder =
+    null;
+
+
+/* =========================================
+   ПРОВЕРКА
+========================================= */
+
+if (
+    !orderId
+) {
+
+    messagesBox.innerHTML =
+        `
+        <div class="center-message">
+            ❌ Заказ не указан.
+        </div>
+        `;
+
+    sendButton.disabled =
+        true;
+
+}
+
+
+/* =========================================
+   ESCAPE
+========================================= */
+
+function escapeHtml(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================
+   ЗАГРУЗКА ЗАКАЗА
+========================================= */
+
+async function loadOrder(){
+
+    if (!orderId) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/users/" +
+                encodeURIComponent(
+                    orderId
+                ),
+                {
+                    headers:
+                        token
+                        ? {
+                            "Authorization":
+                                "Bearer " +
+                                token
+                        }
+                        : {}
+                }
             );
 
-        return params.get("order");
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Не удалось загрузить заказ"
+            );
+
+        }
+
+
+        currentOrder =
+            data;
+
+
+        orderInfo.textContent =
+            "Заказ #" +
+            (
+                data.orderNumber ||
+                "—"
+            );
+
+
+        renderMessages(
+            data.messages || []
+        );
+
+    } catch(error) {
+
+        messagesBox.innerHTML =
+            `
+            <div class="center-message">
+                ❌ ${escapeHtml(
+                    error.message
+                )}
+            </div>
+            `;
+
+    }
+
+}
+
+
+/* =========================================
+   СООБЩЕНИЯ
+========================================= */
+
+function renderMessages(
+    messages
+){
+
+    if (
+        !messages.length
+    ) {
+
+        messagesBox.innerHTML =
+            `
+            <div class="center-message">
+
+                🌌 Здесь пока нет сообщений.
+
+                <br>
+
+                Напишите первым!
+
+            </div>
+            `;
+
+        return;
 
     }
 
 
-    /* ЗАГРУЖАЕМ ЗАКАЗ */
-
-    async function loadOrder() {
-
-        const orderId =
-            getOrderId();
+    messagesBox.innerHTML =
+        "";
 
 
-        if (!orderId) {
+    messages.forEach(
+        message => {
 
-            document.getElementById(
-                "orderInfo"
-            ).innerHTML =
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "message-row " +
+                (
+                    message.sender ===
+                    "user"
+                        ? "user"
+                        : "admin"
+                );
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+
+            bubble.className =
+                "message";
+
+
+            const author =
+                message.sender ===
+                    "user"
+                    ? "Вы"
+                    : (
+                        message.isBot
+                            ? "🤖 RiBot"
+                            : "👑 Продавец"
+                    );
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.type =
+                "button";
+
+
+            deleteButton.className =
+                "cosmic-delete";
+
+
+            deleteButton.title =
+                "Удалить сообщение";
+
+
+            deleteButton.setAttribute(
+                "aria-label",
+                "Удалить сообщение"
+            );
+
+
+            deleteButton.innerHTML =
+                "✦";
+
+
+            deleteButton.addEventListener(
+                "click",
+                () => {
+
+                    openDeleteModal(
+                        message.id
+                    );
+
+                }
+            );
+
+
+            bubble.innerHTML =
                 `
-                <div class="error">
-                    ❌ Заказ не выбран
+                <div class="message-meta">
+
+                    <span class="message-author">
+                        ${escapeHtml(
+                            author
+                        )}
+                    </span>
+
+                </div>
+
+                <div class="message-text">
+                    ${escapeHtml(
+                        message.text
+                    )}
+                </div>
+
+                <div class="message-time">
+                    ${escapeHtml(
+                        message.createdAt ||
+                        ""
+                    )}
                 </div>
                 `;
+
+
+            /*
+            Кнопку удаления показываем
+            на всех сообщениях,
+            доступ проверяет сервер.
+            */
+
+            bubble.appendChild(
+                deleteButton
+            );
+
+
+            row.appendChild(
+                bubble
+            );
+
+
+            messagesBox.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    messagesBox.scrollTop =
+        messagesBox.scrollHeight;
+
+}
+
+
+/* =========================================
+   ОТКРЫТЬ ОКНО УДАЛЕНИЯ
+========================================= */
+
+function openDeleteModal(
+    messageId
+){
+
+    messageToDelete =
+        messageId;
+
+    deleteModal.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =========================================
+   ЗАКРЫТЬ ОКНО
+========================================= */
+
+function closeDeleteModal(){
+
+    messageToDelete =
+        null;
+
+    deleteModal.classList.remove(
+        "active"
+    );
+
+}
+
+
+cancelDelete.addEventListener(
+    "click",
+    closeDeleteModal
+);
+
+
+/* =========================================
+   УДАЛЕНИЕ
+========================================= */
+
+confirmDelete.addEventListener(
+    "click",
+    async () => {
+
+        if (
+            !messageToDelete ||
+            !orderId
+        ) {
+
+            closeDeleteModal();
 
             return;
 
         }
+
+
+        confirmDelete.disabled =
+            true;
+
+
+        confirmDelete.textContent =
+            "Удаляем...";
 
 
         try {
@@ -849,467 +1725,300 @@
                     "/api/users/" +
                     encodeURIComponent(
                         orderId
-                    )
-                );
-
-
-            const order =
-                await response.json();
-
-
-            if (
-                !response.ok ||
-                order.error
-            ) {
-
-                document.getElementById(
-                    "orderInfo"
-                ).innerHTML =
-                    `
-                    <div class="error">
-                        ❌ Заказ не найден
-                    </div>
-                    `;
-
-                return;
-
-            }
-
-
-            currentOrder =
-                order;
-
-
-            renderOrderInfo();
-
-
-            renderMessages();
-
-        } catch (error) {
-
-            console.error(error);
-
-
-            document.getElementById(
-                "orderInfo"
-            ).innerHTML =
-                `
-                <div class="error">
-                    ❌ Ошибка загрузки заказа
-                </div>
-                `;
-
-        }
-
-    }
-
-
-    /* ИНФОРМАЦИЯ О ЗАКАЗЕ */
-
-    function renderOrderInfo() {
-
-        if (!currentOrder) {
-            return;
-        }
-
-
-        document.getElementById(
-            "orderInfo"
-        ).innerHTML =
-            `
-            <b>
-                🚀 Заказ #${escapeHtml(
-                    String(
-                        currentOrder.orderNumber || "—"
-                    )
-                )}
-            </b>
-
-            <br>
-
-            👤 <b>Roblox:</b>
-            ${escapeHtml(
-                currentOrder.username ||
-                "Не указан"
-            )}
-
-            <br>
-
-            💎 <b>Robux:</b>
-            ${Number(
-                currentOrder.robux || 0
-            ).toLocaleString(
-                "ru-RU"
-            )}
-
-            <br>
-
-            📌 <b>Статус:</b>
-            ${escapeHtml(
-                currentOrder.status ||
-                "Новая заявка"
-            )}
-            `;
-
-    }
-
-
-    /* ВЫВОД СООБЩЕНИЙ */
-
-    function renderMessages() {
-
-        const messagesBox =
-            document.getElementById(
-                "messages"
-            );
-
-
-        const messages =
-            Array.isArray(
-                currentOrder.messages
-            )
-                ? currentOrder.messages
-                : [];
-
-
-        const currentJson =
-            JSON.stringify(
-                messages
-            );
-
-
-        /*
-        Если сообщения не изменились,
-        не перерисовываем чат.
-        */
-
-        if (
-            currentJson ===
-            lastMessagesJson
-        ) {
-            return;
-        }
-
-
-        lastMessagesJson =
-            currentJson;
-
-
-        messagesBox.innerHTML =
-            "";
-
-
-        if (
-            messages.length === 0
-        ) {
-
-            messagesBox.innerHTML =
-                `
-                <div class="empty">
-                    🛸 Сообщений пока нет.<br>
-                    Напиши продавцу первым!
-                </div>
-                `;
-
-            return;
-
-        }
-
-
-        messages.forEach(
-            message => {
-
-                const div =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                div.className =
-                    "message";
-
-
-                /*
-                admin = продавец
-                user = покупатель
-                */
-
-                if (
-                    message.sender ===
-                    "admin"
-                ) {
-
-                    div.classList.add(
-                        "admin-message"
-                    );
-
-                } else {
-
-                    div.classList.add(
-                        "user-message"
-                    );
-
-                }
-
-
-                const sender =
-                    message.sender ===
-                    "admin"
-                        ? "🛸 Продавец"
-                        : "👤 Вы";
-
-
-                div.innerHTML =
-                    `
-                    <span class="message-author">
-                        ${sender}
-                    </span>
-
-                    ${escapeHtml(
-                        message.text
-                    )}
-
-                    <span class="message-time">
-                        ${escapeHtml(
-                            message.createdAt ||
-                            ""
-                        )}
-                    </span>
-                    `;
-
-
-                messagesBox.appendChild(
-                    div
-                );
-
-            }
-        );
-
-
-        messagesBox.scrollTop =
-            messagesBox.scrollHeight;
-
-    }
-
-
-    /* ОТПРАВКА СООБЩЕНИЯ */
-
-    async function sendMessage() {
-
-        if (!currentOrder) {
-            return;
-        }
-
-
-        const input =
-            document.getElementById(
-                "messageInput"
-            );
-
-
-        const button =
-            document.getElementById(
-                "sendButton"
-            );
-
-
-        const text =
-            input.value.trim();
-
-
-        if (!text) {
-            return;
-        }
-
-
-        button.disabled =
-            true;
-
-
-        button.textContent =
-            "Отправка...";
-
-
-        try {
-
-            const response =
-                await fetch(
-
-                    "/api/users/" +
-                    encodeURIComponent(
-                        currentOrder.id
                     ) +
-                    "/messages",
-
+                    "/messages/" +
+                    encodeURIComponent(
+                        messageToDelete
+                    ),
                     {
+                        method:
+                            "DELETE",
 
-                        method: "POST",
-
-
-                        headers: {
-
-                            "Content-Type":
-                                "application/json"
-
-                        },
-
-
-                        body:
-                            JSON.stringify({
-
-                                text: text,
-
-                                sender: "user"
-
-                            })
-
+                        headers:
+                            token
+                            ? {
+                                "Authorization":
+                                    "Bearer " +
+                                    token
+                            }
+                            : {}
                     }
-
                 );
 
 
-            const result =
+            const data =
                 await response.json();
 
 
             if (
-                !response.ok ||
-                result.error
+                !response.ok
             ) {
 
-                alert(
-                    result.error ||
-                    "Не удалось отправить сообщение"
+                throw new Error(
+                    data.error ||
+                    "Не удалось удалить сообщение"
                 );
-
-                return;
 
             }
 
 
-            input.value =
-                "";
-
-
-            lastMessagesJson =
-                "";
+            closeDeleteModal();
 
 
             await loadOrder();
 
-        } catch (error) {
 
-            console.error(error);
+        } catch(error) {
 
             alert(
-                "Ошибка соединения с сервером"
+                "❌ " +
+                error.message
             );
 
         } finally {
 
-            button.disabled =
+            confirmDelete.disabled =
                 false;
 
-
-            button.textContent =
-                "🚀 Отправить";
+            confirmDelete.textContent =
+                "✨ Удалить";
 
         }
 
     }
+);
 
 
-    /* ENTER ОТПРАВЛЯЕТ СООБЩЕНИЕ */
+/* =========================================
+   ОТПРАВКА
+========================================= */
 
-    document
-        .getElementById(
-            "messageInput"
-        )
-        .addEventListener(
-            "keydown",
-            function(event) {
+async function sendMessage(){
 
-                if (
-                    event.key ===
-                    "Enter"
-                ) {
+    const text =
+        input.value.trim();
 
-                    event.preventDefault();
 
-                    sendMessage();
+    if (!text) {
+        return;
+    }
 
-                }
 
-            }
+    if (!token) {
+
+        alert(
+            "Необходимо войти в аккаунт."
         );
 
-
-    /* КНОПКА ОТПРАВКИ */
-
-    document
-        .getElementById(
-            "sendButton"
-        )
-        .addEventListener(
-            "click",
-            sendMessage
-        );
-
-
-    /* ЗАЩИТА ОТ HTML */
-
-    function escapeHtml(text) {
-
-        return String(
-            text ?? ""
-        )
-
-            .replaceAll(
-                "&",
-                "&amp;"
-            )
-
-            .replaceAll(
-                "<",
-                "&lt;"
-            )
-
-            .replaceAll(
-                ">",
-                "&gt;"
-            )
-
-            .replaceAll(
-                '"',
-                "&quot;"
-            )
-
-            .replaceAll(
-                "'",
-                "&#039;"
-            );
+        return;
 
     }
 
 
-    /* ПЕРВАЯ ЗАГРУЗКА */
+    sendButton.disabled =
+        true;
 
-    loadOrder();
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/users/" +
+                encodeURIComponent(
+                    orderId
+                ) +
+                "/messages",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            token
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            text
+
+                        })
+
+                }
+            );
 
 
-    /*
-    Автоматическое обновление чата.
-    Сообщения не будут мигать,
-    если ничего не изменилось.
-    */
+        const data =
+            await response.json();
 
-    setInterval(
-        loadOrder,
-        2000
-    );
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Не удалось отправить сообщение"
+            );
+
+        }
+
+
+        input.value =
+            "";
+
+
+        await loadOrder();
+
+
+    } catch(error) {
+
+        alert(
+            "❌ " +
+            error.message
+        );
+
+    } finally {
+
+        sendButton.disabled =
+            false;
+
+    }
+
+}
+
+
+sendButton.addEventListener(
+    "click",
+    sendMessage
+);
+
+
+/* =========================================
+   ENTER
+========================================= */
+
+input.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   ОБНОВЛЕНИЕ
+========================================= */
+
+let loading =
+    false;
+
+
+async function refreshChat(){
+
+    if (
+        loading ||
+        !orderId
+    ) {
+
+        return;
+
+    }
+
+
+    loading =
+        true;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/users/" +
+                encodeURIComponent(
+                    orderId
+                ),
+                {
+                    headers:
+                        token
+                        ? {
+                            "Authorization":
+                                "Bearer " +
+                                token
+                        }
+                        : {}
+                }
+            );
+
+
+        if (
+            response.ok
+        ) {
+
+            const data =
+                await response.json();
+
+
+            currentOrder =
+                data;
+
+
+            renderMessages(
+                data.messages || []
+            );
+
+        }
+
+    } catch {
+
+        /*
+        Не показываем ошибку
+        при автоматическом обновлении.
+        */
+
+    } finally {
+
+        loading =
+            false;
+
+    }
+
+}
+
+
+setInterval(
+    refreshChat,
+    4000
+);
+
+
+/* =========================================
+   START
+========================================= */
+
+loadOrder();
 
 </script>
 
-
 </body>
+
 </html>
