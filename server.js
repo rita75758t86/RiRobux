@@ -7,13 +7,62 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PRICE_PER_ROBUX = 0.76;
 
-const BOT_DELAY = 2 * 60 * 1000;
+/*
+==================================================
+ПРОМОКОДЫ
+==================================================
+20 промокодов:
+
+RITA5       = 5%
+RITA10      = 10%
+RITA15      = 15%
+RITA20      = 20%
+RITA25      = 25%
+RITA30      = 30%
+RITA35      = 35%
+RITA40      = 40%
+RITA45      = 45%
+RITA50      = 50%
+
+ANGELIKA5   = 5%
+ANGELIKA10  = 10%
+ANGELIKA15  = 15%
+ANGELIKA20  = 20%
+ANGELIKA25  = 25%
+ANGELIKA30  = 30%
+ANGELIKA35  = 35%
+ANGELIKA40  = 40%
+ANGELIKA45  = 45%
+ANGELIKA50  = 50%
+==================================================
+*/
 
 const PROMO_CODES = {
-    START10: 10,
-    VIP20: 20,
-    ROBUX5: 5
+
+    RITA5: 5,
+    RITA10: 10,
+    RITA15: 15,
+    RITA20: 20,
+    RITA25: 25,
+    RITA30: 30,
+    RITA35: 35,
+    RITA40: 40,
+    RITA45: 45,
+    RITA50: 50,
+
+    ANGELIKA5: 5,
+    ANGELIKA10: 10,
+    ANGELIKA15: 15,
+    ANGELIKA20: 20,
+    ANGELIKA25: 25,
+    ANGELIKA30: 30,
+    ANGELIKA35: 35,
+    ANGELIKA40: 40,
+    ANGELIKA45: 45,
+    ANGELIKA50: 50
+
 };
+
 
 app.use(express.json());
 
@@ -23,51 +72,107 @@ app.use(
     )
 );
 
+
+/*
+==================================================
+DATA
+==================================================
+*/
+
 const dataDir =
-    path.join(__dirname, "data");
+    path.join(
+        __dirname,
+        "data"
+    );
 
 const usersFile =
-    path.join(dataDir, "users.json");
+    path.join(
+        dataDir,
+        "users.json"
+    );
 
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, {
-        recursive: true
-    });
+
+if (
+    !fs.existsSync(dataDir)
+) {
+
+    fs.mkdirSync(
+        dataDir,
+        {
+            recursive: true
+        }
+    );
+
 }
 
-if (!fs.existsSync(usersFile)) {
+
+if (
+    !fs.existsSync(usersFile)
+) {
+
     fs.writeFileSync(
         usersFile,
         "[]",
         "utf8"
     );
+
 }
 
+
+/*
+==================================================
+ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+==================================================
+*/
+
 function getUsers() {
+
     try {
+
         const raw =
             fs.readFileSync(
                 usersFile,
                 "utf8"
             );
 
+
         const users =
             JSON.parse(raw);
+
+
+        if (
+            !Array.isArray(users)
+        ) {
+
+            return [];
+
+        }
+
 
         return users.map(
             normalizeOrder
         );
-    } catch (error) {
+
+    }
+
+    catch (error) {
+
         console.error(
             "Ошибка чтения users.json:",
             error
         );
 
         return [];
+
     }
+
 }
 
-function saveUsers(users) {
+
+function saveUsers(
+    users
+) {
+
     fs.writeFileSync(
         usersFile,
         JSON.stringify(
@@ -77,31 +182,100 @@ function saveUsers(users) {
         ),
         "utf8"
     );
+
 }
 
-function normalizeOrder(order) {
-    if (!Array.isArray(order.messages)) {
+
+function normalizeOrder(
+    order
+) {
+
+    if (
+        !Array.isArray(
+            order.messages
+        )
+    ) {
+
         order.messages = [];
+
     }
+
 
     if (
         typeof order.hiddenForProfile !==
         "boolean"
     ) {
-        order.hiddenForProfile = false;
+
+        order.hiddenForProfile =
+            false;
+
     }
+
 
     if (
         typeof order.updatedAt !==
         "number"
     ) {
-        order.updatedAt = Date.now();
+
+        order.updatedAt =
+            Date.now();
+
     }
 
+
+    if (
+        typeof order.discountPercent !==
+        "number"
+    ) {
+
+        order.discountPercent =
+            0;
+
+    }
+
+
+    if (
+        typeof order.discountAmount !==
+        "number"
+    ) {
+
+        order.discountAmount =
+            0;
+
+    }
+
+
+    if (
+        typeof order.basePrice !==
+        "number"
+    ) {
+
+        order.basePrice =
+            Number(order.price || 0);
+
+    }
+
+
+    if (
+        typeof order.promoCode !==
+        "string"
+    ) {
+
+        order.promoCode =
+            "";
+
+    }
+
+
     return order;
+
 }
 
-function createId(prefix) {
+
+function createId(
+    prefix
+) {
+
     return (
         prefix +
         "-" +
@@ -111,37 +285,70 @@ function createId(prefix) {
             .toString(36)
             .slice(2, 9)
     );
+
 }
+
 
 function currentDate() {
-    return new Date().toLocaleString(
-        "ru-RU"
-    );
+
+    return new Date()
+        .toLocaleString(
+            "ru-RU"
+        );
+
 }
 
-function normalizePromoCode(code) {
-    return String(code || "")
+
+function normalizePromoCode(
+    code
+) {
+
+    return String(
+        code || ""
+    )
         .trim()
         .toUpperCase();
+
 }
 
-function getPromoDiscount(code) {
+
+function getPromoDiscount(
+    code
+) {
+
     const normalized =
-        normalizePromoCode(code);
+        normalizePromoCode(
+            code
+        );
+
 
     return (
-        PROMO_CODES[normalized] || 0
+        PROMO_CODES[
+            normalized
+        ] || 0
     );
+
 }
+
+
+/*
+==================================================
+РАСЧЁТ ЦЕНЫ
+==================================================
+*/
 
 function calculatePrice(
     robux,
     promoCode = ""
 ) {
+
     const amount =
         Math.floor(
-            Number(robux)
+            Number(
+                robux
+            )
         );
+
 
     const basePrice =
         Math.round(
@@ -150,10 +357,12 @@ function calculatePrice(
             100
         ) / 100;
 
+
     const discountPercent =
         getPromoDiscount(
             promoCode
         );
+
 
     const discountAmount =
         Math.round(
@@ -162,6 +371,7 @@ function calculatePrice(
             100 *
             100
         ) / 100;
+
 
     const finalPrice =
         Math.round(
@@ -172,18 +382,31 @@ function calculatePrice(
             100
         ) / 100;
 
+
     return {
-        basePrice,
-        discountPercent,
-        discountAmount,
-        finalPrice
+
+        basePrice:
+            basePrice,
+
+        discountPercent:
+            discountPercent,
+
+        discountAmount:
+            discountAmount,
+
+        finalPrice:
+            finalPrice
+
     };
+
 }
 
 
-/* =========================
-   ПРОВЕРКА ПРОМОКОДА
-========================= */
+/*
+==================================================
+ПРОВЕРКА ПРОМОКОДА
+==================================================
+*/
 
 app.post(
     "/api/promos/validate",
@@ -194,44 +417,58 @@ app.post(
             robux
         } = req.body;
 
+
         const amount =
             Math.floor(
-                Number(robux)
+                Number(
+                    robux
+                )
             );
+
 
         if (
             !code ||
-            !Number.isFinite(amount) ||
+            !Number.isFinite(
+                amount
+            ) ||
             amount < 1
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверные данные"
                 });
+
         }
+
 
         const normalized =
             normalizePromoCode(
                 code
             );
 
+
         const discountPercent =
             getPromoDiscount(
                 normalized
             );
 
+
         if (
             discountPercent <= 0
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Такого промокода нет"
                 });
+
         }
+
 
         const price =
             calculatePrice(
@@ -239,8 +476,11 @@ app.post(
                 normalized
             );
 
-        res.json({
-            success: true,
+
+        return res.json({
+
+            success:
+                true,
 
             promoCode:
                 normalized,
@@ -256,14 +496,18 @@ app.post(
 
             finalPrice:
                 price.finalPrice
+
         });
+
     }
 );
 
 
-/* =========================
-   СОЗДАНИЕ ЗАКАЗА
-========================= */
+/*
+==================================================
+СОЗДАНИЕ ЗАКАЗА
+==================================================
+*/
 
 app.post(
     "/api/users",
@@ -276,39 +520,54 @@ app.post(
             promoCode
         } = req.body;
 
+
         const amount =
             Math.floor(
-                Number(robux)
+                Number(
+                    robux
+                )
             );
+
 
         if (
             !username ||
-            !String(username).trim()
+            !String(
+                username
+            ).trim()
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите Roblox Username"
                 });
+
         }
 
+
         if (
-            !Number.isFinite(amount) ||
+            !Number.isFinite(
+                amount
+            ) ||
             amount < 1
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите правильное количество Robux"
                 });
+
         }
+
 
         const normalizedPromo =
             normalizePromoCode(
                 promoCode
             );
+
 
         const price =
             calculatePrice(
@@ -316,10 +575,13 @@ app.post(
                 normalizedPromo
             );
 
+
         const users =
             getUsers();
 
+
         const order = {
+
             id:
                 createId(
                     "order"
@@ -337,7 +599,9 @@ app.post(
                 ),
 
             username:
-                String(username).trim(),
+                String(
+                    username
+                ).trim(),
 
             robux:
                 amount,
@@ -362,7 +626,8 @@ app.post(
             status:
                 "Новая заявка",
 
-            messages: [],
+            messages:
+                [],
 
             hiddenForProfile:
                 false,
@@ -372,26 +637,39 @@ app.post(
 
             updatedAt:
                 Date.now()
+
         };
 
-        users.push(order);
 
-        saveUsers(users);
+        users.push(
+            order
+        );
 
-        res.json(order);
+
+        saveUsers(
+            users
+        );
+
+
+        return res.json(
+            order
+        );
+
     }
 );
 
 
-/* =========================
-   ВСЕ ЗАКАЗЫ
-========================= */
+/*
+==================================================
+ПОЛУЧИТЬ ВСЕ ЗАКАЗЫ
+==================================================
+*/
 
 app.get(
     "/api/users",
     (req, res) => {
 
-        res.json(
+        return res.json(
             getUsers()
         );
 
@@ -399,9 +677,11 @@ app.get(
 );
 
 
-/* =========================
-   ЗАКАЗЫ ПРОФИЛЯ
-========================= */
+/*
+==================================================
+ЗАКАЗЫ ПРОФИЛЯ
+==================================================
+*/
 
 app.get(
     "/api/profiles/:profileId/orders",
@@ -409,6 +689,7 @@ app.get(
 
         const users =
             getUsers();
+
 
         const orders =
             users.filter(
@@ -418,17 +699,24 @@ app.get(
                     ) ===
                     String(
                         req.params.profileId
-                    )
+                    ) &&
+                    !order.hiddenForProfile
             );
 
-        res.json(orders);
+
+        return res.json(
+            orders
+        );
+
     }
 );
 
 
-/* =========================
-   ОДИН ЗАКАЗ
-========================= */
+/*
+==================================================
+ПОЛУЧИТЬ ОДИН ЗАКАЗ
+==================================================
+*/
 
 app.get(
     "/api/users/:id",
@@ -437,6 +725,7 @@ app.get(
         const users =
             getUsers();
 
+
         const order =
             users.find(
                 item =>
@@ -444,94 +733,148 @@ app.get(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
 
-        res.json(
+
+        return res.json(
             normalizeOrder(
                 order
             )
         );
+
     }
 );
 
 
-/* =========================
-   БОТ
-========================= */
+/*
+==================================================
+ТАЙМЕР БОТА
+==================================================
+*/
 
 const botTimers =
     new Map();
 
+
 function cancelBotTimer(
     orderId
 ) {
+
     const timer =
         botTimers.get(
             orderId
         );
 
+
     if (timer) {
-        clearTimeout(timer);
+
+        clearTimeout(
+            timer
+        );
+
 
         botTimers.delete(
             orderId
         );
+
     }
+
 }
+
 
 function createBotReply(
     text
 ) {
+
     const lower =
-        String(text)
-            .toLowerCase();
+        String(
+            text
+        ).toLowerCase();
+
 
     if (
-        lower.includes("привет") ||
-        lower.includes("здравствуйте")
+        lower.includes(
+            "привет"
+        ) ||
+        lower.includes(
+            "здравствуйте"
+        )
     ) {
+
         return "🤖 Здравствуйте! Сообщение передано продавцу.";
+
     }
 
+
     if (
-        lower.includes("когда") ||
-        lower.includes("сколько ждать") ||
-        lower.includes("срок")
+        lower.includes(
+            "когда"
+        ) ||
+        lower.includes(
+            "сколько ждать"
+        ) ||
+        lower.includes(
+            "срок"
+        )
     ) {
+
         return "🤖 Ваш вопрос передан продавцу. Пожалуйста, ожидайте ответа.";
+
     }
 
+
     if (
-        lower.includes("где заказ") ||
-        lower.includes("где мой") ||
-        lower.includes("не приш")
+        lower.includes(
+            "где заказ"
+        ) ||
+        lower.includes(
+            "где мой"
+        ) ||
+        lower.includes(
+            "не приш"
+        )
     ) {
+
         return "🤖 Продавец проверит ваш заказ и ответит вам.";
+
     }
 
+
     if (
-        lower.includes("спасибо")
+        lower.includes(
+            "спасибо"
+        )
     ) {
+
         return "🤖 Пожалуйста! 💜";
+
     }
+
 
     return "🤖 Сообщение получено. Продавец обязательно его увидит.";
+
 }
+
 
 function scheduleBot(
     orderId,
     userMessageId
 ) {
+
     cancelBotTimer(
         orderId
     );
+
 
     const timer =
         setTimeout(
@@ -540,6 +883,7 @@ function scheduleBot(
                 const users =
                     getUsers();
 
+
                 const order =
                     users.find(
                         item =>
@@ -547,17 +891,25 @@ function scheduleBot(
                             orderId
                     );
 
+
                 if (!order) {
+
                     return;
+
                 }
+
 
                 if (
                     !Array.isArray(
                         order.messages
                     )
                 ) {
-                    order.messages = [];
+
+                    order.messages =
+                        [];
+
                 }
+
 
                 const lastUserMessage =
                     [...order.messages]
@@ -568,11 +920,15 @@ function scheduleBot(
                                 "user"
                         );
 
+
                 if (
                     !lastUserMessage
                 ) {
+
                     return;
+
                 }
+
 
                 if (
                     String(
@@ -582,35 +938,47 @@ function scheduleBot(
                         userMessageId
                     )
                 ) {
+
                     return;
+
                 }
+
 
                 const hasAdminReply =
                     order.messages.some(
                         message =>
+
                             message.sender ===
                                 "admin" &&
+
                             Number(
                                 message.createdTimestamp ||
                                 0
                             ) >
+
                             Number(
                                 lastUserMessage.createdTimestamp ||
                                 0
                             )
                     );
 
+
                 if (
                     hasAdminReply
                 ) {
+
                     return;
+
                 }
+
 
                 const botAlreadyAnswered =
                     order.messages.some(
                         message =>
+
                             message.sender ===
                                 "bot" &&
+
                             String(
                                 message.replyTo
                             ) ===
@@ -619,13 +987,18 @@ function scheduleBot(
                             )
                     );
 
+
                 if (
                     botAlreadyAnswered
                 ) {
+
                     return;
+
                 }
 
+
                 order.messages.push({
+
                     id:
                         createId(
                             "bot"
@@ -650,29 +1023,36 @@ function scheduleBot(
 
                     createdTimestamp:
                         Date.now()
+
                 });
+
 
                 order.updatedAt =
                     Date.now();
+
 
                 saveUsers(
                     users
                 );
 
             },
-            BOT_DELAY
+            2 * 60 * 1000
         );
+
 
     botTimers.set(
         orderId,
         timer
     );
+
 }
 
 
-/* =========================
-   СООБЩЕНИЯ
-========================= */
+/*
+==================================================
+СООБЩЕНИЯ
+==================================================
+*/
 
 app.post(
     "/api/users/:id/messages",
@@ -683,32 +1063,42 @@ app.post(
             sender
         } = req.body;
 
+
         if (
             !text ||
-            !String(text).trim()
+            !String(
+                text
+            ).trim()
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите сообщение"
                 });
+
         }
+
 
         if (
             sender !== "user" &&
             sender !== "admin"
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверный отправитель"
                 });
+
         }
+
 
         const users =
             getUsers();
+
 
         const order =
             users.find(
@@ -717,22 +1107,30 @@ app.post(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         if (
             !Array.isArray(
                 order.messages
             )
         ) {
-            order.messages = [];
+
+            order.messages =
+                [];
+
         }
+
 
         const message = {
 
@@ -742,58 +1140,74 @@ app.post(
                 ),
 
             sender:
-
                 sender,
 
             text:
-                String(text)
-                    .trim(),
+                String(
+                    text
+                ).trim(),
 
             createdAt:
                 currentDate(),
 
             createdTimestamp:
                 Date.now()
+
         };
+
 
         order.messages.push(
             message
         );
 
+
         order.updatedAt =
             Date.now();
 
+
         if (
-            sender === "admin"
+            sender ===
+            "admin"
         ) {
+
             cancelBotTimer(
                 order.id
             );
+
         }
+
 
         saveUsers(
             users
         );
 
+
         if (
-            sender === "user"
+            sender ===
+            "user"
         ) {
+
             scheduleBot(
                 order.id,
                 message.id
             );
+
         }
 
-        res.json(
+
+        return res.json(
             message
         );
+
     }
 );
 
 
-/* =========================
-   УДАЛЕНИЕ СООБЩЕНИЯ
-========================= */
+/*
+==================================================
+УДАЛИТЬ СООБЩЕНИЕ
+==================================================
+*/
 
 app.delete(
     "/api/users/:orderId/messages/:messageId",
@@ -802,6 +1216,7 @@ app.delete(
         const users =
             getUsers();
 
+
         const order =
             users.find(
                 item =>
@@ -809,19 +1224,24 @@ app.delete(
                     req.params.orderId
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         order.messages =
             Array.isArray(
                 order.messages
             )
+
                 ? order.messages.filter(
                     message =>
                         String(
@@ -831,26 +1251,33 @@ app.delete(
                             req.params.messageId
                         )
                 )
+
                 : [];
+
 
         order.updatedAt =
             Date.now();
+
 
         saveUsers(
             users
         );
 
-        res.json({
+
+        return res.json({
             success:
                 true
         });
+
     }
 );
 
 
-/* =========================
-   ИЗМЕНЕНИЕ ЗАКАЗА
-========================= */
+/*
+==================================================
+ИЗМЕНЕНИЕ ЗАКАЗА
+==================================================
+*/
 
 app.patch(
     "/api/users/:id",
@@ -859,6 +1286,7 @@ app.patch(
         const users =
             getUsers();
 
+
         const order =
             users.find(
                 item =>
@@ -866,34 +1294,44 @@ app.patch(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         if (
             order.status !==
             "Новая заявка"
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Этот заказ уже нельзя изменить"
                 });
+
         }
+
 
         const {
             username,
-            robux
+            robux,
+            promoCode
         } = req.body;
 
+
         if (
-            username !== undefined
+            username !==
+            undefined
         ) {
 
             const name =
@@ -901,27 +1339,49 @@ app.patch(
                     username
                 ).trim();
 
+
             if (!name) {
+
                 return res
                     .status(400)
                     .json({
                         error:
                             "Username не может быть пустым"
                     });
+
             }
+
 
             order.username =
                 name;
+
         }
 
+
         if (
-            robux !== undefined
+            robux !==
+            undefined ||
+            promoCode !==
+            undefined
         ) {
 
             const amount =
-                Math.floor(
-                    Number(robux)
-                );
+                robux !== undefined
+                    ? Math.floor(
+                        Number(
+                            robux
+                        )
+                    )
+                    : order.robux;
+
+
+            const code =
+                promoCode !== undefined
+                    ? normalizePromoCode(
+                        promoCode
+                    )
+                    : order.promoCode;
+
 
             if (
                 !Number.isFinite(
@@ -929,22 +1389,26 @@ app.patch(
                 ) ||
                 amount < 1
             ) {
+
                 return res
                     .status(400)
                     .json({
                         error:
                             "Неверное количество Robux"
                     });
+
             }
 
-            order.robux =
-                amount;
 
             const price =
                 calculatePrice(
                     amount,
-                    order.promoCode
+                    code
                 );
+
+
+            order.robux =
+                amount;
 
             order.basePrice =
                 price.basePrice;
@@ -957,23 +1421,39 @@ app.patch(
 
             order.price =
                 price.finalPrice;
+
+            order.promoCode =
+                price.discountPercent > 0
+                    ? normalizePromoCode(
+                        code
+                    )
+                    : "";
+
         }
+
 
         order.updatedAt =
             Date.now();
+
 
         saveUsers(
             users
         );
 
-        res.json(order);
+
+        return res.json(
+            order
+        );
+
     }
 );
 
 
-/* =========================
-   ОТМЕНА
-========================= */
+/*
+==================================================
+ОТМЕНА ЗАКАЗА
+==================================================
+*/
 
 app.post(
     "/api/users/:id/cancel",
@@ -982,6 +1462,7 @@ app.post(
         const users =
             getUsers();
 
+
         const order =
             users.find(
                 item =>
@@ -989,49 +1470,65 @@ app.post(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         if (
             order.status !==
             "Новая заявка"
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Этот заказ уже нельзя отменить"
                 });
+
         }
+
 
         order.status =
             "Отменена";
 
+
         order.updatedAt =
             Date.now();
+
 
         cancelBotTimer(
             order.id
         );
 
+
         saveUsers(
             users
         );
 
-        res.json(order);
+
+        return res.json(
+            order
+        );
+
     }
 );
 
 
-/* =========================
-   СТАТУС
-========================= */
+/*
+==================================================
+СТАТУС
+==================================================
+*/
 
 app.patch(
     "/api/users/:id/status",
@@ -1041,29 +1538,41 @@ app.patch(
             status
         } = req.body;
 
+
         const allowedStatuses = [
+
             "Новая заявка",
+
             "В работе",
+
             "Выполняется",
+
             "Выполнено",
+
             "Отменена"
+
         ];
+
 
         if (
             !allowedStatuses.includes(
                 status
             )
         ) {
+
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверный статус"
                 });
+
         }
+
 
         const users =
             getUsers();
+
 
         const order =
             users.find(
@@ -1072,33 +1581,45 @@ app.patch(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         order.status =
             status;
 
+
         order.updatedAt =
             Date.now();
+
 
         saveUsers(
             users
         );
 
-        res.json(order);
+
+        return res.json(
+            order
+        );
+
     }
 );
 
 
-/* =========================
-   СКРЫТЬ ЗАКАЗ
-========================= */
+/*
+==================================================
+СКРЫТЬ ЗАКАЗ ИЗ ПРОФИЛЯ
+==================================================
+*/
 
 app.post(
     "/api/users/:id/hide",
@@ -1107,6 +1628,7 @@ app.post(
         const users =
             getUsers();
 
+
         const order =
             users.find(
                 item =>
@@ -1114,36 +1636,48 @@ app.post(
                     req.params.id
             );
 
+
         if (!order) {
+
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
+
         }
+
 
         order.hiddenForProfile =
             true;
 
+
         order.updatedAt =
             Date.now();
+
 
         saveUsers(
             users
         );
 
-        res.json({
+
+        return res.json({
+
             success:
                 true
+
         });
+
     }
 );
 
 
-/* =========================
-   ЗАПУСК
-========================= */
+/*
+==================================================
+ЗАПУСК
+==================================================
+*/
 
 app.listen(
     PORT,
@@ -1152,6 +1686,18 @@ app.listen(
 
         console.log(
             `🚀 RiRobux запущен на порту ${PORT}`
+        );
+
+        console.log(
+            `💎 Курс: 1 Robux = ${PRICE_PER_ROBUX} ₽`
+        );
+
+        console.log(
+            `🎁 Доступно промокодов: ${
+                Object.keys(
+                    PROMO_CODES
+                ).length
+            }`
         );
 
     }
