@@ -3,19 +3,34 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 3000;
+
+const PORT =
+    process.env.PORT || 3000;
+
+const PRICE_PER_ROBUX = 0.76;
+
+const BOT_DELAY =
+    2 * 60 * 1000;
+
 
 app.use(express.json());
 
 app.use(
     express.static(
-        path.join(__dirname, "public")
+        path.join(
+            __dirname,
+            "public"
+        )
     )
 );
 
 
 const dataDir =
-    path.join(__dirname, "data");
+    path.join(
+        __dirname,
+        "data"
+    );
+
 
 const usersFile =
     path.join(
@@ -24,44 +39,49 @@ const usersFile =
     );
 
 
-if (!fs.existsSync(dataDir)) {
-
+if (
+    !fs.existsSync(dataDir)
+) {
     fs.mkdirSync(
         dataDir,
         {
             recursive: true
         }
     );
-
 }
 
 
-if (!fs.existsSync(usersFile)) {
-
+if (
+    !fs.existsSync(usersFile)
+) {
     fs.writeFileSync(
         usersFile,
         "[]",
         "utf8"
     );
-
 }
 
 
 /* =========================
-   РАБОТА С БАЗОЙ
+   БАЗА
 ========================= */
 
 function getUsers() {
 
     try {
 
-        const data =
+        const raw =
             fs.readFileSync(
                 usersFile,
                 "utf8"
             );
 
-        return JSON.parse(data);
+        const users =
+            JSON.parse(raw);
+
+        return users.map(
+            normalizeOrder
+        );
 
     } catch (error) {
 
@@ -73,7 +93,6 @@ function getUsers() {
         return [];
 
     }
-
 }
 
 
@@ -92,6 +111,39 @@ function saveUsers(users) {
 }
 
 
+function normalizeOrder(order) {
+
+    if (
+        !Array.isArray(
+            order.messages
+        )
+    ) {
+        order.messages = [];
+    }
+
+
+    if (
+        typeof order.hiddenForProfile !==
+        "boolean"
+    ) {
+        order.hiddenForProfile =
+            false;
+    }
+
+
+    if (
+        typeof order.updatedAt !==
+        "number"
+    ) {
+        order.updatedAt =
+            Date.now();
+    }
+
+
+    return order;
+}
+
+
 function createId(prefix) {
 
     return (
@@ -101,13 +153,13 @@ function createId(prefix) {
         "-" +
         Math.random()
             .toString(36)
-            .slice(2, 10)
+            .slice(2, 9)
     );
 
 }
 
 
-function getDate() {
+function currentDate() {
 
     return new Date()
         .toLocaleString(
@@ -118,7 +170,7 @@ function getDate() {
 
 
 /* =========================
-   СОЗДАТЬ ЗАКАЗ
+   СОЗДАНИЕ ЗАКАЗА
 ========================= */
 
 app.post(
@@ -128,9 +180,12 @@ app.post(
         const {
             username,
             robux,
-            price,
             profileId
         } = req.body;
+
+
+        const amount =
+            Number(robux);
 
 
         if (
@@ -149,15 +204,15 @@ app.post(
 
 
         if (
-            !robux ||
-            Number(robux) < 1
+            !Number.isFinite(amount) ||
+            amount < 1
         ) {
 
             return res
                 .status(400)
                 .json({
                     error:
-                        "Введите количество Robux"
+                        "Введите правильное количество Robux"
                 });
 
         }
@@ -167,15 +222,12 @@ app.post(
             getUsers();
 
 
-        const finalProfileId =
-            profileId ||
-            createId("profile");
-
-
         const order = {
 
             id:
-                createId("order"),
+                createId(
+                    "order"
+                ),
 
             orderNumber:
                 1000 +
@@ -183,26 +235,37 @@ app.post(
                 1,
 
             profileId:
-                finalProfileId,
+                profileId ||
+                createId(
+                    "profile"
+                ),
 
             username:
                 String(username)
                     .trim(),
 
             robux:
-                Number(robux),
+                Math.floor(
+                    amount
+                ),
 
             price:
-                Number(price) ||
-                Number(robux) * 1.5,
+                Math.round(
+                    Math.floor(amount) *
+                    PRICE_PER_ROBUX *
+                    100
+                ) / 100,
 
             status:
                 "Новая заявка",
 
             messages: [],
 
+            hiddenForProfile:
+                false,
+
             createdAt:
-                getDate(),
+                currentDate(),
 
             updatedAt:
                 Date.now()
@@ -251,9 +314,13 @@ app.get(
 
         const orders =
             users.filter(
-                user =>
-                    user.profileId ===
-                    req.params.profileId
+                order =>
+                    String(
+                        order.profileId
+                    ) ===
+                    String(
+                        req.params.profileId
+                    )
             );
 
 
@@ -295,14 +362,362 @@ app.get(
         }
 
 
-        res.json(order);
+        res.json(
+            normalizeOrder(
+                order
+            )
+        );
 
     }
 );
 
 
 /* =========================
-   ОТПРАВИТЬ СООБЩЕНИЕ
+   СООБЩЕНИЯ
+========================= */
+
+const botTimers =
+    new Map();
+
+
+function cancelBotTimer(
+    orderId
+) {
+
+    const timer =
+        botTimers.get(
+            orderId
+        );
+
+
+    if (timer) {
+
+        clearTimeout(
+            timer
+        );
+
+        botTimers.delete(
+            orderId
+        );
+
+    }
+
+}
+
+
+function createBotReply(
+    text
+) {
+
+    const lower =
+        String(text)
+            .toLowerCase();
+
+
+    if (
+        lower.includes(
+            "привет"
+        ) ||
+        lower.includes(
+            "здравствуйте"
+        )
+    ) {
+
+        return [
+            "🤖 Здравствуйте! Сообщение передано продавцу.",
+            "🤖 Привет! Продавец увидит ваше сообщение и ответит вам.",
+            "🤖 Здравствуйте! Продавец сейчас может быть занят. Ожидайте ответа."
+        ][
+            Math.floor(
+                Math.random() * 3
+            )
+        ];
+
+    }
+
+
+    if (
+        lower.includes(
+            "когда"
+        ) ||
+        lower.includes(
+            "сколько ждать"
+        ) ||
+        lower.includes(
+            "срок"
+        )
+    ) {
+
+        return [
+            "🤖 Ваш вопрос передан продавцу. Пожалуйста, ожидайте ответа.",
+            "🤖 Заказ находится в обработке. Продавец сообщит вам сроки.",
+            "🤖 Спасибо за ожидание. Продавец ответит, как только освободится."
+        ][
+            Math.floor(
+                Math.random() * 3
+            )
+        ];
+
+    }
+
+
+    if (
+        lower.includes(
+            "где заказ"
+        ) ||
+        lower.includes(
+            "где мой"
+        ) ||
+        lower.includes(
+            "не приш"
+        )
+    ) {
+
+        return [
+            "🤖 Продавец проверит ваш заказ и ответит вам.",
+            "🤖 Ваш вопрос передан продавцу.",
+            "🤖 Не переживайте, информация по заказу будет проверена."
+        ][
+            Math.floor(
+                Math.random() * 3
+            )
+        ];
+
+    }
+
+
+    if (
+        lower.includes(
+            "спасибо"
+        )
+    ) {
+
+        return [
+            "🤖 Пожалуйста! 💜",
+            "🤖 Всегда рады помочь!",
+            "🤖 Не за что! Ожидайте ответа продавца."
+        ][
+            Math.floor(
+                Math.random() * 3
+            )
+        ];
+
+    }
+
+
+    return [
+        "🤖 Продавец сейчас не отвечает. Ваше сообщение сохранено.",
+        "🤖 Продавец может быть занят. Он обязательно увидит ваше сообщение.",
+        "🤖 Сообщение получено. Ожидайте ответа продавца в ближайшее время.",
+        "🤖 Ваше сообщение передано продавцу.",
+        "🤖 Продавец временно не в сети. Ожидайте ответа."
+    ][
+        Math.floor(
+            Math.random() * 5
+        )
+    ];
+
+}
+
+
+function scheduleBot(
+    orderId,
+    userMessageId
+) {
+
+    cancelBotTimer(
+        orderId
+    );
+
+
+    const timer =
+        setTimeout(
+            () => {
+
+                const users =
+                    getUsers();
+
+
+                const order =
+                    users.find(
+                        item =>
+                            item.id ===
+                            orderId
+                    );
+
+
+                if (!order) {
+                    return;
+                }
+
+
+                if (
+                    !Array.isArray(
+                        order.messages
+                    )
+                ) {
+                    order.messages = [];
+                }
+
+
+                /*
+                Берём самое последнее
+                сообщение пользователя.
+                */
+
+                const lastUserMessage =
+                    [...order.messages]
+                        .reverse()
+                        .find(
+                            message =>
+                                message.sender ===
+                                "user"
+                        );
+
+
+                if (!lastUserMessage) {
+                    return;
+                }
+
+
+                /*
+                Если последнее
+                сообщение пользователя
+                уже не то, на которое
+                ставился таймер,
+                ничего не делаем.
+                */
+
+                if (
+                    String(
+                        lastUserMessage.id
+                    ) !==
+                    String(
+                        userMessageId
+                    )
+                ) {
+                    return;
+                }
+
+
+                /*
+                Если после него есть
+                сообщение продавца,
+                бот не отвечает.
+                */
+
+                const hasAdminReply =
+                    order.messages.some(
+                        message =>
+                            message.sender ===
+                            "admin" &&
+
+                            Number(
+                                message.createdTimestamp ||
+                                0
+                            ) >
+                            Number(
+                                lastUserMessage.createdTimestamp ||
+                                0
+                            )
+                    );
+
+
+                if (
+                    hasAdminReply
+                ) {
+                    return;
+                }
+
+
+                /*
+                Проверяем, не отвечал
+                ли бот уже на это
+                сообщение.
+                */
+
+                const botAlreadyAnswered =
+                    order.messages.some(
+                        message =>
+
+                            message.sender ===
+                            "bot" &&
+
+                            String(
+                                message.replyTo
+                            ) ===
+                            String(
+                                userMessageId
+                            )
+                    );
+
+
+                if (
+                    botAlreadyAnswered
+                ) {
+                    return;
+                }
+
+
+                const botMessage = {
+
+                    id:
+                        createId(
+                            "bot"
+                        ),
+
+                    sender:
+                        "bot",
+
+                    isBot:
+                        true,
+
+                    replyTo:
+                        userMessageId,
+
+                    text:
+                        createBotReply(
+                            lastUserMessage.text
+                        ),
+
+                    createdAt:
+                        currentDate(),
+
+                    createdTimestamp:
+                        Date.now()
+
+                };
+
+
+                order.messages.push(
+                    botMessage
+                );
+
+
+                order.updatedAt =
+                    Date.now();
+
+
+                saveUsers(
+                    users
+                );
+
+            },
+
+            BOT_DELAY
+        );
+
+
+    botTimers.set(
+        orderId,
+        timer
+    );
+
+}
+
+
+/* =========================
+   ОТПРАВКА СООБЩЕНИЯ
 ========================= */
 
 app.post(
@@ -330,17 +745,9 @@ app.post(
         }
 
 
-        const allowedSenders = [
-            "user",
-            "admin",
-            "bot"
-        ];
-
-
         if (
-            !allowedSenders.includes(
-                sender
-            )
+            sender !== "user" &&
+            sender !== "admin"
         ) {
 
             return res
@@ -384,14 +791,15 @@ app.post(
         ) {
 
             order.messages = [];
-
         }
 
 
         const message = {
 
             id:
-                createId("message"),
+                createId(
+                    "message"
+                ),
 
             sender:
                 sender,
@@ -401,7 +809,7 @@ app.post(
                     .trim(),
 
             createdAt:
-                getDate(),
+                currentDate(),
 
             createdTimestamp:
                 Date.now()
@@ -418,10 +826,48 @@ app.post(
             Date.now();
 
 
-        saveUsers(users);
+        /*
+        Продавец ответил —
+        отменяем текущий
+        таймер бота.
+        */
+
+        if (
+            sender === "admin"
+        ) {
+
+            cancelBotTimer(
+                order.id
+            );
+
+        }
 
 
-        res.json(message);
+        saveUsers(
+            users
+        );
+
+
+        /*
+        Покупатель написал —
+        запускаем таймер 2 минуты.
+        */
+
+        if (
+            sender === "user"
+        ) {
+
+            scheduleBot(
+                order.id,
+                message.id
+            );
+
+        }
+
+
+        res.json(
+            message
+        );
 
     }
 );
@@ -459,54 +905,34 @@ app.delete(
         }
 
 
-        if (
-            !Array.isArray(
+        order.messages =
+            Array.isArray(
                 order.messages
             )
-        ) {
-
-            order.messages = [];
-
-        }
-
-
-        const index =
-            order.messages.findIndex(
-                message =>
-                    String(message.id) ===
-                    String(
-                        req.params.messageId
-                    )
-            );
-
-
-        if (index === -1) {
-
-            return res
-                .status(404)
-                .json({
-                    error:
-                        "Сообщение не найдено"
-                });
-
-        }
-
-
-        order.messages.splice(
-            index,
-            1
-        );
+                ? order.messages.filter(
+                    message =>
+                        String(
+                            message.id
+                        ) !==
+                        String(
+                            req.params.messageId
+                        )
+                )
+                : [];
 
 
         order.updatedAt =
             Date.now();
 
 
-        saveUsers(users);
+        saveUsers(
+            users
+        );
 
 
         res.json({
-            success: true
+            success:
+                true
         });
 
     }
@@ -561,48 +987,78 @@ app.patch(
 
 
         const {
-            robux,
-            username
+            username,
+            robux
         } = req.body;
+
+
+        if (
+            username !== undefined
+        ) {
+
+            const name =
+                String(
+                    username
+                ).trim();
+
+
+            if (!name) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            "Username не может быть пустым"
+                    });
+
+            }
+
+
+            order.username =
+                name;
+
+        }
 
 
         if (
             robux !== undefined
         ) {
 
+            const amount =
+                Number(
+                    robux
+                );
+
+
             if (
-                Number(robux) < 1
+                !Number.isFinite(
+                    amount
+                ) ||
+                amount < 1
             ) {
 
                 return res
                     .status(400)
                     .json({
                         error:
-                            "Количество Robux должно быть больше 0"
+                            "Неверное количество Robux"
                     });
 
             }
 
 
             order.robux =
-                Number(robux);
+                Math.floor(
+                    amount
+                );
 
 
             order.price =
-                Number(robux) *
-                1.5;
-
-        }
-
-
-        if (
-            username !== undefined &&
-            String(username).trim()
-        ) {
-
-            order.username =
-                String(username)
-                    .trim();
+                Math.round(
+                    order.robux *
+                    PRICE_PER_ROBUX *
+                    100
+                ) / 100;
 
         }
 
@@ -611,17 +1067,21 @@ app.patch(
             Date.now();
 
 
-        saveUsers(users);
+        saveUsers(
+            users
+        );
 
 
-        res.json(order);
+        res.json(
+            order
+        );
 
     }
 );
 
 
 /* =========================
-   ОТМЕНИТЬ ЗАКАЗ
+   ОТМЕНА
 ========================= */
 
 app.post(
@@ -675,7 +1135,14 @@ app.post(
             Date.now();
 
 
-        saveUsers(users);
+        saveUsers(
+            users
+        );
+
+
+        cancelBotTimer(
+            order.id
+        );
 
 
         res.json(order);
@@ -685,7 +1152,7 @@ app.post(
 
 
 /* =========================
-   ИЗМЕНИТЬ СТАТУС
+   СТАТУС
 ========================= */
 
 app.patch(
@@ -698,15 +1165,11 @@ app.patch(
 
 
         const allowedStatuses = [
-
             "Новая заявка",
-
             "В работе",
-
+            "Выполняется",
             "Выполнено",
-
             "Отменена"
-
         ];
 
 
@@ -758,7 +1221,9 @@ app.patch(
             Date.now();
 
 
-        saveUsers(users);
+        saveUsers(
+            users
+        );
 
 
         res.json(order);
@@ -768,26 +1233,26 @@ app.patch(
 
 
 /* =========================
-   УДАЛИТЬ ЗАКАЗ ИЗ ПРОФИЛЯ
+   СКРЫТЬ ЗАКАЗ
 ========================= */
 
-app.delete(
-    "/api/users/:id",
+app.post(
+    "/api/users/:id/hide",
     (req, res) => {
 
         const users =
             getUsers();
 
 
-        const index =
-            users.findIndex(
+        const order =
+            users.find(
                 item =>
                     item.id ===
                     req.params.id
             );
 
 
-        if (index === -1) {
+        if (!order) {
 
             return res
                 .status(404)
@@ -799,17 +1264,22 @@ app.delete(
         }
 
 
-        users.splice(
-            index,
-            1
+        order.hiddenForProfile =
+            true;
+
+
+        order.updatedAt =
+            Date.now();
+
+
+        saveUsers(
+            users
         );
 
 
-        saveUsers(users);
-
-
         res.json({
-            success: true
+            success:
+                true
         });
 
     }
@@ -822,15 +1292,11 @@ app.delete(
 
 app.listen(
     PORT,
+    "0.0.0.0",
     () => {
 
         console.log(
-            "🚀 RiRobux запущен!"
-        );
-
-        console.log(
-            "👉 http://localhost:" +
-            PORT
+            `🚀 RiRobux запущен на порту ${PORT}`
         );
 
     }
