@@ -1,0 +1,399 @@
+[
+  {
+    "id": "user-1787825788284",
+    "username": "ler4egme3",
+    "robux": 21,
+    "status": "Отменена",
+    "messages": [
+      {
+        "id": 1787825807137,
+        "sender": "user",
+        "text": "првапргвапро",
+        "createdAt": "27.08.2026, 17:16:47"
+      }
+    ],
+    "createdAt": "27.08.2026, 17:16:28",
+    "chatActive": false
+  },
+  {
+    "id": "user-1787826052573",
+    "username": "ler4egme3",
+    "robux": 223,
+    "status": "Отменена",
+    "messages": [
+      {
+        "id": 1787826055189,
+        "sender": "user",
+        "text": "ек",
+        "createdAt": "27.08.2026, 17:20:55"
+      },
+      {
+        "id": 1787882767106,
+        "sender": "admin",
+        "text": "прпр",
+        "createdAt": "28.08.2026, 09:06:07"
+      }
+    ],
+    "createdAt": "27.08.2026, 17:20:52",
+    "chatActive": false
+  },
+  {
+    "id": "user-1787826911198",
+    "username": "ler4egme3",
+    "robux": 15,
+    "status": "Отменена",
+    "messages": [],
+    "createdAt": "27.08.2026, 17:35:11",
+    "chatActive": false
+  },
+  {
+    "id": "user-1787827137779",
+    "username": "ler4egme3",
+    "robux": 545,
+    "status": "Отменена",
+    "messages": [
+      {
+        "id": 1787827480900,
+        "sender": "admin",
+        "text": "💳 К оплате: 420 ₽",
+        "createdAt": "27.08.2026, 17:44:40"
+      }
+    ],
+    "createdAt": "27.08.2026, 17:38:57",
+    "chatActive": false
+  },
+  {
+    "id": "user-1787827497699",
+    "username": "ler4egme3",
+    "robux": 455,
+    "status": "Отменена",
+    "messages": [
+      {
+        "id": 1787827520834,
+        "sender": "admin",
+        "text": "💳 К оплате: 789 ₽",
+        "createdAt": "27.08.2026, 17:45:20"
+      },
+      {
+        "id": 1787827526881,
+        "sender": "user",
+        "text": "ggh",
+        "createdAt": "27.08.2026, 17:45:26"
+      },
+      {
+        "id": 1787827533865,
+        "sender": "admin",
+        "text": "💳 К оплате: 67 ₽",
+        "createdAt": "27.08.2026, 17:45:33"
+      }
+    ],
+    "createdAt": "27.08.2026, 17:44:57",
+    "chatActive": false
+  },
+  {
+    "id": "user-1787828081621",
+    "username": "ler4egme3",
+    "robux": 56,
+    "status": "Отменена",
+    "messages": [],
+    "createdAt": "27.08.2026, 17:54:41",
+    "chatActive": false
+  },
+  {
+    "id": "user-1787836466008",
+    "username": "ler4egme3",
+    "robux": 300,
+    "status": "Отменена",
+    "messages": [
+      {
+        "id": 1787836503974,
+        "sender": "admin",
+        "text": "💳 К оплате: 230 ₽",
+        "createdAt": "27.08.2026, 20:15:03"
+      }
+    ],
+    "createdAt": "27.08.2026, 20:14:26",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787843190214",
+    "orderNumber": 1008,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "ler4egme3",
+    "robux": 20,
+    "price": 30,
+    "status": "В работе",
+    "messages": [
+      {
+        "id": 1787843230794,
+        "sender": "admin",
+        "text": "номер заказа",
+        "createdAt": "27.08.2026, 22:07:10"
+      },
+      {
+        "id": 1787843237545,
+        "sender": "user",
+        "text": "1008",
+        "createdAt": "27.08.2026, 22:07:17"
+      }
+    ],
+    "createdAt": "27.08.2026, 22:06:30",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787847953539-hcr4y1",
+    "orderNumber": 1009,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "ler4egme3",
+    "robux": 32,
+    "price": 48,
+    "status": "Отменена",
+    "messages": [
+      {
+        "id": 1787847960275,
+        "sender": "user",
+        "text": "привет",
+        "createdAt": "27.08.2026, 23:25:59"
+      }
+    ],
+    "createdAt": "27.08.2026, 23:25:53",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787849172835-m99zky",
+    "orderNumber": 1010,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "ler4egme3",
+    "robux": 445,
+    "price": 667.5,
+    "status": "Новая заявка",
+    "messages": [],
+    "createdAt": "27.08.2026, 23:46:12",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787882490990-bszt9k",
+    "orderNumber": 1011,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "ler4egme3",
+    "robux": 56,
+    "price": 84,
+    "status": "Новая заявка",
+    "messages": [],
+    "createdAt": "28.08.2026, 09:01:30",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787882619509-nnxkek",
+    "orderNumber": 1012,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "ler4egme3",
+    "robux": 45,
+    "price": 67.5,
+    "status": "Новая заявка",
+    "messages": [
+      {
+        "id": 1787882633274,
+        "sender": "user",
+        "text": "кккк",
+        "createdAt": "28.08.2026, 09:03:52"
+      }
+    ],
+    "createdAt": "28.08.2026, 09:03:39",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787882644888-r8e3uy",
+    "orderNumber": 1013,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "ler4egme3",
+    "robux": 67,
+    "price": 100.5,
+    "status": "Отменена",
+    "messages": [],
+    "createdAt": "28.08.2026, 09:04:04",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787883390464-swl9je",
+    "orderNumber": 1014,
+    "profileId": "profile-1787883390464-3j2z4r",
+    "username": "ler4egme3",
+    "robux": 100,
+    "price": 150,
+    "status": "Новая заявка",
+    "messages": [
+      {
+        "id": 1787883433440,
+        "sender": "admin",
+        "text": "plhfdcndeqnrt",
+        "createdAt": "28.08.2026, 09:17:12"
+      }
+    ],
+    "createdAt": "28.08.2026, 09:16:30",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787883563048-z9xizf",
+    "orderNumber": 1015,
+    "profileId": "profile-1787883563048-rt351x",
+    "username": "y667",
+    "robux": 100,
+    "price": 150,
+    "status": "Новая заявка",
+    "messages": [],
+    "createdAt": "28.08.2026, 09:19:23",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787883859713-t5hygw",
+    "orderNumber": 1016,
+    "profileId": "profile-1787883859713-q5svlh",
+    "username": "ler4egme3",
+    "robux": 100,
+    "price": 150,
+    "status": "Новая заявка",
+    "messages": [],
+    "createdAt": "28.08.2026, 09:24:19",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787884231748-ulgjr3",
+    "orderNumber": 1017,
+    "profileId": "profile-1787884231748-e5asau",
+    "username": "let467yrtygrrty7854456789y3cv rbxzueyycyyyexzydmsy,ynyyyyyuyyyyhyyyyyy,y,y,,y,yi,y,y,y,y,",
+    "robux": 100,
+    "price": 150,
+    "status": "Новая заявка",
+    "messages": [
+      {
+        "id": 1787884270994,
+        "sender": "admin",
+        "text": "здравствуйте",
+        "createdAt": "28.08.2026, 09:31:10"
+      }
+    ],
+    "createdAt": "28.08.2026, 09:30:31",
+    "chatActive": false
+  },
+  {
+    "id": "order-1787884563946-0cr7m2",
+    "orderNumber": 1018,
+    "profileId": "profile-1787884563946-9bgsol",
+    "username": "дук4упьу3",
+    "robux": 100,
+    "price": 150,
+    "status": "Новая заявка",
+    "chatActive": true,
+    "messages": [
+      {
+        "id": "message-1787884588193-p5gc47",
+        "sender": "admin",
+        "text": "здравствуйте",
+        "temporary": false,
+        "readByUser": false,
+        "createdAt": "28.08.2026, 09:36:28"
+      },
+      {
+        "id": 1787884986525,
+        "sender": "admin",
+        "text": "роро",
+        "createdAt": "28.08.2026, 09:41:46"
+      }
+    ],
+    "createdAt": "28.08.2026, 09:36:03",
+    "lastAdminReply": 1787884906566
+  },
+  {
+    "id": "order-1787885273963-1xhcki",
+    "orderNumber": 1019,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "tyu",
+    "robux": 100,
+    "price": 150,
+    "status": "Отменена",
+    "messages": [
+      {
+        "id": 1787885374059,
+        "sender": "admin",
+        "text": "hi",
+        "createdAt": "28.08.2026, 09:48:14"
+      }
+    ],
+    "lastUserMessage": null,
+    "lastAdminReply": 1787885294584,
+    "createdAt": "28.08.2026, 09:47:53"
+  },
+  {
+    "id": "order-1787885513155-x3wxf8",
+    "orderNumber": 1020,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "66yyh",
+    "robux": 100,
+    "price": 150,
+    "status": "Новая заявка",
+    "messages": [
+      {
+        "id": 1787885652341,
+        "sender": "user",
+        "text": "ggh",
+        "createdAt": "28.08.2026, 09:54:10"
+      },
+      {
+        "id": 1787885770624,
+        "sender": "admin",
+        "isBot": true,
+        "text": "🤖 Продавец сейчас не отвечает. Он обязательно ответит вам в течение 24 часов ❤️",
+        "createdAt": "28.08.2026, 09:56:10"
+      },
+      {
+        "id": 1787885805153,
+        "sender": "admin",
+        "text": "bdfgbcf",
+        "createdAt": "28.08.2026, 09:56:40"
+      },
+      {
+        "id": 1787886844908,
+        "sender": "admin",
+        "text": "как дела",
+        "createdAt": "28.08.2026, 10:13:56"
+      }
+    ],
+    "createdAt": "28.08.2026, 09:51:53"
+  },
+  {
+    "id": "order-1787887217897-q4bz4n",
+    "orderNumber": 1021,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "гьь",
+    "robux": 100,
+    "price": 150,
+    "status": "В работе",
+    "messages": [
+      {
+        "id": 1787887269881,
+        "sender": "admin",
+        "text": "привет",
+        "createdAt": "28.08.2026, 10:21:06"
+      },
+      {
+        "id": 1787887281902,
+        "sender": "admin",
+        "text": "олщол",
+        "createdAt": "28.08.2026, 10:21:12"
+      }
+    ],
+    "createdAt": "28.08.2026, 10:20:17"
+  },
+  {
+    "id": "order-1787888629323-o4incm",
+    "orderNumber": 1022,
+    "profileId": "profile-1787836428444-h89568m52h8",
+    "username": "vika63600",
+    "robux": 100,
+    "price": 150,
+    "status": "В работе",
+    "messages": [],
+    "createdAt": "28.08.2026, 10:43:49"
+  }
+]

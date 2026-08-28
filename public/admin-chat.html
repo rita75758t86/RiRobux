@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RiRobux — Чат с покупателем</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        /* КОСМИЧЕСКИЙ ФОН */
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(124, 58, 237, 0.28),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 85% 70%,
+                    rgba(37, 99, 235, 0.22),
+                    transparent 35%
+                ),
+
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(168, 85, 247, 0.15),
+                    transparent 40%
+                ),
+
+                linear-gradient(
+                    135deg,
+                    #050816,
+                    #101636,
+                    #09061a
+                );
+
+            background-attachment: fixed;
+        }
+
+
+        /* ЗВЁЗДЫ */
+
+        body::before {
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                radial-gradient(
+                    circle,
+                    white 1px,
+                    transparent 1.5px
+                ),
+
+                radial-gradient(
+                    circle,
+                    rgba(196, 181, 253, 0.8) 1px,
+                    transparent 1.5px
+                );
+
+            background-size:
+                80px 80px,
+                130px 130px;
+
+            background-position:
+                0 0,
+                40px 60px;
+
+            opacity: 0.45;
+
+            animation:
+                starsMove 25s linear infinite;
+
+            z-index: -1;
+        }
+
+
+        @keyframes starsMove {
+
+            from {
+
+                background-position:
+                    0 0,
+                    40px 60px;
+
+            }
+
+            to {
+
+                background-position:
+                    80px 120px,
+                    120px 180px;
+
+            }
+
+        }
+
+
+        /* ШАПКА */
+
+        header {
+
+            padding: 16px 6%;
+
+            background:
+                rgba(8, 12, 35, 0.85);
+
+            border-bottom:
+                1px solid
+                rgba(139, 92, 246, 0.35);
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            backdrop-filter:
+                blur(18px);
+
+        }
+
+
+        /* ЛОГО */
+
+        .logo {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            text-shadow:
+                0 0 20px
+                rgba(124, 58, 237, 0.5);
+
+        }
+
+
+        .logo span {
+
+            color: #b57cff;
+
+            text-shadow:
+                0 0 15px
+                #7c3aed;
+
+        }
+
+
+        /* КНОПКА НАЗАД */
+
+        .back {
+
+            border: none;
+
+            padding: 11px 18px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #2563eb
+                );
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            box-shadow:
+                0 0 25px
+                rgba(124, 58, 237, 0.35);
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+
+        }
+
+
+        .back:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 0 30px
+                rgba(124, 58, 237, 0.6);
+
+        }
+
+
+        /* ОСНОВНОЙ БЛОК */
+
+        main {
+
+            max-width: 700px;
+
+            margin: 50px auto;
+
+            padding: 20px;
+
+        }
+
+
+        .card {
+
+            padding: 28px;
+
+            border-radius: 26px;
+
+            background:
+                rgba(16, 20, 55, 0.88);
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.4);
+
+            box-shadow:
+                0 0 45px
+                rgba(76, 29, 149, 0.22);
+
+        }
+
+
+        h1 {
+
+            margin-top: 0;
+
+            font-size: 28px;
+
+            text-shadow:
+                0 0 25px
+                rgba(139, 92, 246, 0.5);
+
+        }
+
+
+        /* ИНФОРМАЦИЯ О ЗАКАЗЕ */
+
+        #orderInfo {
+
+            padding: 16px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(7, 10, 30, 0.55);
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.28);
+
+            color: #c7cce5;
+
+            line-height: 1.8;
+
+        }
+
+
+        /* ЧАТ */
+
+        #messages {
+
+            height: 400px;
+
+            overflow-y: auto;
+
+            margin-top: 20px;
+
+            padding: 16px;
+
+            background:
+                rgba(5, 8, 25, 0.75);
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.35);
+
+            border-radius: 20px;
+
+        }
+
+
+        /* СООБЩЕНИЕ */
+
+        .message {
+
+            max-width: 80%;
+
+            padding: 13px 16px;
+
+            margin: 10px 0;
+
+            border-radius: 18px;
+
+            background:
+                rgba(55, 65, 120, 0.5);
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.25);
+
+            color: white;
+
+            word-break:
+                break-word;
+
+            animation:
+                messageAppear
+                0.25s ease;
+
+        }
+
+
+        @keyframes messageAppear {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(8px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+
+            }
+
+        }
+
+
+        /* СООБЩЕНИЕ АДМИНА */
+
+        .admin-message {
+
+            margin-left: auto;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(124, 58, 237, 0.8),
+                    rgba(37, 99, 235, 0.75)
+                );
+
+            border:
+                1px solid
+                rgba(196, 181, 253, 0.5);
+
+            box-shadow:
+                0 0 18px
+                rgba(124, 58, 237, 0.2);
+
+        }
+
+
+        /* ВРЕМЯ */
+
+        .message-time {
+
+            display: block;
+
+            margin-top: 7px;
+
+            font-size: 11px;
+
+            color: #b8c1e0;
+
+        }
+
+
+        /* ОТПРАВКА */
+
+        .send-area {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 16px;
+
+        }
+
+
+        #messageInput {
+
+            flex: 1;
+
+            padding: 15px;
+
+            border-radius: 15px;
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.4);
+
+            background:
+                rgba(7, 10, 30, 0.75);
+
+            color: white;
+
+            font-size: 15px;
+
+            outline: none;
+
+        }
+
+
+        #messageInput:focus {
+
+            border-color:
+                #a78bfa;
+
+            box-shadow:
+                0 0 20px
+                rgba(124, 58, 237, 0.25);
+
+        }
+
+
+        #messageInput::placeholder {
+
+            color: #8d95b8;
+
+        }
+
+
+        /* КНОПКА ОТПРАВКИ */
+
+        .send-button {
+
+            border: none;
+
+            padding: 15px 20px;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #2563eb
+                );
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 0 20px
+                rgba(124, 58, 237, 0.3);
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+
+        }
+
+
+        .send-button:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 0 28px
+                rgba(124, 58, 237, 0.55);
+
+        }
+
+
+        /* ОШИБКА */
+
+        .error {
+
+            padding: 20px;
+
+            text-align: center;
+
+            color: #fca5a5;
+
+        }
+
+
+        /* МОБИЛЬНАЯ ВЕРСИЯ */
+
+        @media (max-width: 600px) {
+
+            header {
+
+                padding: 16px;
+
+            }
+
+
+            .logo {
+
+                font-size: 23px;
+
+            }
+
+
+            main {
+
+                margin: 20px auto;
+
+                padding: 14px;
+
+            }
+
+
+            .card {
+
+                padding: 18px;
+
+            }
+
+
+            #messages {
+
+                height: 350px;
+
+            }
+
+
+            .send-area {
+
+                flex-direction:
+                    column;
+
+            }
+
+
+            .send-button {
+
+                width: 100%;
+
+            }
+
+
+            .back {
+
+                padding:
+                    10px 12px;
+
+                font-size:
+                    13px;
+
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+
+        Ri<span>Robux</span>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="back"
+        onclick="goBackToOrders()"
+    >
+
+        ← К заявкам
+
+    </button>
+
+</header>
+
+
+<main>
+
+    <div class="card">
+
+        <h1>
+            💬 Космический чат
+        </h1>
+
+
+        <div id="orderInfo">
+
+            Загрузка заявки...
+
+        </div>
+
+
+        <div id="messages"></div>
+
+
+        <div class="send-area">
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Напишите сообщение покупателю..."
+                autocomplete="off"
+            >
+
+
+            <button
+                type="button"
+                class="send-button"
+                onclick="sendMessage()"
+            >
+
+                🚀 Отправить
+
+            </button>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+    let currentOrder = null;
+
+
+    /* КНОПКА НАЗАД К ЗАЯВКАМ */
+
+    function goBackToOrders() {
+
+        window.location.href =
+            "/admin.html";
+
+    }
+
+
+    /* ПОЛУЧАЕМ ID ЗАЯВКИ */
+
+    function getOrderId() {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        return params.get("order");
+
+    }
+
+
+    /* ЗАГРУЗКА ЗАЯВКИ */
+
+    async function loadOrder() {
+
+        const orderId =
+            getOrderId();
+
+
+        if (!orderId) {
+
+            document.getElementById(
+                "orderInfo"
+            ).innerHTML =
+                `
+                <div class="error">
+                    ❌ Заявка не выбрана
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/users/" +
+                    encodeURIComponent(
+                        orderId
+                    )
+                );
+
+
+            const order =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                order.error
+            ) {
+
+                document.getElementById(
+                    "orderInfo"
+                ).innerHTML =
+                    `
+                    <div class="error">
+                        ❌ Заявка не найдена
+                    </div>
+                    `;
+
+                return;
+
+            }
+
+
+            currentOrder =
+                order;
+
+
+            renderOrderInfo();
+
+            renderMessages();
+
+        }
+
+        catch (error) {
+
+            document.getElementById(
+                "orderInfo"
+            ).innerHTML =
+                `
+                <div class="error">
+                    ❌ Ошибка загрузки заявки
+                </div>
+                `;
+
+        }
+
+    }
+
+
+    /* ИНФОРМАЦИЯ О ЗАКАЗЕ */
+
+    function renderOrderInfo() {
+
+        if (!currentOrder) {
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "orderInfo"
+        ).innerHTML =
+            `
+
+            <b>
+                🚀 Заказ #${escapeHtml(
+                    String(
+                        currentOrder.orderNumber ||
+                        "—"
+                    )
+                )}
+            </b>
+
+            <br>
+
+            👤 Покупатель:
+            ${escapeHtml(
+                currentOrder.username ||
+                "Неизвестно"
+            )}
+
+            <br>
+
+            💎 Robux:
+            ${escapeHtml(
+                String(
+                    currentOrder.robux ||
+                    "0"
+                )
+            )}
+
+            <br>
+
+            📌 Статус:
+            ${escapeHtml(
+                currentOrder.status ||
+                "Новая заявка"
+            )}
+
+            `;
+
+    }
+
+
+    /* ПОКАЗ СООБЩЕНИЙ */
+
+    function renderMessages() {
+
+        const messagesBox =
+            document.getElementById(
+                "messages"
+            );
+
+
+        messagesBox.innerHTML =
+            "";
+
+
+        if (
+            !currentOrder ||
+            !Array.isArray(
+                currentOrder.messages
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        currentOrder.messages.forEach(
+            message => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "message";
+
+
+                if (
+                    message.sender ===
+                    "admin"
+                ) {
+
+                    div.classList.add(
+                        "admin-message"
+                    );
+
+                }
+
+
+                const sender =
+                    message.sender === "admin"
+                        ? "👑 Вы"
+                        : "👤 Покупатель";
+
+
+                div.innerHTML =
+                    `
+
+                    <strong>
+                        ${sender}
+                    </strong>
+
+                    <br>
+
+                    ${escapeHtml(
+                        message.text
+                    )}
+
+                    <span class="message-time">
+
+                        ${escapeHtml(
+                            message.createdAt ||
+                            ""
+                        )}
+
+                    </span>
+
+                    `;
+
+
+                messagesBox.appendChild(
+                    div
+                );
+
+            }
+        );
+
+
+        messagesBox.scrollTop =
+            messagesBox.scrollHeight;
+
+    }
+
+
+    /* ОТПРАВКА СООБЩЕНИЯ */
+
+    async function sendMessage() {
+
+        if (!currentOrder) {
+
+            return;
+
+        }
+
+
+        const input =
+            document.getElementById(
+                "messageInput"
+            );
+
+
+        const text =
+            input.value.trim();
+
+
+        if (!text) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+
+                    "/api/users/" +
+
+                    encodeURIComponent(
+                        currentOrder.id
+                    ) +
+
+                    "/messages",
+
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                text:
+                                    text,
+
+                                sender:
+                                    "admin"
+
+                            })
+
+                    }
+
+                );
+
+
+            const message =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                message.error
+            ) {
+
+                alert(
+                    message.error ||
+                    "Ошибка отправки сообщения"
+                );
+
+                return;
+
+            }
+
+
+            input.value =
+                "";
+
+
+            await loadOrder();
+
+        }
+
+        catch (error) {
+
+            alert(
+                "❌ Не удалось отправить сообщение"
+            );
+
+        }
+
+    }
+
+
+    /* ENTER ДЛЯ ОТПРАВКИ */
+
+    document
+        .getElementById(
+            "messageInput"
+        )
+        .addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
+
+    /* ЗАЩИТА ОТ HTML */
+
+    function escapeHtml(text) {
+
+        return String(
+            text || ""
+        )
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+    }
+
+
+    /* ПЕРВАЯ ЗАГРУЗКА */
+
+    loadOrder();
+
+
+    /* ОБНОВЛЕНИЕ ЧАТА */
+
+    setInterval(
+        loadOrder,
+        3000
+    );
+
+</script>
+
+</body>
+</html>

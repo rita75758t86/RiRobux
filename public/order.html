@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RiRobux — Оформление заказа</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(124, 58, 237, 0.25),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 40%,
+                    rgba(37, 99, 235, 0.18),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(168, 85, 247, 0.15),
+                    transparent 40%
+                ),
+                linear-gradient(
+                    135deg,
+                    #050816,
+                    #101636,
+                    #09061a
+                );
+
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,0.8) 1px,
+                    transparent 1.5px
+                ),
+                radial-gradient(
+                    circle,
+                    rgba(196,181,253,0.7) 1px,
+                    transparent 1.5px
+                );
+
+            background-size:
+                90px 90px,
+                150px 150px;
+
+            background-position:
+                0 0,
+                50px 70px;
+
+            opacity: 0.35;
+
+            animation:
+                starsMove 30s linear infinite;
+
+            z-index: -1;
+        }
+
+        @keyframes starsMove {
+
+            from {
+                background-position:
+                    0 0,
+                    50px 70px;
+            }
+
+            to {
+                background-position:
+                    90px 130px,
+                    140px 220px;
+            }
+
+        }
+
+        header {
+            padding: 18px 7%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            background:
+                rgba(7,7,17,0.72);
+
+            backdrop-filter:
+                blur(18px);
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: #9d7bff;
+
+            text-shadow:
+                0 0 20px
+                rgba(124,58,237,0.8);
+        }
+
+        .back {
+            text-decoration: none;
+            color: #d6d6e5;
+
+            padding: 11px 17px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.1);
+
+            background:
+                rgba(255,255,255,0.04);
+
+            transition: 0.2s;
+        }
+
+        .back:hover {
+            color: white;
+
+            background:
+                rgba(124,58,237,0.18);
+
+            border-color:
+                rgba(167,139,250,0.5);
+        }
+
+        main {
+            width: 100%;
+            max-width: 1050px;
+
+            margin: 0 auto;
+            padding: 70px 25px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .page-title h1 {
+            font-size: 42px;
+            letter-spacing: -2px;
+        }
+
+        .page-title h1 span {
+            color: #a78bfa;
+        }
+
+        .page-title p {
+            margin-top: 14px;
+            color: #9696aa;
+            line-height: 1.6;
+        }
+
+        .order-grid {
+            display: grid;
+
+            grid-template-columns:
+                1.2fr 0.8fr;
+
+            gap: 25px;
+            align-items: start;
+        }
+
+        .card {
+            padding: 30px;
+
+            border-radius: 24px;
+
+            background:
+                rgba(15,18,45,0.82);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.09);
+
+            box-shadow:
+                0 20px 80px
+                rgba(0,0,0,0.35);
+
+            backdrop-filter:
+                blur(15px);
+        }
+
+        .card h2 {
+            font-size: 22px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            color: #c9c9d8;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 16px;
+
+            border-radius: 14px;
+
+            border:
+                1px solid
+                rgba(139,92,246,0.3);
+
+            outline: none;
+
+            color: white;
+            font-size: 16px;
+
+            background:
+                rgba(5,7,22,0.65);
+
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color:
+                #a78bfa;
+
+            box-shadow:
+                0 0 25px
+                rgba(124,58,237,0.2);
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        .hint {
+            margin-top: 8px;
+
+            color: #77778c;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .buy-button {
+            width: 100%;
+
+            margin-top: 10px;
+            padding: 17px;
+
+            border: none;
+            border-radius: 14px;
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #4f46e5
+                );
+
+            box-shadow:
+                0 12px 35px
+                rgba(124,58,237,0.3);
+
+            transition: 0.2s;
+        }
+
+        .buy-button:hover {
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 18px 45px
+                rgba(124,58,237,0.45);
+        }
+
+        .buy-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .summary-card {
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-label {
+            color: #85859b;
+            font-size: 13px;
+        }
+
+        .robux-amount {
+            margin-top: 12px;
+
+            font-size: 48px;
+            font-weight: 800;
+
+            letter-spacing: -2px;
+
+            color: #c4b5fd;
+
+            text-shadow:
+                0 0 25px
+                rgba(167,139,250,0.25);
+        }
+
+        .robux-text {
+            margin-top: 3px;
+            color: #8c8ca2;
+        }
+
+        .line {
+            height: 1px;
+            margin: 28px 0;
+
+            background:
+                rgba(255,255,255,0.08);
+        }
+
+        .summary-row {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin: 16px 0;
+
+            color: #a4a4b5;
+        }
+
+        .summary-row strong {
+            color: white;
+        }
+
+        .total {
+            padding-top: 18px;
+            margin-top: 20px;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            font-size: 17px;
+        }
+
+        .total strong {
+            font-size: 24px;
+            color: #a78bfa;
+        }
+
+        .secure {
+            margin-top: 25px;
+
+            padding: 15px;
+
+            border-radius: 14px;
+
+            color: #9b9bae;
+
+            font-size: 13px;
+            line-height: 1.6;
+
+            background:
+                rgba(124,58,237,0.08);
+
+            border:
+                1px solid
+                rgba(124,58,237,0.15);
+        }
+
+        .error {
+            margin-top: 15px;
+
+            padding: 13px;
+
+            border-radius: 12px;
+
+            display: none;
+
+            color: #fecaca;
+
+            background:
+                rgba(220,38,38,0.12);
+
+            border:
+                1px solid
+                rgba(220,38,38,0.25);
+        }
+
+        .success {
+            display: none;
+
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            font-size: 30px;
+
+            background:
+                rgba(124,58,237,0.15);
+
+            border:
+                1px solid
+                rgba(167,139,250,0.4);
+
+            box-shadow:
+                0 0 35px
+                rgba(124,58,237,0.25);
+        }
+
+        .success h2 {
+            font-size: 28px;
+        }
+
+        .success p {
+            margin-top: 12px;
+
+            color: #a4a4b5;
+            line-height: 1.6;
+        }
+
+        .profile-button {
+            display: inline-block;
+
+            margin-top: 25px;
+            padding: 14px 22px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            color: white;
+            font-weight: bold;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #4f46e5
+                );
+        }
+
+        @media (max-width: 800px) {
+
+            main {
+                padding: 45px 18px;
+            }
+
+            .page-title h1 {
+                font-size: 34px;
+            }
+
+            .order-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card {
+                position: static;
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            header {
+                padding: 16px 20px;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .back {
+                padding: 9px 12px;
+                font-size: 13px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .robux-amount {
+                font-size: 40px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        Ri<span>Robux</span>
+    </div>
+
+    <a
+        href="index.html"
+        class="back"
+    >
+        ← На главную
+    </a>
+
+</header>
+
+<main>
+
+    <div class="page-title">
+
+        <h1>
+            Оформление <span>заказа</span>
+        </h1>
+
+        <p>
+            Укажите ваш Roblox Username и создайте заявку.
+        </p>
+
+    </div>
+
+    <div
+        class="order-grid"
+        id="orderGrid"
+    >
+
+        <div class="card">
+
+            <h2>
+                Данные покупателя
+            </h2>
+
+            <div class="input-group">
+
+                <label>
+                    Roblox Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Например: Player123"
+                    autocomplete="off"
+                >
+
+                <div class="hint">
+                    Введите именно Username,
+                    а не Display Name.
+                </div>
+
+            </div>
+
+            <button
+                class="buy-button"
+                id="buyButton"
+                type="button"
+            >
+                Создать заказ
+            </button>
+
+            <div
+                class="error"
+                id="errorBox"
+            ></div>
+
+        </div>
+
+        <div class="card summary-card">
+
+            <div class="summary-label">
+                ВЫ ВЫБРАЛИ
+            </div>
+
+            <div
+                class="robux-amount"
+                id="robuxAmount"
+            >
+                0
+            </div>
+
+            <div class="robux-text">
+                Robux
+            </div>
+
+            <div class="line"></div>
+
+            <div class="summary-row">
+
+                <span>
+                    Количество
+                </span>
+
+                <strong id="robuxSummary">
+                    0 Robux
+                </strong>
+
+            </div>
+
+            <div class="summary-row total">
+
+                <span>
+                    Итого
+                </span>
+
+                <strong id="priceAmount">
+                    0 ₽
+                </strong>
+
+            </div>
+
+            <div class="secure">
+                После создания заявки вы сможете
+                отслеживать её статус и общаться
+                с продавцом через профиль.
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        class="card success"
+        id="successBox"
+    >
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h2>
+            Заказ создан
+        </h2>
+
+        <p id="successText"></p>
+
+        <a
+            href="profile.html"
+            class="profile-button"
+        >
+            Перейти в профиль
+        </a>
+
+    </div>
+
+</main>
+
+<script>
+
+    /* ==============================
+       ПОЛУЧАЕМ ВЫБРАННЫЙ ПАКЕТ
+    ============================== */
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const selectedRobux =
+        Number(
+            params.get("robux")
+        );
+
+
+    const selectedPrice =
+        Number(
+            params.get("price")
+        );
+
+
+    if (
+        !selectedRobux ||
+        !selectedPrice ||
+        selectedRobux < 1
+    ) {
+
+        window.location.href =
+            "index.html";
+
+    }
+
+
+    /* ==============================
+       СОЗДАЁМ ИЛИ БЕРЁМ ID ПРОФИЛЯ
+    ============================== */
+
+    let profileId =
+        localStorage.getItem(
+            "rirobuxProfileId"
+        );
+
+
+    if (!profileId) {
+
+        profileId =
+            "profile-" +
+            Date.now() +
+            "-" +
+            Math.random()
+                .toString(36)
+                .slice(2, 10);
+
+
+        localStorage.setItem(
+            "rirobuxProfileId",
+            profileId
+        );
+
+    }
+
+
+    /* ==============================
+       ПОКАЗЫВАЕМ ПАКЕТ
+    ============================== */
+
+    document.getElementById(
+        "robuxAmount"
+    ).textContent =
+        selectedRobux.toLocaleString(
+            "ru-RU"
+        );
+
+
+    document.getElementById(
+        "robuxSummary"
+    ).textContent =
+        selectedRobux.toLocaleString(
+            "ru-RU"
+        ) + " Robux";
+
+
+    document.getElementById(
+        "priceAmount"
+    ).textContent =
+        selectedPrice.toLocaleString(
+            "ru-RU"
+        ) + " ₽";
+
+
+    /* ==============================
+       СОЗДАНИЕ ЗАКАЗА
+    ============================== */
+
+    async function createOrder() {
+
+        const username =
+            document
+                .getElementById(
+                    "username"
+                )
+                .value
+                .trim();
+
+
+        const errorBox =
+            document.getElementById(
+                "errorBox"
+            );
+
+
+        errorBox.style.display =
+            "none";
+
+
+        if (!username) {
+
+            showError(
+                "Введите Roblox Username."
+            );
+
+            return;
+
+        }
+
+
+        const button =
+            document.getElementById(
+                "buyButton"
+            );
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "Создаём заказ...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/users",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                username:
+                                    username,
+
+                                robux:
+                                    selectedRobux,
+
+                                price:
+                                    selectedPrice,
+
+                                /* ВАЖНО:
+                                   ОТПРАВЛЯЕМ ID
+                                   ПРОФИЛЯ */
+                                profileId:
+                                    profileId
+
+                            })
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                result.error
+            ) {
+
+                throw new Error(
+                    result.error ||
+                    "Не удалось создать заказ."
+                );
+
+            }
+
+
+            /* СОХРАНЯЕМ ID ПРОФИЛЯ ЕЩЁ РАЗ */
+
+            if (result.profileId) {
+
+                localStorage.setItem(
+                    "rirobuxProfileId",
+                    result.profileId
+                );
+
+            }
+
+
+            /* СОХРАНЯЕМ ID ЗАКАЗА */
+
+            if (result.id) {
+
+                localStorage.setItem(
+                    "currentOrderId",
+                    result.id
+                );
+
+            }
+
+
+            /* ПОКАЗЫВАЕМ УСПЕХ */
+
+            document.getElementById(
+                "orderGrid"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "successBox"
+            ).style.display =
+                "block";
+
+
+            document.getElementById(
+                "successText"
+            ).innerHTML =
+                `
+                Ваш заказ на
+                <b>
+                    ${selectedRobux.toLocaleString("ru-RU")}
+                    Robux
+                </b>
+                успешно создан.
+
+                <br><br>
+
+                Теперь вы можете перейти
+                в профиль, следить за статусом
+                и открыть чат с продавцом.
+                `;
+
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            showError(
+                error.message ||
+                "Ошибка при создании заказа."
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "Создать заказ";
+
+        }
+
+    }
+
+
+    /* ==============================
+       КНОПКА СОЗДАТЬ ЗАКАЗ
+    ============================== */
+
+    document
+        .getElementById(
+            "buyButton"
+        )
+        .addEventListener(
+            "click",
+            createOrder
+        );
+
+
+    /* ==============================
+       ENTER
+    ============================== */
+
+    document
+        .getElementById(
+            "username"
+        )
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    createOrder();
+
+                }
+
+            }
+        );
+
+
+    /* ==============================
+       ПОКАЗ ОШИБКИ
+    ============================== */
+
+    function showError(message) {
+
+        const errorBox =
+            document.getElementById(
+                "errorBox"
+            );
+
+
+        errorBox.textContent =
+            "⚠ " + message;
+
+
+        errorBox.style.display =
+            "block";
+
+    }
+
+</script>
+
+</body>
+</html>

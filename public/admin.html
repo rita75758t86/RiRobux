@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RiRobux — Админ-панель</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(124, 58, 237, 0.30),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 70%,
+                    rgba(37, 99, 235, 0.25),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    135deg,
+                    #050816,
+                    #101636,
+                    #09061a
+                );
+
+            background-attachment: fixed;
+        }
+
+        /* ЗВЁЗДЫ */
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                radial-gradient(
+                    circle,
+                    white 1px,
+                    transparent 1.5px
+                ),
+                radial-gradient(
+                    circle,
+                    rgba(196, 181, 253, 0.8) 1px,
+                    transparent 1.5px
+                );
+
+            background-size:
+                80px 80px,
+                130px 130px;
+
+            background-position:
+                0 0,
+                40px 60px;
+
+            opacity: 0.45;
+
+            animation:
+                starsMove 25s linear infinite;
+
+            z-index: -1;
+        }
+
+        @keyframes starsMove {
+
+            from {
+                background-position:
+                    0 0,
+                    40px 60px;
+            }
+
+            to {
+                background-position:
+                    80px 120px,
+                    120px 180px;
+            }
+
+        }
+
+
+        /* ШАПКА */
+
+        header {
+            padding: 16px 6%;
+
+            background:
+                rgba(8, 12, 35, 0.88);
+
+            border-bottom:
+                1px solid
+                rgba(139, 92, 246, 0.35);
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            backdrop-filter:
+                blur(18px);
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 28px;
+
+            font-weight: bold;
+
+            text-shadow:
+                0 0 20px
+                rgba(124, 58, 237, 0.5);
+        }
+
+        .logo span {
+            color: #b57cff;
+
+            text-shadow:
+                0 0 15px
+                #7c3aed;
+        }
+
+        .admin {
+            padding: 11px 18px;
+
+            border-radius: 14px;
+
+            font-weight: bold;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #2563eb
+                );
+
+            box-shadow:
+                0 0 25px
+                rgba(124, 58, 237, 0.4);
+        }
+
+
+        /* ОСНОВНОЙ КОНТЕНТ */
+
+        main {
+            max-width: 1100px;
+
+            margin: 40px auto;
+
+            padding: 20px;
+        }
+
+        h1 {
+            margin-top: 0;
+
+            font-size: 32px;
+
+            text-shadow:
+                0 0 25px
+                rgba(139, 92, 246, 0.45);
+        }
+
+
+        /* СТАТИСТИКА */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(200px, 1fr)
+                );
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            padding: 22px;
+
+            border-radius: 22px;
+
+            background:
+                rgba(16, 20, 55, 0.84);
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.35);
+
+            box-shadow:
+                0 0 30px
+                rgba(76, 29, 149, 0.18);
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+                0 0 40px
+                rgba(124, 58, 237, 0.35);
+        }
+
+        .stat-card h3 {
+            margin: 0;
+
+            color: #b8c1e0;
+
+            font-size: 15px;
+        }
+
+        .stat-number {
+            margin-top: 12px;
+
+            font-size: 32px;
+
+            font-weight: bold;
+
+            color: #c4b5fd;
+
+            text-shadow:
+                0 0 15px
+                rgba(139, 92, 246, 0.6);
+        }
+
+
+        /* ПОИСК */
+
+        .controls {
+            padding: 25px;
+
+            border-radius: 24px;
+
+            margin-bottom: 25px;
+
+            background:
+                rgba(16, 20, 55, 0.84);
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.35);
+
+            box-shadow:
+                0 0 35px
+                rgba(76, 29, 149, 0.2);
+        }
+
+        label {
+            display: block;
+
+            margin-top: 15px;
+
+            margin-bottom: 8px;
+
+            color: #d8dcf0;
+
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+
+            padding: 14px;
+
+            border-radius: 14px;
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.4);
+
+            font-size: 16px;
+
+            color: white;
+
+            background:
+                rgba(7, 10, 30, 0.7);
+
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #a78bfa;
+
+            box-shadow:
+                0 0 20px
+                rgba(124, 58, 237, 0.3);
+        }
+
+        select option {
+            background: #101636;
+            color: white;
+        }
+
+
+        /* ЗАЯВКИ */
+
+        .orders {
+            display: grid;
+
+            gap: 18px;
+        }
+
+        .order {
+            padding: 24px;
+
+            border-radius: 24px;
+
+            background:
+                rgba(16, 20, 55, 0.84);
+
+            border:
+                1px solid
+                rgba(139, 92, 246, 0.35);
+
+            box-shadow:
+                0 0 30px
+                rgba(76, 29, 149, 0.16);
+
+            transition:
+                transform 0.2s,
+                border 0.2s;
+        }
+
+        .order:hover {
+            transform:
+                translateY(-3px);
+
+            border-color:
+                rgba(167, 139, 250, 0.7);
+        }
+
+        .order-top {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            gap: 15px;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+        }
+
+        .order-number {
+            font-size: 22px;
+
+            font-weight: bold;
+        }
+
+
+        /* СТАТУСЫ */
+
+        .status {
+            padding: 8px 14px;
+
+            border-radius: 30px;
+
+            font-weight: bold;
+
+            border: 1px solid transparent;
+        }
+
+        .status-new {
+            background:
+                rgba(139, 92, 246, 0.22);
+
+            border-color:
+                rgba(167, 139, 250, 0.6);
+
+            color: #d8b4fe;
+        }
+
+        .status-work {
+            background:
+                rgba(37, 99, 235, 0.20);
+
+            border-color:
+                rgba(96, 165, 250, 0.6);
+
+            color: #93c5fd;
+        }
+
+        .status-done {
+            background:
+                rgba(22, 163, 74, 0.20);
+
+            border-color:
+                rgba(74, 222, 128, 0.6);
+
+            color: #86efac;
+        }
+
+        .status-cancel {
+            background:
+                rgba(225, 29, 72, 0.20);
+
+            border-color:
+                rgba(251, 113, 133, 0.6);
+
+            color: #fda4af;
+        }
+
+
+        /* ИНФОРМАЦИЯ */
+
+        .order-info {
+            margin-top: 18px;
+
+            line-height: 2;
+
+            color: #c7cce5;
+
+            padding: 15px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(7, 10, 30, 0.45);
+        }
+
+        .order-info b {
+            color: white;
+        }
+
+
+        /* КНОПКИ */
+
+        .actions {
+            margin-top: 20px;
+
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+
+            padding: 12px 16px;
+
+            border-radius: 13px;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 0 20px
+                rgba(124, 58, 237, 0.45);
+        }
+
+        .new-button {
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #9333ea
+                );
+        }
+
+        .work-button {
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #0891b2
+                );
+        }
+
+        .done-button {
+            background:
+                linear-gradient(
+                    135deg,
+                    #16a34a,
+                    #059669
+                );
+        }
+
+        .cancel-button {
+            background:
+                linear-gradient(
+                    135deg,
+                    #e11d48,
+                    #be123c
+                );
+        }
+
+        .chat-button {
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #3b82f6
+                );
+        }
+
+
+        /* ПУСТО */
+
+        .empty {
+            text-align: center;
+
+            padding: 45px;
+
+            color: #b8c1e0;
+
+            background:
+                rgba(16, 20, 55, 0.84);
+
+            border-radius: 24px;
+
+            border:
+                1px dashed
+                rgba(139, 92, 246, 0.5);
+        }
+
+
+        /* УВЕДОМЛЕНИЕ */
+
+        .notification {
+            position: fixed;
+
+            top: 90px;
+
+            right: 25px;
+
+            max-width: 350px;
+
+            padding: 16px 22px;
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #2563eb
+                );
+
+            color: white;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 0 35px
+                rgba(124, 58, 237, 0.6);
+
+            transform:
+                translateX(150%);
+
+            opacity: 0;
+
+            transition:
+                transform 0.4s,
+                opacity 0.4s;
+
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform:
+                translateX(0);
+
+            opacity: 1;
+        }
+
+
+        /* МОБИЛЬНАЯ ВЕРСИЯ */
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 16px;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .admin {
+                padding: 9px 12px;
+
+                font-size: 13px;
+            }
+
+            main {
+                margin: 20px auto;
+
+                padding: 14px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .order {
+                padding: 18px;
+            }
+
+            .actions button {
+                width: 100%;
+            }
+
+            .notification {
+                right: 15px;
+                left: 15px;
+
+                max-width: none;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        Ri<span>Robux</span>
+    </div>
+
+    <div class="admin">
+        🛡️ Админ-панель
+    </div>
+
+</header>
+
+
+<main>
+
+    <h1>🌌 Управление заявками</h1>
+
+
+    <!-- СТАТИСТИКА -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <h3>
+                📦 Всего заявок
+            </h3>
+
+            <div
+                class="stat-number"
+                id="totalOrders"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>
+                💎 Всего заказано Robux
+            </h3>
+
+            <div
+                class="stat-number"
+                id="totalRobux"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>
+                🚀 Выполнено заказов
+            </h3>
+
+            <div
+                class="stat-number"
+                id="completedOrders"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ПОИСК -->
+
+    <div class="controls">
+
+        <label>
+            🔍 Поиск
+        </label>
+
+        <input
+            type="text"
+            id="search"
+            placeholder="Player123 или номер заказа"
+        >
+
+
+        <label>
+            🛰️ Фильтр по статусу
+        </label>
+
+        <select id="statusFilter">
+
+            <option value="all">
+                Все заявки
+            </option>
+
+            <option value="Новая заявка">
+                🆕 Новые
+            </option>
+
+            <option value="В работе">
+                ⚙️ В работе
+            </option>
+
+            <option value="Выполнено">
+                🚀 Выполненные
+            </option>
+
+            <option value="Отменена">
+                ❌ Отменённые
+            </option>
+
+        </select>
+
+
+        <label>
+            ⏳ Сортировка
+        </label>
+
+        <select id="sort">
+
+            <option value="new">
+                Сначала новые
+            </option>
+
+            <option value="old">
+                Сначала старые
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- ЗАЯВКИ -->
+
+    <div
+        class="orders"
+        id="orders"
+    ></div>
+
+</main>
+
+
+<!-- УВЕДОМЛЕНИЕ -->
+
+<div
+    class="notification"
+    id="notification"
+></div>
+
+
+<script>
+
+    let allOrders = [];
+
+    let previousOrderCount = 0;
+
+    let firstLoad = true;
+
+
+    async function loadOrders() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/users"
+                );
+
+
+            allOrders =
+                await response.json();
+
+
+            /* НОВАЯ ЗАЯВКА */
+
+            if (
+                !firstLoad &&
+                allOrders.length >
+                previousOrderCount
+            ) {
+
+                const newOrder =
+                    allOrders[
+                        allOrders.length - 1
+                    ];
+
+
+                showNotification(
+                    "🔔 Новая заявка! Заказ #" +
+                    (
+                        newOrder.orderNumber ||
+                        "—"
+                    )
+                );
+
+
+                playNotificationSound();
+
+            }
+
+
+            previousOrderCount =
+                allOrders.length;
+
+
+            firstLoad = false;
+
+
+            updateStats();
+
+            renderOrders();
+
+        }
+
+        catch (error) {
+
+            document.getElementById(
+                "orders"
+            ).innerHTML =
+                `
+                <div class="empty">
+                    ❌ Не удалось загрузить заявки.<br>
+                    Проверь, запущен ли сервер.
+                </div>
+                `;
+
+        }
+
+    }
+
+
+    /* СТАТИСТИКА */
+
+    function updateStats() {
+
+        const totalOrders =
+            allOrders.length;
+
+
+        const totalRobux =
+            allOrders.reduce(
+                (sum, order) =>
+                    sum +
+                    Number(
+                        order.robux || 0
+                    ),
+                0
+            );
+
+
+        const completedOrders =
+            allOrders.filter(
+                order =>
+                    order.status ===
+                    "Выполнено"
+            ).length;
+
+
+        document.getElementById(
+            "totalOrders"
+        ).textContent =
+            totalOrders;
+
+
+        document.getElementById(
+            "totalRobux"
+        ).textContent =
+            totalRobux;
+
+
+        document.getElementById(
+            "completedOrders"
+        ).textContent =
+            completedOrders;
+
+    }
+
+
+    /* ЦВЕТ СТАТУСА */
+
+    function getStatusClass(status) {
+
+        if (
+            status ===
+            "В работе"
+        ) {
+            return "status-work";
+        }
+
+
+        if (
+            status ===
+            "Выполнено"
+        ) {
+            return "status-done";
+        }
+
+
+        if (
+            status ===
+            "Отменена"
+        ) {
+            return "status-cancel";
+        }
+
+
+        return "status-new";
+
+    }
+
+
+    /* ЗАЯВКИ */
+
+    function renderOrders() {
+
+        const search =
+            document
+                .getElementById(
+                    "search"
+                )
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const statusFilter =
+            document
+                .getElementById(
+                    "statusFilter"
+                )
+                .value;
+
+
+        const sort =
+            document
+                .getElementById(
+                    "sort"
+                )
+                .value;
+
+
+        let orders =
+            [...allOrders];
+
+
+        /* ПОИСК */
+
+        if (search) {
+
+            orders =
+                orders.filter(
+                    order =>
+
+                        String(
+                            order.username || ""
+                        )
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+
+                        ||
+
+                        String(
+                            order.orderNumber || ""
+                        )
+                        .includes(
+                            search
+                        )
+
+                );
+
+        }
+
+
+        /* ФИЛЬТР */
+
+        if (
+            statusFilter !== "all"
+        ) {
+
+            orders =
+                orders.filter(
+                    order =>
+                        order.status ===
+                        statusFilter
+                );
+
+        }
+
+
+        /* СОРТИРОВКА */
+
+        orders.sort(
+            (a, b) => {
+
+                const timeA =
+                    new Date(
+                        a.createdAt
+                    ).getTime() || 0;
+
+
+                const timeB =
+                    new Date(
+                        b.createdAt
+                    ).getTime() || 0;
+
+
+                if (
+                    sort === "new"
+                ) {
+
+                    return timeB - timeA;
+
+                }
+
+
+                return timeA - timeB;
+
+            }
+        );
+
+
+        const ordersBox =
+            document.getElementById(
+                "orders"
+            );
+
+
+        ordersBox.innerHTML =
+            "";
+
+
+        if (
+            orders.length === 0
+        ) {
+
+            ordersBox.innerHTML =
+                `
+                <div class="empty">
+                    📭 В этой части галактики заявок пока нет
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        orders.forEach(
+            order => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "order";
+
+
+                const status =
+                    order.status ||
+                    "Новая заявка";
+
+
+                const statusClass =
+                    getStatusClass(
+                        status
+                    );
+
+
+                div.innerHTML =
+                    `
+
+                    <div class="order-top">
+
+                        <div class="order-number">
+
+                            🚀 Заказ #${escapeHtml(
+                                String(
+                                    order.orderNumber ||
+                                    "—"
+                                )
+                            )}
+
+                        </div>
+
+
+                        <div
+                            class="status ${statusClass}"
+                        >
+
+                            ${escapeHtml(
+                                status
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-info">
+
+                        👤 <b>Roblox:</b>
+                        ${escapeHtml(
+                            order.username ||
+                            "Неизвестно"
+                        )}
+
+                        <br>
+
+                        💎 <b>Robux:</b>
+                        ${escapeHtml(
+                            order.robux || 0
+                        )}
+
+                        <br>
+
+                        💰 <b>Цена:</b>
+                        ${Number(
+                            order.price ||
+                            Number(
+                                order.robux || 0
+                            ) * 1.5
+                        ).toFixed(2)} ₽
+
+                        <br>
+
+                        📅 <b>Дата:</b>
+                        ${escapeHtml(
+                            order.createdAt ||
+                            "Неизвестно"
+                        )}
+
+                    </div>
+
+
+                    <div class="actions">
+
+                        <button
+                            class="new-button"
+                            onclick="changeStatus(
+                                '${escapeJs(order.id)}',
+                                'Новая заявка'
+                            )"
+                        >
+                            🆕 Новая
+                        </button>
+
+
+                        <button
+                            class="work-button"
+                            onclick="changeStatus(
+                                '${escapeJs(order.id)}',
+                                'В работе'
+                            )"
+                        >
+                            ⚙️ В работу
+                        </button>
+
+
+                        <button
+                            class="done-button"
+                            onclick="changeStatus(
+                                '${escapeJs(order.id)}',
+                                'Выполнено'
+                            )"
+                        >
+                            🚀 Выполнено
+                        </button>
+
+
+                        <button
+                            class="cancel-button"
+                            onclick="changeStatus(
+                                '${escapeJs(order.id)}',
+                                'Отменена'
+                            )"
+                        >
+                            ❌ Отменить
+                        </button>
+
+
+                        <button
+                            class="chat-button"
+                            onclick="openChat(
+                                '${escapeJs(order.id)}'
+                            )"
+                        >
+                            💬 Открыть чат
+                        </button>
+
+                    </div>
+
+                    `;
+
+
+                ordersBox.appendChild(
+                    div
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ИЗМЕНЕНИЕ СТАТУСА */
+
+    async function changeStatus(
+        orderId,
+        status
+    ) {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/users/" +
+                    encodeURIComponent(
+                        orderId
+                    ) +
+                    "/status",
+                    {
+                        method:
+                            "PATCH",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                status: status
+                            })
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                result.error
+            ) {
+
+                alert(
+                    result.error ||
+                    "Ошибка изменения статуса"
+                );
+
+                return;
+
+            }
+
+
+            await loadOrders();
+
+        }
+
+        catch (error) {
+
+            alert(
+                "❌ Не удалось изменить статус"
+            );
+
+        }
+
+    }
+
+
+    /* ОТКРЫТЬ ЧАТ */
+
+    function openChat(orderId) {
+
+        window.location.href =
+            "admin-chat.html?order=" +
+            encodeURIComponent(
+                orderId
+            );
+
+    }
+
+
+    /* УВЕДОМЛЕНИЕ */
+
+    function showNotification(text) {
+
+        const notification =
+            document.getElementById(
+                "notification"
+            );
+
+
+        notification.textContent =
+            text;
+
+
+        notification.classList.add(
+            "show"
+        );
+
+
+        setTimeout(
+            () => {
+
+                notification.classList.remove(
+                    "show"
+                );
+
+            },
+            5000
+        );
+
+    }
+
+
+    /* ЗВУК */
+
+    function playNotificationSound() {
+
+        try {
+
+            const AudioContextClass =
+                window.AudioContext ||
+                window.webkitAudioContext;
+
+
+            if (
+                !AudioContextClass
+            ) {
+                return;
+            }
+
+
+            const audioContext =
+                new AudioContextClass();
+
+
+            const oscillator =
+                audioContext.createOscillator();
+
+
+            const gain =
+                audioContext.createGain();
+
+
+            oscillator.connect(
+                gain
+            );
+
+
+            gain.connect(
+                audioContext.destination
+            );
+
+
+            oscillator.frequency.value =
+                700;
+
+
+            gain.gain.setValueAtTime(
+                0.12,
+                audioContext.currentTime
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                audioContext.currentTime + 0.5
+            );
+
+
+            oscillator.start();
+
+
+            oscillator.stop(
+                audioContext.currentTime + 0.5
+            );
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Звук недоступен"
+            );
+
+        }
+
+    }
+
+
+    /* ЗАЩИТА HTML */
+
+    function escapeHtml(text) {
+
+        return String(
+            text || ""
+        )
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+    }
+
+
+    /* ЗАЩИТА ДЛЯ JS */
+
+    function escapeJs(text) {
+
+        return String(
+            text || ""
+        )
+        .replaceAll(
+            "\\",
+            "\\\\"
+        )
+        .replaceAll(
+            "'",
+            "\\'"
+        );
+
+    }
+
+
+    /* СОБЫТИЯ */
+
+    document
+        .getElementById(
+            "search"
+        )
+        .addEventListener(
+            "input",
+            renderOrders
+        );
+
+
+    document
+        .getElementById(
+            "statusFilter"
+        )
+        .addEventListener(
+            "change",
+            renderOrders
+        );
+
+
+    document
+        .getElementById(
+            "sort"
+        )
+        .addEventListener(
+            "change",
+            renderOrders
+        );
+
+
+    /* ЗАГРУЗКА */
+
+    loadOrders();
+
+
+    /* АВТООБНОВЛЕНИЕ */
+
+    setInterval(
+        loadOrders,
+        3000
+    );
+
+</script>
+
+</body>
+</html>
