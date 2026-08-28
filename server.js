@@ -6,39 +6,10 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 const PRICE_PER_ROBUX = 0.76;
-
-/*
-==================================================
-ПРОМОКОДЫ
-==================================================
-20 промокодов:
-
-RITA5       = 5%
-RITA10      = 10%
-RITA15      = 15%
-RITA20      = 20%
-RITA25      = 25%
-RITA30      = 30%
-RITA35      = 35%
-RITA40      = 40%
-RITA45      = 45%
-RITA50      = 50%
-
-ANGELIKA5   = 5%
-ANGELIKA10  = 10%
-ANGELIKA15  = 15%
-ANGELIKA20  = 20%
-ANGELIKA25  = 25%
-ANGELIKA30  = 30%
-ANGELIKA35  = 35%
-ANGELIKA40  = 40%
-ANGELIKA45  = 45%
-ANGELIKA50  = 50%
-==================================================
-*/
+const REFERRAL_DISCOUNT = 5; // скидка приглашённому на первый заказ
+const REFERRAL_BONUS_ROBUX = 15; // бонус пригласившему
 
 const PROMO_CODES = {
-
     RITA5: 5,
     RITA10: 10,
     RITA15: 15,
@@ -60,9 +31,7 @@ const PROMO_CODES = {
     ANGELIKA40: 40,
     ANGELIKA45: 45,
     ANGELIKA50: 50
-
 };
-
 
 app.use(express.json());
 
@@ -72,107 +41,60 @@ app.use(
     )
 );
 
+const dataDir = path.join(
+    __dirname,
+    "data"
+);
 
-/*
-==================================================
-DATA
-==================================================
-*/
+const usersFile = path.join(
+    dataDir,
+    "users.json"
+);
 
-const dataDir =
-    path.join(
-        __dirname,
-        "data"
-    );
-
-const usersFile =
-    path.join(
-        dataDir,
-        "users.json"
-    );
-
-
-if (
-    !fs.existsSync(dataDir)
-) {
-
-    fs.mkdirSync(
-        dataDir,
-        {
-            recursive: true
-        }
-    );
-
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, {
+        recursive: true
+    });
 }
 
-
-if (
-    !fs.existsSync(usersFile)
-) {
-
+if (!fs.existsSync(usersFile)) {
     fs.writeFileSync(
         usersFile,
         "[]",
         "utf8"
     );
-
 }
 
 
-/*
-==================================================
-ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-==================================================
-*/
+/* =========================================
+   БАЗА
+========================================= */
 
 function getUsers() {
-
     try {
-
-        const raw =
-            fs.readFileSync(
-                usersFile,
-                "utf8"
-            );
-
-
-        const users =
-            JSON.parse(raw);
-
-
-        if (
-            !Array.isArray(users)
-        ) {
-
-            return [];
-
-        }
-
-
-        return users.map(
-            normalizeOrder
+        const raw = fs.readFileSync(
+            usersFile,
+            "utf8"
         );
 
-    }
+        const users = JSON.parse(raw);
 
-    catch (error) {
+        if (!Array.isArray(users)) {
+            return [];
+        }
 
+        return users.map(normalizeOrder);
+    } catch (error) {
         console.error(
             "Ошибка чтения users.json:",
             error
         );
 
         return [];
-
     }
-
 }
 
-
-function saveUsers(
-    users
-) {
-
+function saveUsers(users) {
     fs.writeFileSync(
         usersFile,
         JSON.stringify(
@@ -182,100 +104,81 @@ function saveUsers(
         ),
         "utf8"
     );
-
 }
 
-
-function normalizeOrder(
-    order
-) {
-
-    if (
-        !Array.isArray(
-            order.messages
-        )
-    ) {
-
+function normalizeOrder(order) {
+    if (!Array.isArray(order.messages)) {
         order.messages = [];
-
     }
-
 
     if (
         typeof order.hiddenForProfile !==
         "boolean"
     ) {
-
-        order.hiddenForProfile =
-            false;
-
+        order.hiddenForProfile = false;
     }
-
 
     if (
         typeof order.updatedAt !==
         "number"
     ) {
-
-        order.updatedAt =
-            Date.now();
-
+        order.updatedAt = Date.now();
     }
-
 
     if (
         typeof order.discountPercent !==
         "number"
     ) {
-
-        order.discountPercent =
-            0;
-
+        order.discountPercent = 0;
     }
-
 
     if (
         typeof order.discountAmount !==
         "number"
     ) {
-
-        order.discountAmount =
-            0;
-
+        order.discountAmount = 0;
     }
-
 
     if (
         typeof order.basePrice !==
         "number"
     ) {
-
         order.basePrice =
             Number(order.price || 0);
-
     }
-
 
     if (
         typeof order.promoCode !==
         "string"
     ) {
-
-        order.promoCode =
-            "";
-
+        order.promoCode = "";
     }
 
+    if (
+        typeof order.referralCode !==
+        "string"
+    ) {
+        order.referralCode = "";
+    }
+
+    if (
+        typeof order.referrerProfileId !==
+        "string"
+    ) {
+        order.referrerProfileId = "";
+    }
+
+    if (
+        typeof order.referralDiscount !==
+        "number"
+    ) {
+        order.referralDiscount = 0;
+    }
 
     return order;
-
 }
 
-
-function createId(
-    prefix
-) {
-
+function createId(prefix) {
     return (
         prefix +
         "-" +
@@ -285,70 +188,155 @@ function createId(
             .toString(36)
             .slice(2, 9)
     );
-
 }
-
 
 function currentDate() {
-
-    return new Date()
-        .toLocaleString(
-            "ru-RU"
-        );
-
+    return new Date().toLocaleString(
+        "ru-RU"
+    );
 }
 
 
-function normalizePromoCode(
-    code
-) {
+/* =========================================
+   ПРОМОКОДЫ
+========================================= */
 
-    return String(
-        code || ""
-    )
+function normalizePromoCode(code) {
+    return String(code || "")
         .trim()
         .toUpperCase();
-
 }
 
-
-function getPromoDiscount(
-    code
-) {
-
+function getPromoDiscount(code) {
     const normalized =
-        normalizePromoCode(
-            code
-        );
-
+        normalizePromoCode(code);
 
     return (
-        PROMO_CODES[
-            normalized
-        ] || 0
+        PROMO_CODES[normalized] || 0
     );
-
 }
 
 
-/*
-==================================================
-РАСЧЁТ ЦЕНЫ
-==================================================
-*/
+/* =========================================
+   РЕФЕРАЛЬНЫЕ КОДЫ
+========================================= */
+
+function generateReferralCode(
+    profileId
+) {
+    const clean = String(
+        profileId || ""
+    )
+        .replace(
+            /[^a-zA-Z0-9]/g,
+            ""
+        )
+        .toUpperCase();
+
+    const tail =
+        clean.slice(-6) ||
+        Math.random()
+            .toString(36)
+            .slice(2, 8)
+            .toUpperCase();
+
+    return "RI" + tail;
+}
+
+function getOrdersByProfileId(
+    users,
+    profileId
+) {
+    return users.filter(
+        order =>
+            String(
+                order.profileId
+            ) ===
+            String(
+                profileId
+            )
+    );
+}
+
+function getReferralCodeForProfile(
+    users,
+    profileId
+) {
+    const existingOrder =
+        users.find(
+            order =>
+                String(
+                    order.profileId
+                ) ===
+                String(
+                    profileId
+                ) &&
+                order.myReferralCode
+        );
+
+    if (
+        existingOrder &&
+        existingOrder.myReferralCode
+    ) {
+        return existingOrder.myReferralCode;
+    }
+
+    return generateReferralCode(
+        profileId
+    );
+}
+
+function findProfileByReferralCode(
+    users,
+    referralCode
+) {
+    const normalized =
+        String(
+            referralCode || ""
+        )
+            .trim()
+            .toUpperCase();
+
+    if (!normalized) {
+        return null;
+    }
+
+    const order =
+        users.find(
+            item =>
+                String(
+                    item.myReferralCode || ""
+                ).toUpperCase() ===
+                normalized
+        );
+
+    if (!order) {
+        return null;
+    }
+
+    return {
+        profileId:
+            order.profileId,
+
+        referralCode:
+            order.myReferralCode
+    };
+}
+
+
+/* =========================================
+   ЦЕНА
+========================================= */
 
 function calculatePrice(
     robux,
-    promoCode = ""
+    promoCode = "",
+    referralApplied = false
 ) {
-
     const amount =
         Math.floor(
-            Number(
-                robux
-            )
+            Number(robux)
         );
-
 
     const basePrice =
         Math.round(
@@ -357,56 +345,64 @@ function calculatePrice(
             100
         ) / 100;
 
-
-    const discountPercent =
+    const promoPercent =
         getPromoDiscount(
             promoCode
         );
 
-
-    const discountAmount =
+    const promoAmount =
         Math.round(
             basePrice *
-            discountPercent /
+            promoPercent /
             100 *
             100
         ) / 100;
 
+    let priceAfterPromo =
+        basePrice -
+        promoAmount;
+
+    let referralAmount = 0;
+
+    if (
+        referralApplied &&
+        promoPercent === 0
+    ) {
+        referralAmount =
+            Math.round(
+                priceAfterPromo *
+                REFERRAL_DISCOUNT /
+                100 *
+                100
+            ) / 100;
+    }
 
     const finalPrice =
         Math.round(
             (
-                basePrice -
-                discountAmount
+                priceAfterPromo -
+                referralAmount
             ) *
             100
         ) / 100;
 
-
     return {
+        basePrice,
 
-        basePrice:
-            basePrice,
+        promoPercent,
 
-        discountPercent:
-            discountPercent,
+        promoAmount,
 
-        discountAmount:
-            discountAmount,
+        referralAmount,
 
-        finalPrice:
-            finalPrice
-
+        finalPrice
     };
-
 }
 
 
-/*
-==================================================
-ПРОВЕРКА ПРОМОКОДА
-==================================================
-*/
+/* =========================================
+   ПРОВЕРКА ПРОМОКОДА
+========================================= */
 
 app.post(
     "/api/promos/validate",
@@ -417,14 +413,10 @@ app.post(
             robux
         } = req.body;
 
-
         const amount =
             Math.floor(
-                Number(
-                    robux
-                )
+                Number(robux)
             );
-
 
         if (
             !code ||
@@ -433,52 +425,43 @@ app.post(
             ) ||
             amount < 1
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверные данные"
                 });
-
         }
-
 
         const normalized =
             normalizePromoCode(
                 code
             );
 
-
         const discountPercent =
             getPromoDiscount(
                 normalized
             );
 
-
         if (
             discountPercent <= 0
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Такого промокода нет"
                 });
-
         }
-
 
         const price =
             calculatePrice(
                 amount,
-                normalized
+                normalized,
+                false
             );
 
-
         return res.json({
-
             success:
                 true,
 
@@ -486,28 +469,153 @@ app.post(
                 normalized,
 
             discountPercent:
-                price.discountPercent,
+                price.promoPercent,
 
             basePrice:
                 price.basePrice,
 
             discountAmount:
-                price.discountAmount,
+                price.promoAmount,
 
             finalPrice:
                 price.finalPrice
-
         });
-
     }
 );
 
 
-/*
-==================================================
-СОЗДАНИЕ ЗАКАЗА
-==================================================
-*/
+/* =========================================
+   РЕФЕРАЛЬНАЯ ССЫЛКА
+========================================= */
+
+app.get(
+    "/api/referrals/:profileId",
+    (req, res) => {
+
+        const profileId =
+            String(
+                req.params.profileId
+            );
+
+        const users =
+            getUsers();
+
+        const existing =
+            getOrdersByProfileId(
+                users,
+                profileId
+            );
+
+        let referralCode;
+
+        if (
+            existing.length > 0
+        ) {
+            referralCode =
+                getReferralCodeForProfile(
+                    users,
+                    profileId
+                );
+
+            let changed = false;
+
+            existing.forEach(
+                order => {
+
+                    if (
+                        !order.myReferralCode
+                    ) {
+                        order.myReferralCode =
+                            referralCode;
+
+                        changed = true;
+                    }
+
+                    if (
+                        typeof order.referralBonus !==
+                        "number"
+                    ) {
+                        order.referralBonus =
+                            0;
+
+                        changed = true;
+                    }
+
+                    if (
+                        typeof order.referralCount !==
+                        "number"
+                    ) {
+                        order.referralCount =
+                            0;
+
+                        changed = true;
+                    }
+                }
+            );
+
+            if (changed) {
+                saveUsers(users);
+            }
+        } else {
+            referralCode =
+                generateReferralCode(
+                    profileId
+                );
+        }
+
+        const profileOrders =
+            getOrdersByProfileId(
+                users,
+                profileId
+            );
+
+        const referralOrders =
+            profileOrders.filter(
+                order =>
+                    order.referrerProfileId &&
+                    order.referrerProfileId !==
+                    profileId
+            );
+
+        const bonusHolder =
+            profileOrders.find(
+                order =>
+                    typeof order.referralBonus ===
+                    "number"
+            );
+
+        const referralBonus =
+            bonusHolder
+                ? Number(
+                    bonusHolder.referralBonus
+                )
+                : 0;
+
+        return res.json({
+            profileId,
+            referralCode,
+
+            referralLink:
+                `https://rirobux.onrender.com/?ref=${encodeURIComponent(
+                    referralCode
+                )}`,
+
+            invitedCount:
+                referralOrders.length,
+
+            bonusRobux:
+                referralBonus,
+
+            invitedDiscount:
+                REFERRAL_DISCOUNT
+        });
+    }
+);
+
+
+/* =========================================
+   СОЗДАНИЕ ЗАКАЗА
+========================================= */
 
 app.post(
     "/api/users",
@@ -517,17 +625,14 @@ app.post(
             username,
             robux,
             profileId,
-            promoCode
+            promoCode,
+            referralCode
         } = req.body;
-
 
         const amount =
             Math.floor(
-                Number(
-                    robux
-                )
+                Number(robux)
             );
-
 
         if (
             !username ||
@@ -535,16 +640,13 @@ app.post(
                 username
             ).trim()
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите Roblox Username"
                 });
-
         }
-
 
         if (
             !Number.isFinite(
@@ -552,40 +654,91 @@ app.post(
             ) ||
             amount < 1
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите правильное количество Robux"
                 });
-
         }
 
+        const users =
+            getUsers();
+
+        const buyerProfileId =
+            String(
+                profileId ||
+                createId("profile")
+            );
 
         const normalizedPromo =
             normalizePromoCode(
                 promoCode
             );
 
+        const normalizedReferral =
+            String(
+                referralCode || ""
+            )
+                .trim()
+                .toUpperCase();
+
+        const referrer =
+            findProfileByReferralCode(
+                users,
+                normalizedReferral
+            );
+
+        let referralApplied =
+            false;
+
+        let referrerProfileId =
+            "";
+
+        /*
+        Нельзя пригласить самого себя.
+        */
+
+        if (
+            referrer &&
+            String(
+                referrer.profileId
+            ) !==
+            buyerProfileId
+        ) {
+
+            const buyerOrders =
+                getOrdersByProfileId(
+                    users,
+                    buyerProfileId
+                );
+
+            /*
+            Реферальная скидка
+            только на первый заказ.
+            */
+
+            referralApplied =
+                buyerOrders.length === 0;
+
+            referrerProfileId =
+                String(
+                    referrer.profileId
+                );
+
+        }
 
         const price =
             calculatePrice(
                 amount,
-                normalizedPromo
+                normalizedPromo,
+                referralApplied
             );
-
-
-        const users =
-            getUsers();
-
 
         const order = {
 
             id:
-                createId(
-                    "order"
-                ),
+                createId("order"),
 
             orderNumber:
                 1000 +
@@ -593,10 +746,7 @@ app.post(
                 1,
 
             profileId:
-                profileId ||
-                createId(
-                    "profile"
-                ),
+                buyerProfileId,
 
             username:
                 String(
@@ -613,15 +763,41 @@ app.post(
                 price.basePrice,
 
             discountPercent:
-                price.discountPercent,
+                price.promoPercent,
 
             discountAmount:
-                price.discountAmount,
+                price.promoAmount,
 
             promoCode:
-                price.discountPercent > 0
+                price.promoPercent > 0
                     ? normalizedPromo
                     : "",
+
+            referralCode:
+                referralApplied
+                    ? normalizedReferral
+                    : "",
+
+            referrerProfileId:
+                referralApplied
+                    ? referrerProfileId
+                    : "",
+
+            referralDiscount:
+                referralApplied
+                    ? price.referralAmount
+                    : 0,
+
+            myReferralCode:
+                generateReferralCode(
+                    buyerProfileId
+                ),
+
+            referralBonus:
+                0,
+
+            referralCount:
+                0,
 
             status:
                 "Новая заявка",
@@ -637,33 +813,88 @@ app.post(
 
             updatedAt:
                 Date.now()
-
         };
 
+        /*
+        Если у пользователя уже есть
+        старый referralCode, используем его.
+        */
+
+        const oldProfileOrder =
+            users.find(
+                item =>
+                    String(
+                        item.profileId
+                    ) ===
+                    buyerProfileId &&
+                    item.myReferralCode
+            );
+
+        if (
+            oldProfileOrder &&
+            oldProfileOrder.myReferralCode
+        ) {
+            order.myReferralCode =
+                oldProfileOrder.myReferralCode;
+        }
+
+        /*
+        Начисляем бонус пригласившему
+        после создания первого заказа.
+        */
+
+        if (
+            referralApplied &&
+            referrerProfileId
+        ) {
+
+            users.forEach(
+                item => {
+
+                    if (
+                        String(
+                            item.profileId
+                        ) ===
+                        referrerProfileId
+                    ) {
+
+                        item.referralBonus =
+                            Number(
+                                item.referralBonus ||
+                                0
+                            ) +
+                            REFERRAL_BONUS_ROBUX;
+
+                        item.referralCount =
+                            Number(
+                                item.referralCount ||
+                                0
+                            ) +
+                            1;
+                    }
+
+                }
+            );
+        }
 
         users.push(
             order
         );
 
-
         saveUsers(
             users
         );
 
-
         return res.json(
             order
         );
-
     }
 );
 
 
-/*
-==================================================
-ПОЛУЧИТЬ ВСЕ ЗАКАЗЫ
-==================================================
-*/
+/* =========================================
+   ВСЕ ЗАКАЗЫ
+========================================= */
 
 app.get(
     "/api/users",
@@ -677,11 +908,9 @@ app.get(
 );
 
 
-/*
-==================================================
-ЗАКАЗЫ ПРОФИЛЯ
-==================================================
-*/
+/* =========================================
+   ЗАКАЗЫ ПРОФИЛЯ
+========================================= */
 
 app.get(
     "/api/profiles/:profileId/orders",
@@ -689,7 +918,6 @@ app.get(
 
         const users =
             getUsers();
-
 
         const orders =
             users.filter(
@@ -703,20 +931,16 @@ app.get(
                     !order.hiddenForProfile
             );
 
-
         return res.json(
             orders
         );
-
     }
 );
 
 
-/*
-==================================================
-ПОЛУЧИТЬ ОДИН ЗАКАЗ
-==================================================
-*/
+/* =========================================
+   ОДИН ЗАКАЗ
+========================================= */
 
 app.get(
     "/api/users/:id",
@@ -725,7 +949,6 @@ app.get(
         const users =
             getUsers();
 
-
         const order =
             users.find(
                 item =>
@@ -733,64 +956,46 @@ app.get(
                     req.params.id
             );
 
-
         if (!order) {
-
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
-
         }
-
 
         return res.json(
             normalizeOrder(
                 order
             )
         );
-
     }
 );
 
 
-/*
-==================================================
-ТАЙМЕР БОТА
-==================================================
-*/
+/* =========================================
+   БОТ
+========================================= */
 
 const botTimers =
     new Map();
 
-
 function cancelBotTimer(
     orderId
 ) {
-
     const timer =
         botTimers.get(
             orderId
         );
 
-
     if (timer) {
-
-        clearTimeout(
-            timer
-        );
-
-
+        clearTimeout(timer);
         botTimers.delete(
             orderId
         );
-
     }
-
 }
-
 
 function createBotReply(
     text
@@ -801,70 +1006,37 @@ function createBotReply(
             text
         ).toLowerCase();
 
-
     if (
-        lower.includes(
-            "привет"
-        ) ||
-        lower.includes(
-            "здравствуйте"
-        )
+        lower.includes("привет") ||
+        lower.includes("здравствуйте")
     ) {
-
         return "🤖 Здравствуйте! Сообщение передано продавцу.";
-
     }
 
-
     if (
-        lower.includes(
-            "когда"
-        ) ||
-        lower.includes(
-            "сколько ждать"
-        ) ||
-        lower.includes(
-            "срок"
-        )
+        lower.includes("когда") ||
+        lower.includes("сколько ждать") ||
+        lower.includes("срок")
     ) {
-
         return "🤖 Ваш вопрос передан продавцу. Пожалуйста, ожидайте ответа.";
-
     }
 
-
     if (
-        lower.includes(
-            "где заказ"
-        ) ||
-        lower.includes(
-            "где мой"
-        ) ||
-        lower.includes(
-            "не приш"
-        )
+        lower.includes("где заказ") ||
+        lower.includes("где мой") ||
+        lower.includes("не приш")
     ) {
-
         return "🤖 Продавец проверит ваш заказ и ответит вам.";
-
     }
-
 
     if (
-        lower.includes(
-            "спасибо"
-        )
+        lower.includes("спасибо")
     ) {
-
         return "🤖 Пожалуйста! 💜";
-
     }
-
 
     return "🤖 Сообщение получено. Продавец обязательно его увидит.";
-
 }
-
 
 function scheduleBot(
     orderId,
@@ -875,14 +1047,12 @@ function scheduleBot(
         orderId
     );
 
-
     const timer =
         setTimeout(
             () => {
 
                 const users =
                     getUsers();
-
 
                 const order =
                     users.find(
@@ -891,25 +1061,17 @@ function scheduleBot(
                             orderId
                     );
 
-
                 if (!order) {
-
                     return;
-
                 }
-
 
                 if (
                     !Array.isArray(
                         order.messages
                     )
                 ) {
-
-                    order.messages =
-                        [];
-
+                    order.messages = [];
                 }
-
 
                 const lastUserMessage =
                     [...order.messages]
@@ -920,15 +1082,9 @@ function scheduleBot(
                                 "user"
                         );
 
-
-                if (
-                    !lastUserMessage
-                ) {
-
+                if (!lastUserMessage) {
                     return;
-
                 }
-
 
                 if (
                     String(
@@ -938,47 +1094,33 @@ function scheduleBot(
                         userMessageId
                     )
                 ) {
-
                     return;
-
                 }
-
 
                 const hasAdminReply =
                     order.messages.some(
                         message =>
-
                             message.sender ===
                                 "admin" &&
-
                             Number(
                                 message.createdTimestamp ||
                                 0
                             ) >
-
                             Number(
                                 lastUserMessage.createdTimestamp ||
                                 0
                             )
                     );
 
-
-                if (
-                    hasAdminReply
-                ) {
-
+                if (hasAdminReply) {
                     return;
-
                 }
-
 
                 const botAlreadyAnswered =
                     order.messages.some(
                         message =>
-
                             message.sender ===
                                 "bot" &&
-
                             String(
                                 message.replyTo
                             ) ===
@@ -987,15 +1129,11 @@ function scheduleBot(
                             )
                     );
 
-
                 if (
                     botAlreadyAnswered
                 ) {
-
                     return;
-
                 }
-
 
                 order.messages.push({
 
@@ -1026,10 +1164,8 @@ function scheduleBot(
 
                 });
 
-
                 order.updatedAt =
                     Date.now();
-
 
                 saveUsers(
                     users
@@ -1039,20 +1175,16 @@ function scheduleBot(
             2 * 60 * 1000
         );
 
-
     botTimers.set(
         orderId,
         timer
     );
-
 }
 
 
-/*
-==================================================
-СООБЩЕНИЯ
-==================================================
-*/
+/* =========================================
+   СООБЩЕНИЯ
+========================================= */
 
 app.post(
     "/api/users/:id/messages",
@@ -1063,42 +1195,34 @@ app.post(
             sender
         } = req.body;
 
-
         if (
             !text ||
             !String(
                 text
             ).trim()
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Введите сообщение"
                 });
-
         }
-
 
         if (
             sender !== "user" &&
             sender !== "admin"
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверный отправитель"
                 });
-
         }
-
 
         const users =
             getUsers();
-
 
         const order =
             users.find(
@@ -1107,30 +1231,22 @@ app.post(
                     req.params.id
             );
 
-
         if (!order) {
-
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
-
         }
-
 
         if (
             !Array.isArray(
                 order.messages
             )
         ) {
-
-            order.messages =
-                [];
-
+            order.messages = [];
         }
-
 
         const message = {
 
@@ -1155,59 +1271,44 @@ app.post(
 
         };
 
-
         order.messages.push(
             message
         );
 
-
         order.updatedAt =
             Date.now();
 
-
         if (
-            sender ===
-            "admin"
+            sender === "admin"
         ) {
-
             cancelBotTimer(
                 order.id
             );
-
         }
-
 
         saveUsers(
             users
         );
 
-
         if (
-            sender ===
-            "user"
+            sender === "user"
         ) {
-
             scheduleBot(
                 order.id,
                 message.id
             );
-
         }
-
 
         return res.json(
             message
         );
-
     }
 );
 
 
-/*
-==================================================
-УДАЛИТЬ СООБЩЕНИЕ
-==================================================
-*/
+/* =========================================
+   УДАЛЕНИЕ СООБЩЕНИЯ
+========================================= */
 
 app.delete(
     "/api/users/:orderId/messages/:messageId",
@@ -1216,7 +1317,6 @@ app.delete(
         const users =
             getUsers();
 
-
         const order =
             users.find(
                 item =>
@@ -1224,24 +1324,19 @@ app.delete(
                     req.params.orderId
             );
 
-
         if (!order) {
-
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
-
         }
-
 
         order.messages =
             Array.isArray(
                 order.messages
             )
-
                 ? order.messages.filter(
                     message =>
                         String(
@@ -1251,33 +1346,26 @@ app.delete(
                             req.params.messageId
                         )
                 )
-
                 : [];
-
 
         order.updatedAt =
             Date.now();
-
 
         saveUsers(
             users
         );
 
-
         return res.json({
             success:
                 true
         });
-
     }
 );
 
 
-/*
-==================================================
-ИЗМЕНЕНИЕ ЗАКАЗА
-==================================================
-*/
+/* =========================================
+   ИЗМЕНЕНИЕ ЗАКАЗА
+========================================= */
 
 app.patch(
     "/api/users/:id",
@@ -1286,7 +1374,6 @@ app.patch(
         const users =
             getUsers();
 
-
         const order =
             users.find(
                 item =>
@@ -1294,40 +1381,31 @@ app.patch(
                     req.params.id
             );
 
-
         if (!order) {
-
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
-
         }
-
 
         if (
             order.status !==
             "Новая заявка"
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Этот заказ уже нельзя изменить"
                 });
-
         }
-
 
         const {
             username,
-            robux,
-            promoCode
+            robux
         } = req.body;
-
 
         if (
             username !==
@@ -1339,49 +1417,30 @@ app.patch(
                     username
                 ).trim();
 
-
             if (!name) {
-
                 return res
                     .status(400)
                     .json({
                         error:
                             "Username не может быть пустым"
                     });
-
             }
-
 
             order.username =
                 name;
-
         }
-
 
         if (
             robux !==
-            undefined ||
-            promoCode !==
             undefined
         ) {
 
             const amount =
-                robux !== undefined
-                    ? Math.floor(
-                        Number(
-                            robux
-                        )
+                Math.floor(
+                    Number(
+                        robux
                     )
-                    : order.robux;
-
-
-            const code =
-                promoCode !== undefined
-                    ? normalizePromoCode(
-                        promoCode
-                    )
-                    : order.promoCode;
-
+                );
 
             if (
                 !Number.isFinite(
@@ -1389,23 +1448,20 @@ app.patch(
                 ) ||
                 amount < 1
             ) {
-
                 return res
                     .status(400)
                     .json({
                         error:
                             "Неверное количество Robux"
                     });
-
             }
-
 
             const price =
                 calculatePrice(
                     amount,
-                    code
+                    order.promoCode || "",
+                    false
                 );
-
 
             order.robux =
                 amount;
@@ -1413,47 +1469,27 @@ app.patch(
             order.basePrice =
                 price.basePrice;
 
-            order.discountPercent =
-                price.discountPercent;
-
-            order.discountAmount =
-                price.discountAmount;
-
             order.price =
                 price.finalPrice;
-
-            order.promoCode =
-                price.discountPercent > 0
-                    ? normalizePromoCode(
-                        code
-                    )
-                    : "";
-
         }
-
 
         order.updatedAt =
             Date.now();
-
 
         saveUsers(
             users
         );
 
-
         return res.json(
             order
         );
-
     }
 );
 
 
-/*
-==================================================
-ОТМЕНА ЗАКАЗА
-==================================================
-*/
+/* =========================================
+   ОТМЕНА
+========================================= */
 
 app.post(
     "/api/users/:id/cancel",
@@ -1462,7 +1498,6 @@ app.post(
         const users =
             getUsers();
 
-
         const order =
             users.find(
                 item =>
@@ -1470,65 +1505,51 @@ app.post(
                     req.params.id
             );
 
-
         if (!order) {
-
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
-
         }
-
 
         if (
             order.status !==
             "Новая заявка"
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Этот заказ уже нельзя отменить"
                 });
-
         }
-
 
         order.status =
             "Отменена";
 
-
         order.updatedAt =
             Date.now();
-
 
         cancelBotTimer(
             order.id
         );
 
-
         saveUsers(
             users
         );
 
-
         return res.json(
             order
         );
-
     }
 );
 
 
-/*
-==================================================
-СТАТУС
-==================================================
-*/
+/* =========================================
+   СТАТУС
+========================================= */
 
 app.patch(
     "/api/users/:id/status",
@@ -1538,41 +1559,29 @@ app.patch(
             status
         } = req.body;
 
-
         const allowedStatuses = [
-
             "Новая заявка",
-
             "В работе",
-
             "Выполняется",
-
             "Выполнено",
-
             "Отменена"
-
         ];
-
 
         if (
             !allowedStatuses.includes(
                 status
             )
         ) {
-
             return res
                 .status(400)
                 .json({
                     error:
                         "Неверный статус"
                 });
-
         }
-
 
         const users =
             getUsers();
-
 
         const order =
             users.find(
@@ -1581,45 +1590,35 @@ app.patch(
                     req.params.id
             );
 
-
         if (!order) {
-
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
-
         }
-
 
         order.status =
             status;
 
-
         order.updatedAt =
             Date.now();
-
 
         saveUsers(
             users
         );
 
-
         return res.json(
             order
         );
-
     }
 );
 
 
-/*
-==================================================
-СКРЫТЬ ЗАКАЗ ИЗ ПРОФИЛЯ
-==================================================
-*/
+/* =========================================
+   СКРЫТЬ ЗАКАЗ
+========================================= */
 
 app.post(
     "/api/users/:id/hide",
@@ -1628,7 +1627,6 @@ app.post(
         const users =
             getUsers();
 
-
         const order =
             users.find(
                 item =>
@@ -1636,48 +1634,36 @@ app.post(
                     req.params.id
             );
 
-
         if (!order) {
-
             return res
                 .status(404)
                 .json({
                     error:
                         "Заказ не найден"
                 });
-
         }
-
 
         order.hiddenForProfile =
             true;
 
-
         order.updatedAt =
             Date.now();
-
 
         saveUsers(
             users
         );
 
-
         return res.json({
-
             success:
                 true
-
         });
-
     }
 );
 
 
-/*
-==================================================
-ЗАПУСК
-==================================================
-*/
+/* =========================================
+   ЗАПУСК
+========================================= */
 
 app.listen(
     PORT,
@@ -1693,11 +1679,19 @@ app.listen(
         );
 
         console.log(
-            `🎁 Доступно промокодов: ${
+            `🎁 Промокодов: ${
                 Object.keys(
                     PROMO_CODES
                 ).length
             }`
+        );
+
+        console.log(
+            `👥 Реферальная скидка: ${REFERRAL_DISCOUNT}%`
+        );
+
+        console.log(
+            `🎁 Реферальный бонус: ${REFERRAL_BONUS_ROBUX} Robux`
         );
 
     }
