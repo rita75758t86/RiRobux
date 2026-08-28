@@ -1,1120 +1,1661 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>RiRobux — Админ-панель</title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            color: white;
+<meta charset="UTF-8">
 
-            background:
-                radial-gradient(
-                    circle at 15% 20%,
-                    rgba(124, 58, 237, 0.30),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 85% 70%,
-                    rgba(37, 99, 235, 0.25),
-                    transparent 35%
-                ),
-                linear-gradient(
-                    135deg,
-                    #050816,
-                    #101636,
-                    #09061a
-                );
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-            background-attachment: fixed;
-        }
+<title>RiRobux — Админ-панель</title>
 
-        /* ЗВЁЗДЫ */
+<style>
 
-        body::before {
-            content: "";
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
 
-            position: fixed;
-            inset: 0;
+body{
+    min-height:100vh;
+    color:white;
 
-            pointer-events: none;
+    background:
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(124,58,237,.28),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 70%,
+            rgba(37,99,235,.20),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #03040d,
+            #0b0e25,
+            #070313
+        );
+}
 
-            background-image:
-                radial-gradient(
-                    circle,
-                    white 1px,
-                    transparent 1.5px
-                ),
-                radial-gradient(
-                    circle,
-                    rgba(196, 181, 253, 0.8) 1px,
-                    transparent 1.5px
-                );
+/* =========================
+   LOGIN
+========================= */
 
-            background-size:
-                80px 80px,
-                130px 130px;
+.login-screen{
+    min-height:100vh;
 
-            background-position:
-                0 0,
-                40px 60px;
+    display:flex;
 
-            opacity: 0.45;
+    align-items:center;
+    justify-content:center;
 
-            animation:
-                starsMove 25s linear infinite;
+    padding:20px;
+}
 
-            z-index: -1;
-        }
+.login-box{
+    width:100%;
+    max-width:430px;
 
-        @keyframes starsMove {
+    padding:35px;
 
-            from {
-                background-position:
-                    0 0,
-                    40px 60px;
-            }
+    border-radius:28px;
 
-            to {
-                background-position:
-                    80px 120px,
-                    120px 180px;
-            }
+    text-align:center;
 
-        }
+    background:
+        rgba(15,18,48,.88);
 
+    border:
+        1px solid
+        rgba(139,92,246,.35);
 
-        /* ШАПКА */
+    box-shadow:
+        0 30px 100px
+        rgba(0,0,0,.5);
+}
 
-        header {
-            padding: 16px 6%;
+.login-logo{
+    font-size:34px;
+    font-weight:900;
+}
 
-            background:
-                rgba(8, 12, 35, 0.88);
+.login-logo span{
+    color:#b57cff;
+}
 
-            border-bottom:
-                1px solid
-                rgba(139, 92, 246, 0.35);
+.login-box p{
+    margin-top:10px;
+    color:#8f97b8;
+}
 
-            display: flex;
+.password-input{
+    width:100%;
 
-            justify-content:
-                space-between;
+    margin-top:25px;
 
-            align-items: center;
+    padding:16px;
 
-            backdrop-filter:
-                blur(18px);
+    border-radius:14px;
 
-            position: sticky;
+    border:
+        1px solid
+        rgba(139,92,246,.35);
 
-            top: 0;
+    outline:none;
 
-            z-index: 100;
-        }
+    color:white;
 
-        .logo {
-            font-size: 28px;
+    background:
+        rgba(4,6,20,.8);
 
-            font-weight: bold;
+    font-size:16px;
+}
 
-            text-shadow:
-                0 0 20px
-                rgba(124, 58, 237, 0.5);
-        }
+.login-button{
+    width:100%;
 
-        .logo span {
-            color: #b57cff;
+    margin-top:15px;
 
-            text-shadow:
-                0 0 15px
-                #7c3aed;
-        }
+    padding:16px;
 
-        .admin {
-            padding: 11px 18px;
+    border:0;
 
-            border-radius: 14px;
+    border-radius:14px;
 
-            font-weight: bold;
+    color:white;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #7c3aed,
-                    #2563eb
-                );
+    font-size:16px;
 
-            box-shadow:
-                0 0 25px
-                rgba(124, 58, 237, 0.4);
-        }
+    font-weight:bold;
 
+    cursor:pointer;
 
-        /* ОСНОВНОЙ КОНТЕНТ */
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #2563eb
+        );
+}
 
-        main {
-            max-width: 1100px;
+.login-error{
+    display:none;
 
-            margin: 40px auto;
+    margin-top:12px;
 
-            padding: 20px;
-        }
+    color:#fca5a5;
 
-        h1 {
-            margin-top: 0;
+    font-size:14px;
+}
 
-            font-size: 32px;
+/* =========================
+   ADMIN
+========================= */
 
-            text-shadow:
-                0 0 25px
-                rgba(139, 92, 246, 0.45);
-        }
+.admin-page{
+    display:none;
+}
 
+header{
+    position:sticky;
 
-        /* СТАТИСТИКА */
+    top:0;
 
-        .stats {
-            display: grid;
+    z-index:100;
 
-            grid-template-columns:
-                repeat(
-                    auto-fit,
-                    minmax(200px, 1fr)
-                );
+    display:flex;
 
-            gap: 18px;
+    justify-content:space-between;
 
-            margin-bottom: 30px;
-        }
+    align-items:center;
 
-        .stat-card {
-            padding: 22px;
+    gap:20px;
 
-            border-radius: 22px;
+    padding:
+        16px 6%;
 
-            background:
-                rgba(16, 20, 55, 0.84);
+    background:
+        rgba(5,7,20,.82);
 
-            border:
-                1px solid
-                rgba(139, 92, 246, 0.35);
+    border-bottom:
+        1px solid
+        rgba(167,139,250,.2);
 
-            box-shadow:
-                0 0 30px
-                rgba(76, 29, 149, 0.18);
+    backdrop-filter:
+        blur(20px);
+}
 
-            transition:
-                transform 0.2s,
-                box-shadow 0.2s;
-        }
+.logo{
+    color:white;
 
-        .stat-card:hover {
-            transform:
-                translateY(-4px);
+    text-decoration:none;
 
-            box-shadow:
-                0 0 40px
-                rgba(124, 58, 237, 0.35);
-        }
+    font-size:28px;
 
-        .stat-card h3 {
-            margin: 0;
+    font-weight:900;
+}
 
-            color: #b8c1e0;
+.logo span{
+    color:#b57cff;
+}
 
-            font-size: 15px;
-        }
+.logout-button{
+    padding:
+        10px 15px;
 
-        .stat-number {
-            margin-top: 12px;
+    border:0;
 
-            font-size: 32px;
+    border-radius:12px;
 
-            font-weight: bold;
+    color:white;
 
-            color: #c4b5fd;
+    background:
+        rgba(255,255,255,.07);
 
-            text-shadow:
-                0 0 15px
-                rgba(139, 92, 246, 0.6);
-        }
+    cursor:pointer;
+}
 
+main{
+    max-width:1250px;
 
-        /* ПОИСК */
+    margin:auto;
 
-        .controls {
-            padding: 25px;
+    padding:
+        35px 20px 80px;
+}
 
-            border-radius: 24px;
+/* =========================
+   TOP
+========================= */
 
-            margin-bottom: 25px;
+.page-top{
+    display:flex;
 
-            background:
-                rgba(16, 20, 55, 0.84);
+    justify-content:space-between;
 
-            border:
-                1px solid
-                rgba(139, 92, 246, 0.35);
+    align-items:end;
 
-            box-shadow:
-                0 0 35px
-                rgba(76, 29, 149, 0.2);
-        }
+    gap:20px;
 
-        label {
-            display: block;
+    flex-wrap:wrap;
+}
 
-            margin-top: 15px;
+.page-top h1{
+    font-size:40px;
+}
 
-            margin-bottom: 8px;
+.page-top p{
+    margin-top:8px;
 
-            color: #d8dcf0;
+    color:#929bb8;
+}
 
-            font-weight: bold;
-        }
+.refresh-button{
+    padding:
+        12px 16px;
 
-        input,
-        select {
-            width: 100%;
+    border:0;
 
-            padding: 14px;
+    border-radius:12px;
 
-            border-radius: 14px;
+    color:white;
 
-            border:
-                1px solid
-                rgba(139, 92, 246, 0.4);
+    background:
+        rgba(255,255,255,.06);
 
-            font-size: 16px;
+    cursor:pointer;
+}
 
-            color: white;
+/* =========================
+   STATS
+========================= */
 
-            background:
-                rgba(7, 10, 30, 0.7);
+.stats{
+    display:grid;
 
-            outline: none;
-        }
+    grid-template-columns:
+        repeat(4,1fr);
 
-        input:focus,
-        select:focus {
-            border-color: #a78bfa;
+    gap:15px;
 
-            box-shadow:
-                0 0 20px
-                rgba(124, 58, 237, 0.3);
-        }
+    margin-top:28px;
+}
 
-        select option {
-            background: #101636;
-            color: white;
-        }
+.stat{
+    padding:22px;
 
+    border-radius:20px;
 
-        /* ЗАЯВКИ */
+    background:
+        rgba(16,20,55,.82);
 
-        .orders {
-            display: grid;
+    border:
+        1px solid
+        rgba(139,92,246,.22);
+}
 
-            gap: 18px;
-        }
+.stat-number{
+    font-size:30px;
 
-        .order {
-            padding: 24px;
+    font-weight:900;
 
-            border-radius: 24px;
+    color:#c4b5fd;
+}
 
-            background:
-                rgba(16, 20, 55, 0.84);
+.stat-label{
+    margin-top:6px;
 
-            border:
-                1px solid
-                rgba(139, 92, 246, 0.35);
+    color:#858da9;
 
-            box-shadow:
-                0 0 30px
-                rgba(76, 29, 149, 0.16);
+    font-size:13px;
+}
 
-            transition:
-                transform 0.2s,
-                border 0.2s;
-        }
+/* =========================
+   PROMO
+========================= */
 
-        .order:hover {
-            transform:
-                translateY(-3px);
+.section-title{
+    margin-top:38px;
 
-            border-color:
-                rgba(167, 139, 250, 0.7);
-        }
+    font-size:24px;
+}
 
-        .order-top {
-            display: flex;
+.promo-box{
+    margin-top:18px;
 
-            justify-content:
-                space-between;
+    padding:25px;
 
-            gap: 15px;
+    border-radius:24px;
 
-            align-items: center;
+    background:
+        rgba(13,16,43,.86);
 
-            flex-wrap: wrap;
-        }
+    border:
+        1px solid
+        rgba(139,92,246,.25);
+}
 
-        .order-number {
-            font-size: 22px;
+.promo-subtitle{
+    color:#929bb8;
 
-            font-weight: bold;
-        }
+    line-height:1.6;
 
+    margin-top:7px;
+}
 
-        /* СТАТУСЫ */
+.promo-grid{
+    display:grid;
 
-        .status {
-            padding: 8px 14px;
+    grid-template-columns:
+        repeat(2,1fr);
 
-            border-radius: 30px;
+    gap:14px;
 
-            font-weight: bold;
+    margin-top:22px;
+}
 
-            border: 1px solid transparent;
-        }
+.promo-group{
+    padding:18px;
 
-        .status-new {
-            background:
-                rgba(139, 92, 246, 0.22);
+    border-radius:18px;
 
-            border-color:
-                rgba(167, 139, 250, 0.6);
+    background:
+        rgba(255,255,255,.025);
 
-            color: #d8b4fe;
-        }
+    border:
+        1px solid
+        rgba(255,255,255,.06);
+}
 
-        .status-work {
-            background:
-                rgba(37, 99, 235, 0.20);
+.promo-group h3{
+    margin-bottom:14px;
+}
 
-            border-color:
-                rgba(96, 165, 250, 0.6);
+.promo-list{
+    display:grid;
 
-            color: #93c5fd;
-        }
+    gap:9px;
+}
 
-        .status-done {
-            background:
-                rgba(22, 163, 74, 0.20);
+.promo-item{
+    display:flex;
 
-            border-color:
-                rgba(74, 222, 128, 0.6);
+    align-items:center;
 
-            color: #86efac;
-        }
+    justify-content:space-between;
 
-        .status-cancel {
-            background:
-                rgba(225, 29, 72, 0.20);
+    gap:12px;
 
-            border-color:
-                rgba(251, 113, 133, 0.6);
+    padding:
+        11px 12px;
 
-            color: #fda4af;
-        }
+    border-radius:12px;
 
+    background:
+        rgba(255,255,255,.035);
+}
 
-        /* ИНФОРМАЦИЯ */
+.promo-code{
+    font-weight:800;
 
-        .order-info {
-            margin-top: 18px;
+    letter-spacing:.4px;
+}
 
-            line-height: 2;
+.promo-discount{
+    color:#86efac;
 
-            color: #c7cce5;
+    font-size:13px;
 
-            padding: 15px;
+    margin-top:3px;
+}
 
-            border-radius: 16px;
+.copy-button{
+    flex-shrink:0;
 
-            background:
-                rgba(7, 10, 30, 0.45);
-        }
+    padding:
+        9px 12px;
 
-        .order-info b {
-            color: white;
-        }
+    border:0;
 
+    border-radius:10px;
 
-        /* КНОПКИ */
+    color:white;
 
-        .actions {
-            margin-top: 20px;
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #2563eb
+        );
 
-            display: flex;
+    cursor:pointer;
 
-            gap: 10px;
+    font-size:12px;
 
-            flex-wrap: wrap;
-        }
+    font-weight:bold;
+}
 
-        button {
-            border: none;
+.copy-button.copied{
+    background:#15803d;
+}
 
-            padding: 12px 16px;
+.promo-all{
+    display:flex;
 
-            border-radius: 13px;
+    align-items:center;
 
-            color: white;
+    justify-content:space-between;
 
-            font-weight: bold;
+    gap:15px;
 
-            cursor: pointer;
+    flex-wrap:wrap;
 
-            transition:
-                transform 0.2s,
-                box-shadow 0.2s;
-        }
+    margin-top:18px;
 
-        button:hover {
-            transform:
-                translateY(-2px);
+    padding:16px;
 
-            box-shadow:
-                0 0 20px
-                rgba(124, 58, 237, 0.45);
-        }
+    border-radius:15px;
 
-        .new-button {
-            background:
-                linear-gradient(
-                    135deg,
-                    #7c3aed,
-                    #9333ea
-                );
-        }
+    background:
+        rgba(124,58,237,.08);
+}
 
-        .work-button {
-            background:
-                linear-gradient(
-                    135deg,
-                    #2563eb,
-                    #0891b2
-                );
-        }
+.copy-all-button{
+    padding:
+        11px 15px;
 
-        .done-button {
-            background:
-                linear-gradient(
-                    135deg,
-                    #16a34a,
-                    #059669
-                );
-        }
+    border:0;
 
-        .cancel-button {
-            background:
-                linear-gradient(
-                    135deg,
-                    #e11d48,
-                    #be123c
-                );
-        }
+    border-radius:11px;
 
-        .chat-button {
-            background:
-                linear-gradient(
-                    135deg,
-                    #8b5cf6,
-                    #3b82f6
-                );
-        }
+    color:white;
 
+    background:
+        rgba(255,255,255,.08);
 
-        /* ПУСТО */
+    cursor:pointer;
 
-        .empty {
-            text-align: center;
+    font-weight:bold;
+}
 
-            padding: 45px;
+/* =========================
+   ORDERS
+========================= */
 
-            color: #b8c1e0;
+.orders-title{
+    margin-top:38px;
 
-            background:
-                rgba(16, 20, 55, 0.84);
+    font-size:24px;
+}
 
-            border-radius: 24px;
+.orders{
+    display:grid;
 
-            border:
-                1px dashed
-                rgba(139, 92, 246, 0.5);
-        }
+    gap:18px;
 
+    margin-top:18px;
+}
 
-        /* УВЕДОМЛЕНИЕ */
+.order{
+    padding:22px;
 
-        .notification {
-            position: fixed;
+    border-radius:22px;
 
-            top: 90px;
+    background:
+        rgba(13,16,43,.86);
 
-            right: 25px;
+    border:
+        1px solid
+        rgba(139,92,246,.25);
 
-            max-width: 350px;
+    box-shadow:
+        0 15px 50px
+        rgba(0,0,0,.18);
+}
 
-            padding: 16px 22px;
+.order-top{
+    display:flex;
 
-            border-radius: 16px;
+    align-items:center;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #7c3aed,
-                    #2563eb
-                );
+    justify-content:space-between;
 
-            color: white;
+    gap:15px;
 
-            font-weight: bold;
+    flex-wrap:wrap;
+}
 
-            box-shadow:
-                0 0 35px
-                rgba(124, 58, 237, 0.6);
+.order-number{
+    font-size:19px;
 
-            transform:
-                translateX(150%);
+    font-weight:bold;
+}
 
-            opacity: 0;
+.status-badge{
+    padding:
+        7px 12px;
 
-            transition:
-                transform 0.4s,
-                opacity 0.4s;
+    border-radius:
+        20px;
 
-            z-index: 1000;
-        }
+    color:#ddd6fe;
 
-        .notification.show {
-            transform:
-                translateX(0);
+    background:
+        rgba(124,58,237,.18);
 
-            opacity: 1;
-        }
+    font-size:13px;
+}
 
+.order-grid{
+    display:grid;
 
-        /* МОБИЛЬНАЯ ВЕРСИЯ */
+    grid-template-columns:
+        repeat(4,1fr);
 
-        @media (max-width: 600px) {
+    gap:10px;
 
-            header {
-                padding: 16px;
-            }
+    margin-top:18px;
+}
 
-            .logo {
-                font-size: 22px;
-            }
+.order-info{
+    padding:
+        14px;
 
-            .admin {
-                padding: 9px 12px;
+    border-radius:
+        14px;
 
-                font-size: 13px;
-            }
+    background:
+        rgba(255,255,255,.025);
 
-            main {
-                margin: 20px auto;
+    color:
+        #919ab8;
 
-                padding: 14px;
-            }
+    font-size:
+        12px;
+}
 
-            h1 {
-                font-size: 26px;
-            }
+.order-info strong{
+    display:block;
 
-            .order {
-                padding: 18px;
-            }
+    margin-top:
+        5px;
 
-            .actions button {
-                width: 100%;
-            }
+    color:
+        white;
 
-            .notification {
-                right: 15px;
-                left: 15px;
+    font-size:
+        15px;
+}
 
-                max-width: none;
-            }
+.order-promo{
+    margin-top:14px;
 
-        }
+    padding:12px 14px;
 
-    </style>
+    border-radius:13px;
+
+    color:#c4b5fd;
+
+    background:
+        rgba(124,58,237,.08);
+
+    border:
+        1px solid
+        rgba(124,58,237,.12);
+
+    font-size:13px;
+}
+
+.order-promo b{
+    color:#86efac;
+}
+
+.actions{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-top:18px;
+}
+
+.action-button{
+    padding:
+        11px 14px;
+
+    border:0;
+
+    border-radius:
+        12px;
+
+    color:white;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.chat-button{
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #2563eb
+        );
+}
+
+.delete-button{
+    background:
+        #dc2626;
+}
+
+select{
+    padding:
+        11px 13px;
+
+    border:
+        1px solid
+        rgba(139,92,246,.35);
+
+    border-radius:
+        12px;
+
+    color:white;
+
+    background:
+        #11152d;
+
+    outline:none;
+
+    cursor:pointer;
+}
+
+.empty{
+    padding:
+        50px 20px;
+
+    text-align:center;
+
+    color:#8f96b1;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(0,0,0,.72);
+
+    backdrop-filter:
+        blur(8px);
+
+    z-index:1000;
+}
+
+.modal.active{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+
+    max-width:500px;
+
+    padding:28px;
+
+    border-radius:24px;
+
+    background:#0e1230;
+
+    border:
+        1px solid
+        rgba(167,139,250,.35);
+}
+
+.modal-box h2{
+    margin-bottom:20px;
+}
+
+.modal-box p{
+    color:#a2a9c3;
+
+    line-height:1.6;
+}
+
+.modal-buttons{
+    display:flex;
+
+    gap:10px;
+
+    margin-top:22px;
+}
+
+.modal-buttons button{
+    flex:1;
+
+    padding:13px;
+
+    border:0;
+
+    border-radius:12px;
+
+    cursor:pointer;
+}
+
+.confirm{
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #2563eb
+        );
+}
+
+.close{
+    color:white;
+
+    background:
+        rgba(255,255,255,.07);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:900px){
+
+    .stats{
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .order-grid{
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .promo-grid{
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+@media(max-width:600px){
+
+    header{
+        padding:
+            15px 18px;
+    }
+
+    .page-top h1{
+        font-size:30px;
+    }
+
+    .stats{
+        grid-template-columns:
+            1fr;
+    }
+
+    .order-grid{
+        grid-template-columns:
+            1fr;
+    }
+
+    .actions{
+        flex-direction:
+            column;
+    }
+
+    .action-button,
+    select{
+        width:100%;
+    }
+
+    .promo-item{
+        align-items:flex-start;
+    }
+
+    .copy-button{
+        width:100%;
+    }
+
+}
+
+</style>
+
 </head>
 
 <body>
 
+
+<!-- =========================
+     LOGIN
+========================= -->
+
+<section
+    class="login-screen"
+    id="loginScreen"
+>
+
+    <div class="login-box">
+
+        <div class="login-logo">
+            Ri<span>Robux</span>
+        </div>
+
+        <p>
+            Панель управления продавца
+        </p>
+
+        <input
+            type="password"
+            id="passwordInput"
+            class="password-input"
+            placeholder="Введите пароль"
+            autocomplete="off"
+        >
+
+        <button
+            class="login-button"
+            onclick="login()"
+        >
+            🔐 Войти
+        </button>
+
+        <div
+            class="login-error"
+            id="loginError"
+        >
+            Неверный пароль
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ADMIN
+========================= -->
+
+<section
+    class="admin-page"
+    id="adminPage"
+>
+
 <header>
 
-    <div class="logo">
+    <a
+        href="index.html"
+        class="logo"
+    >
         Ri<span>Robux</span>
-    </div>
+    </a>
 
-    <div class="admin">
-        🛡️ Админ-панель
-    </div>
+    <button
+        class="logout-button"
+        onclick="logout()"
+    >
+        Выйти
+    </button>
 
 </header>
 
 
 <main>
 
-    <h1>🌌 Управление заявками</h1>
 
+<div class="page-top">
 
-    <!-- СТАТИСТИКА -->
+    <div>
 
-    <div class="stats">
+        <h1>
+            👑 Админ-панель
+        </h1>
 
-        <div class="stat-card">
-
-            <h3>
-                📦 Всего заявок
-            </h3>
-
-            <div
-                class="stat-number"
-                id="totalOrders"
-            >
-                0
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <h3>
-                💎 Всего заказано Robux
-            </h3>
-
-            <div
-                class="stat-number"
-                id="totalRobux"
-            >
-                0
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <h3>
-                🚀 Выполнено заказов
-            </h3>
-
-            <div
-                class="stat-number"
-                id="completedOrders"
-            >
-                0
-            </div>
-
-        </div>
+        <p>
+            Управление заказами RiRobux
+        </p>
 
     </div>
 
+    <button
+        class="refresh-button"
+        onclick="loadOrders()"
+    >
+        🔄 Обновить
+    </button>
 
-    <!-- ПОИСК -->
+</div>
 
-    <div class="controls">
 
-        <label>
-            🔍 Поиск
-        </label>
+<!-- СТАТИСТИКА -->
 
-        <input
-            type="text"
-            id="search"
-            placeholder="Player123 или номер заказа"
+<div class="stats">
+
+    <div class="stat">
+
+        <div
+            class="stat-number"
+            id="allCount"
         >
+            0
+        </div>
 
-
-        <label>
-            🛰️ Фильтр по статусу
-        </label>
-
-        <select id="statusFilter">
-
-            <option value="all">
-                Все заявки
-            </option>
-
-            <option value="Новая заявка">
-                🆕 Новые
-            </option>
-
-            <option value="В работе">
-                ⚙️ В работе
-            </option>
-
-            <option value="Выполнено">
-                🚀 Выполненные
-            </option>
-
-            <option value="Отменена">
-                ❌ Отменённые
-            </option>
-
-        </select>
-
-
-        <label>
-            ⏳ Сортировка
-        </label>
-
-        <select id="sort">
-
-            <option value="new">
-                Сначала новые
-            </option>
-
-            <option value="old">
-                Сначала старые
-            </option>
-
-        </select>
+        <div class="stat-label">
+            Всего заказов
+        </div>
 
     </div>
 
 
-    <!-- ЗАЯВКИ -->
+    <div class="stat">
 
-    <div
-        class="orders"
-        id="orders"
-    ></div>
+        <div
+            class="stat-number"
+            id="newCount"
+        >
+            0
+        </div>
+
+        <div class="stat-label">
+            Новые
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div
+            class="stat-number"
+            id="workCount"
+        >
+            0
+        </div>
+
+        <div class="stat-label">
+            В работе
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div
+            class="stat-number"
+            id="doneCount"
+        >
+            0
+        </div>
+
+        <div class="stat-label">
+            Выполнено
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     ПРОМОКОДЫ
+========================= -->
+
+<h2 class="section-title">
+    🎁 Промокоды
+</h2>
+
+
+<div class="promo-box">
+
+    <p class="promo-subtitle">
+        20 активных промокодов RiRobux.
+        Нажми «Скопировать», чтобы быстро
+        передать код покупателю.
+    </p>
+
+
+    <div class="promo-grid">
+
+
+        <!-- RITA -->
+
+        <div class="promo-group">
+
+            <h3>
+                💜 Коды RITA
+            </h3>
+
+            <div
+                class="promo-list"
+                id="ritaPromoList"
+            ></div>
+
+        </div>
+
+
+        <!-- ANGELIKA -->
+
+        <div class="promo-group">
+
+            <h3>
+                💙 Коды ANGELIKA
+            </h3>
+
+            <div
+                class="promo-list"
+                id="angelikaPromoList"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="promo-all">
+
+        <span id="promoCount">
+            Всего: 20 промокодов
+        </span>
+
+        <button
+            class="copy-all-button"
+            onclick="copyAllPromos()"
+        >
+            📋 Скопировать все
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     ORDERS
+========================= -->
+
+<h2 class="orders-title">
+    📦 Заказы
+</h2>
+
+
+<div
+    class="orders"
+    id="orders"
+>
+
+    <div class="empty">
+        Загрузка...
+    </div>
+
+</div>
+
 
 </main>
 
+</section>
 
-<!-- УВЕДОМЛЕНИЕ -->
+
+<!-- =========================
+     MODAL
+========================= -->
 
 <div
-    class="notification"
-    id="notification"
-></div>
+    class="modal"
+    id="modal"
+>
+
+    <div class="modal-box">
+
+        <h2 id="modalTitle">
+            Подтверждение
+        </h2>
+
+        <p id="modalText"></p>
+
+        <div class="modal-buttons">
+
+            <button
+                class="confirm"
+                id="modalConfirm"
+            >
+                Подтвердить
+            </button>
+
+            <button
+                class="close"
+                onclick="closeModal()"
+            >
+                Отмена
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 
 <script>
 
-    let allOrders = [];
+/*
+==================================================
+НАСТРОЙКИ
+==================================================
+*/
 
-    let previousOrderCount = 0;
-
-    let firstLoad = true;
-
-
-    async function loadOrders() {
-
-        try {
-
-            const response =
-                await fetch(
-                    "/api/users"
-                );
+const ADMIN_PASSWORD =
+    "09876543211234567890a";
 
 
-            allOrders =
-                await response.json();
+/*
+==================================================
+ПРОМОКОДЫ ДЛЯ ОТОБРАЖЕНИЯ
+==================================================
+*/
+
+const PROMOS = {
+
+    RITA: {
+        RITA5: 5,
+        RITA10: 10,
+        RITA15: 15,
+        RITA20: 20,
+        RITA25: 25,
+        RITA30: 30,
+        RITA35: 35,
+        RITA40: 40,
+        RITA45: 45,
+        RITA50: 50
+    },
+
+    ANGELIKA: {
+        ANGELIKA5: 5,
+        ANGELIKA10: 10,
+        ANGELIKA15: 15,
+        ANGELIKA20: 20,
+        ANGELIKA25: 25,
+        ANGELIKA30: 30,
+        ANGELIKA35: 35,
+        ANGELIKA40: 40,
+        ANGELIKA45: 45,
+        ANGELIKA50: 50
+    }
+
+};
 
 
-            /* НОВАЯ ЗАЯВКА */
-
-            if (
-                !firstLoad &&
-                allOrders.length >
-                previousOrderCount
-            ) {
-
-                const newOrder =
-                    allOrders[
-                        allOrders.length - 1
-                    ];
+const ALL_PROMOS = {
+    ...PROMOS.RITA,
+    ...PROMOS.ANGELIKA
+};
 
 
-                showNotification(
-                    "🔔 Новая заявка! Заказ #" +
-                    (
-                        newOrder.orderNumber ||
-                        "—"
-                    )
-                );
+let orders = [];
+
+let modalAction =
+    null;
 
 
-                playNotificationSound();
+/*
+==================================================
+LOGIN
+==================================================
+*/
 
-            }
+function login(){
+
+    const password =
+        document.getElementById(
+            "passwordInput"
+        ).value;
 
 
-            previousOrderCount =
-                allOrders.length;
+    if(
+        password ===
+        ADMIN_PASSWORD
+    ){
 
+        sessionStorage.setItem(
+            "rirobuxAdmin",
+            "true"
+        );
 
-            firstLoad = false;
+        showAdmin();
 
+    }else{
 
-            updateStats();
-
-            renderOrders();
-
-        }
-
-        catch (error) {
-
-            document.getElementById(
-                "orders"
-            ).innerHTML =
-                `
-                <div class="empty">
-                    ❌ Не удалось загрузить заявки.<br>
-                    Проверь, запущен ли сервер.
-                </div>
-                `;
-
-        }
+        document.getElementById(
+            "loginError"
+        ).style.display =
+            "block";
 
     }
 
-
-    /* СТАТИСТИКА */
-
-    function updateStats() {
-
-        const totalOrders =
-            allOrders.length;
+}
 
 
-        const totalRobux =
-            allOrders.reduce(
-                (sum, order) =>
-                    sum +
-                    Number(
-                        order.robux || 0
-                    ),
-                0
-            );
+function showAdmin(){
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "none";
 
 
-        const completedOrders =
-            allOrders.filter(
-                order =>
-                    order.status ===
-                    "Выполнено"
-            ).length;
+    document.getElementById(
+        "adminPage"
+    ).style.display =
+        "block";
 
 
+    renderPromoCodes();
+
+    loadOrders();
+
+}
+
+
+function logout(){
+
+    sessionStorage.removeItem(
+        "rirobuxAdmin"
+    );
+
+    location.reload();
+
+}
+
+
+/*
+==================================================
+ПРОМОКОДЫ
+==================================================
+*/
+
+function renderPromoCodes(){
+
+    const ritaBox =
         document.getElementById(
-            "totalOrders"
-        ).textContent =
-            totalOrders;
-
-
-        document.getElementById(
-            "totalRobux"
-        ).textContent =
-            totalRobux;
-
-
-        document.getElementById(
-            "completedOrders"
-        ).textContent =
-            completedOrders;
-
-    }
-
-
-    /* ЦВЕТ СТАТУСА */
-
-    function getStatusClass(status) {
-
-        if (
-            status ===
-            "В работе"
-        ) {
-            return "status-work";
-        }
-
-
-        if (
-            status ===
-            "Выполнено"
-        ) {
-            return "status-done";
-        }
-
-
-        if (
-            status ===
-            "Отменена"
-        ) {
-            return "status-cancel";
-        }
-
-
-        return "status-new";
-
-    }
-
-
-    /* ЗАЯВКИ */
-
-    function renderOrders() {
-
-        const search =
-            document
-                .getElementById(
-                    "search"
-                )
-                .value
-                .toLowerCase()
-                .trim();
-
-
-        const statusFilter =
-            document
-                .getElementById(
-                    "statusFilter"
-                )
-                .value;
-
-
-        const sort =
-            document
-                .getElementById(
-                    "sort"
-                )
-                .value;
-
-
-        let orders =
-            [...allOrders];
-
-
-        /* ПОИСК */
-
-        if (search) {
-
-            orders =
-                orders.filter(
-                    order =>
-
-                        String(
-                            order.username || ""
-                        )
-                        .toLowerCase()
-                        .includes(
-                            search
-                        )
-
-                        ||
-
-                        String(
-                            order.orderNumber || ""
-                        )
-                        .includes(
-                            search
-                        )
-
-                );
-
-        }
-
-
-        /* ФИЛЬТР */
-
-        if (
-            statusFilter !== "all"
-        ) {
-
-            orders =
-                orders.filter(
-                    order =>
-                        order.status ===
-                        statusFilter
-                );
-
-        }
-
-
-        /* СОРТИРОВКА */
-
-        orders.sort(
-            (a, b) => {
-
-                const timeA =
-                    new Date(
-                        a.createdAt
-                    ).getTime() || 0;
-
-
-                const timeB =
-                    new Date(
-                        b.createdAt
-                    ).getTime() || 0;
-
-
-                if (
-                    sort === "new"
-                ) {
-
-                    return timeB - timeA;
-
-                }
-
-
-                return timeA - timeB;
-
-            }
+            "ritaPromoList"
         );
 
 
-        const ordersBox =
-            document.getElementById(
-                "orders"
+    const angelikaBox =
+        document.getElementById(
+            "angelikaPromoList"
+        );
+
+
+    ritaBox.innerHTML =
+        "";
+
+
+    angelikaBox.innerHTML =
+        "";
+
+
+    Object.entries(
+        PROMOS.RITA
+    ).forEach(
+        ([code, discount]) => {
+
+            ritaBox.appendChild(
+                createPromoElement(
+                    code,
+                    discount
+                )
+            );
+
+        }
+    );
+
+
+    Object.entries(
+        PROMOS.ANGELIKA
+    ).forEach(
+        ([code, discount]) => {
+
+            angelikaBox.appendChild(
+                createPromoElement(
+                    code,
+                    discount
+                )
+            );
+
+        }
+    );
+
+
+    document.getElementById(
+        "promoCount"
+    ).textContent =
+        `Всего: ${
+            Object.keys(
+                ALL_PROMOS
+            ).length
+        } промокодов`;
+
+}
+
+
+function createPromoElement(
+    code,
+    discount
+){
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+    wrapper.className =
+        "promo-item";
+
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+
+    const codeElement =
+        document.createElement(
+            "div"
+        );
+
+    codeElement.className =
+        "promo-code";
+
+    codeElement.textContent =
+        code;
+
+
+    const discountElement =
+        document.createElement(
+            "div"
+        );
+
+    discountElement.className =
+        "promo-discount";
+
+    discountElement.textContent =
+        `Скидка ${discount}%`;
+
+
+    info.appendChild(
+        codeElement
+    );
+
+    info.appendChild(
+        discountElement
+    );
+
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+    button.className =
+        "copy-button";
+
+    button.textContent =
+        "📋 Скопировать";
+
+
+    button.addEventListener(
+        "click",
+        async () => {
+
+            await copyText(
+                code
             );
 
 
-        ordersBox.innerHTML =
-            "";
+            button.textContent =
+                "✅ Скопировано";
 
 
-        if (
-            orders.length === 0
-        ) {
+            button.classList.add(
+                "copied"
+            );
 
-            ordersBox.innerHTML =
-                `
-                <div class="empty">
-                    📭 В этой части галактики заявок пока нет
-                </div>
-                `;
 
-            return;
+            setTimeout(
+                () => {
+
+                    button.textContent =
+                        "📋 Скопировать";
+
+                    button.classList.remove(
+                        "copied"
+                    );
+
+                },
+                1400
+            );
+
+        }
+    );
+
+
+    wrapper.appendChild(
+        info
+    );
+
+    wrapper.appendChild(
+        button
+    );
+
+
+    return wrapper;
+
+}
+
+
+async function copyText(
+    text
+){
+
+    try{
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+    }catch{
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+        textarea.value =
+            text;
+
+        textarea.style.position =
+            "fixed";
+
+        textarea.style.opacity =
+            "0";
+
+        document.body.appendChild(
+            textarea
+        );
+
+        textarea.select();
+
+        document.execCommand(
+            "copy"
+        );
+
+        textarea.remove();
+
+    }
+
+}
+
+
+async function copyAllPromos(){
+
+    const text =
+        Object.entries(
+            ALL_PROMOS
+        )
+            .map(
+                ([code, discount]) =>
+                    `${code} — скидка ${discount}%`
+            )
+            .join("\n");
+
+
+    await copyText(
+        text
+    );
+
+
+    const button =
+        document.querySelector(
+            ".copy-all-button"
+        );
+
+
+    button.textContent =
+        "✅ Скопировано";
+
+
+    setTimeout(
+        () => {
+
+            button.textContent =
+                "📋 Скопировать все";
+
+        },
+        1500
+    );
+
+}
+
+
+/*
+==================================================
+ЗАГРУЗКА ЗАКАЗОВ
+==================================================
+*/
+
+async function loadOrders(){
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/users"
+            );
+
+
+        if(
+            !response.ok
+        ){
+
+            throw new Error(
+                "Ошибка загрузки заказов"
+            );
 
         }
 
 
-        orders.forEach(
+        orders =
+            await response.json();
+
+
+        renderOrders();
+
+    }catch(error){
+
+        document.getElementById(
+            "orders"
+        ).innerHTML =
+            `
+            <div class="empty">
+                ❌ ${escapeHtml(
+                    error.message
+                )}
+            </div>
+            `;
+
+    }
+
+}
+
+
+/*
+==================================================
+ОТОБРАЖЕНИЕ ЗАКАЗОВ
+==================================================
+*/
+
+function renderOrders(){
+
+    const box =
+        document.getElementById(
+            "orders"
+        );
+
+
+    updateStats();
+
+
+    if(
+        orders.length === 0
+    ){
+
+        box.innerHTML =
+            `
+            <div class="empty">
+                📦 Заказов пока нет
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        "";
+
+
+    orders
+        .slice()
+        .reverse()
+        .forEach(
             order => {
 
                 const div =
@@ -1127,15 +1668,11 @@
                     "order";
 
 
-                const status =
-                    order.status ||
-                    "Новая заявка";
-
-
-                const statusClass =
-                    getStatusClass(
-                        status
-                    );
+                const hasPromo =
+                    Number(
+                        order.discountPercent ||
+                        0
+                    ) > 0;
 
 
                 div.innerHTML =
@@ -1145,22 +1682,20 @@
 
                         <div class="order-number">
 
-                            🚀 Заказ #${escapeHtml(
-                                String(
-                                    order.orderNumber ||
-                                    "—"
-                                )
+                            🚀 Заказ
+                            #${escapeHtml(
+                                order.orderNumber ||
+                                "—"
                             )}
 
                         </div>
 
 
-                        <div
-                            class="status ${statusClass}"
-                        >
+                        <div class="status-badge">
 
                             ${escapeHtml(
-                                status
+                                order.status ||
+                                "—"
                             )}
 
                         </div>
@@ -1168,95 +1703,166 @@
                     </div>
 
 
-                    <div class="order-info">
+                    <div class="order-grid">
 
-                        👤 <b>Roblox:</b>
-                        ${escapeHtml(
-                            order.username ||
-                            "Неизвестно"
-                        )}
+                        <div class="order-info">
 
-                        <br>
+                            👤 Username
 
-                        💎 <b>Robux:</b>
-                        ${escapeHtml(
-                            order.robux || 0
-                        )}
+                            <strong>
+                                ${escapeHtml(
+                                    order.username
+                                )}
+                            </strong>
 
-                        <br>
+                        </div>
 
-                        💰 <b>Цена:</b>
-                        ${Number(
-                            order.price ||
-                            Number(
-                                order.robux || 0
-                            ) * 1.5
-                        ).toFixed(2)} ₽
 
-                        <br>
+                        <div class="order-info">
 
-                        📅 <b>Дата:</b>
-                        ${escapeHtml(
-                            order.createdAt ||
-                            "Неизвестно"
-                        )}
+                            💎 Robux
+
+                            <strong>
+                                ${Number(
+                                    order.robux ||
+                                    0
+                                ).toLocaleString(
+                                    "ru-RU"
+                                )}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="order-info">
+
+                            💰 Цена
+
+                            <strong>
+                                ${Number(
+                                    order.price ||
+                                    0
+                                ).toLocaleString(
+                                    "ru-RU",
+                                    {
+                                        maximumFractionDigits:
+                                            2
+                                    }
+                                )} ₽
+                            </strong>
+
+                        </div>
+
+
+                        <div class="order-info">
+
+                            📅 Дата
+
+                            <strong>
+                                ${escapeHtml(
+                                    order.createdAt ||
+                                    "—"
+                                )}
+                            </strong>
+
+                        </div>
 
                     </div>
+
+
+                    ${
+                        hasPromo
+                        ?
+                        `
+                        <div class="order-promo">
+
+                            🎁 Промокод:
+                            <b>
+                                ${escapeHtml(
+                                    order.promoCode
+                                )}
+                            </b>
+
+                            · Скидка
+                            <b>
+                                ${Number(
+                                    order.discountPercent
+                                )}%
+                            </b>
+
+                            · Сэкономлено
+                            <b>
+                                ${Number(
+                                    order.discountAmount ||
+                                    0
+                                ).toLocaleString(
+                                    "ru-RU",
+                                    {
+                                        maximumFractionDigits:
+                                            2
+                                    }
+                                )} ₽
+                            </b>
+
+                        </div>
+                        `
+                        :
+                        ""
+                    }
 
 
                     <div class="actions">
 
                         <button
-                            class="new-button"
-                            onclick="changeStatus(
-                                '${escapeJs(order.id)}',
-                                'Новая заявка'
-                            )"
-                        >
-                            🆕 Новая
-                        </button>
-
-
-                        <button
-                            class="work-button"
-                            onclick="changeStatus(
-                                '${escapeJs(order.id)}',
-                                'В работе'
-                            )"
-                        >
-                            ⚙️ В работу
-                        </button>
-
-
-                        <button
-                            class="done-button"
-                            onclick="changeStatus(
-                                '${escapeJs(order.id)}',
-                                'Выполнено'
-                            )"
-                        >
-                            🚀 Выполнено
-                        </button>
-
-
-                        <button
-                            class="cancel-button"
-                            onclick="changeStatus(
-                                '${escapeJs(order.id)}',
-                                'Отменена'
-                            )"
-                        >
-                            ❌ Отменить
-                        </button>
-
-
-                        <button
-                            class="chat-button"
-                            onclick="openChat(
-                                '${escapeJs(order.id)}'
-                            )"
+                            class="action-button chat-button"
+                            data-chat="${escapeAttribute(
+                                order.id
+                            )}"
                         >
                             💬 Открыть чат
+                        </button>
+
+
+                        <select
+                            data-status="${escapeAttribute(
+                                order.id
+                            )}"
+                        >
+
+                            <option value="">
+                                Изменить статус
+                            </option>
+
+                            <option value="Новая заявка">
+                                Новая заявка
+                            </option>
+
+                            <option value="В работе">
+                                В работе
+                            </option>
+
+                            <option value="Выполняется">
+                                Выполняется
+                            </option>
+
+                            <option value="Выполнено">
+                                Выполнено
+                            </option>
+
+                            <option value="Отменена">
+                                Отменена
+                            </option>
+
+                        </select>
+
+
+                        <button
+                            class="action-button delete-button"
+                            data-delete="${escapeAttribute(
+                                order.id
+                            )}"
+                        >
+                            🗑 Скрыть заказ
                         </button>
 
                     </div>
@@ -1264,300 +1870,441 @@
                     `;
 
 
-                ordersBox.appendChild(
+                const chat =
+                    div.querySelector(
+                        "[data-chat]"
+                    );
+
+
+                chat.onclick =
+                    () => {
+
+                        window.location.href =
+                            "chat.html?order=" +
+                            encodeURIComponent(
+                                order.id
+                            ) +
+                            "&admin=true";
+
+                    };
+
+
+                const select =
+                    div.querySelector(
+                        "[data-status]"
+                    );
+
+
+                select.addEventListener(
+                    "change",
+                    () => {
+
+                        if(
+                            !select.value
+                        ){
+
+                            return;
+
+                        }
+
+
+                        changeStatus(
+                            order.id,
+                            select.value
+                        );
+
+                    }
+                );
+
+
+                const deleteButton =
+                    div.querySelector(
+                        "[data-delete]"
+                    );
+
+
+                deleteButton.onclick =
+                    () =>
+                        confirmHide(
+                            order.id
+                        );
+
+
+                box.appendChild(
                     div
                 );
 
             }
         );
 
-    }
+}
 
 
-    /* ИЗМЕНЕНИЕ СТАТУСА */
+/*
+==================================================
+СТАТИСТИКА
+==================================================
+*/
 
-    async function changeStatus(
-        orderId,
-        status
-    ) {
+function updateStats(){
 
-        try {
-
-            const response =
-                await fetch(
-                    "/api/users/" +
-                    encodeURIComponent(
-                        orderId
-                    ) +
-                    "/status",
-                    {
-                        method:
-                            "PATCH",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            JSON.stringify({
-                                status: status
-                            })
-                    }
-                );
+    document.getElementById(
+        "allCount"
+    ).textContent =
+        orders.length;
 
 
-            const result =
-                await response.json();
+    document.getElementById(
+        "newCount"
+    ).textContent =
+        orders.filter(
+            order =>
+                order.status ===
+                "Новая заявка"
+        ).length;
 
 
-            if (
-                !response.ok ||
-                result.error
-            ) {
-
-                alert(
-                    result.error ||
-                    "Ошибка изменения статуса"
-                );
-
-                return;
-
-            }
+    document.getElementById(
+        "workCount"
+    ).textContent =
+        orders.filter(
+            order =>
+                order.status ===
+                    "В работе" ||
+                order.status ===
+                    "Выполняется"
+        ).length;
 
 
-            await loadOrders();
+    document.getElementById(
+        "doneCount"
+    ).textContent =
+        orders.filter(
+            order =>
+                order.status ===
+                "Выполнено"
+        ).length;
 
-        }
+}
 
-        catch (error) {
 
-            alert(
-                "❌ Не удалось изменить статус"
+/*
+==================================================
+СТАТУС
+==================================================
+*/
+
+async function changeStatus(
+    orderId,
+    status
+){
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/users/" +
+                encodeURIComponent(
+                    orderId
+                ) +
+                "/status",
+                {
+                    method:
+                        "PATCH",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            status
+                        })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(
+            !response.ok
+        ){
+
+            throw new Error(
+                result.error ||
+                "Не удалось изменить статус"
             );
 
         }
 
+
+        loadOrders();
+
+    }catch(error){
+
+        alert(
+            error.message
+        );
+
     }
 
+}
 
-    /* ОТКРЫТЬ ЧАТ */
 
-    function openChat(orderId) {
+/*
+==================================================
+СКРЫТЬ ЗАКАЗ
+==================================================
+*/
 
-        window.location.href =
-            "admin-chat.html?order=" +
-            encodeURIComponent(
+function confirmHide(
+    orderId
+){
+
+    openModal(
+        "Скрыть заказ?",
+        "Заказ исчезнет из списка профиля покупателя.",
+        () =>
+            hideOrder(
                 orderId
-            );
+            )
+    );
 
-    }
-
-
-    /* УВЕДОМЛЕНИЕ */
-
-    function showNotification(text) {
-
-        const notification =
-            document.getElementById(
-                "notification"
-            );
+}
 
 
-        notification.textContent =
-            text;
+async function hideOrder(
+    orderId
+){
 
+    try{
 
-        notification.classList.add(
-            "show"
-        );
-
-
-        setTimeout(
-            () => {
-
-                notification.classList.remove(
-                    "show"
-                );
-
-            },
-            5000
-        );
-
-    }
-
-
-    /* ЗВУК */
-
-    function playNotificationSound() {
-
-        try {
-
-            const AudioContextClass =
-                window.AudioContext ||
-                window.webkitAudioContext;
-
-
-            if (
-                !AudioContextClass
-            ) {
-                return;
-            }
-
-
-            const audioContext =
-                new AudioContextClass();
-
-
-            const oscillator =
-                audioContext.createOscillator();
-
-
-            const gain =
-                audioContext.createGain();
-
-
-            oscillator.connect(
-                gain
+        const response =
+            await fetch(
+                "/api/users/" +
+                encodeURIComponent(
+                    orderId
+                ) +
+                "/hide",
+                {
+                    method:
+                        "POST"
+                }
             );
 
 
-            gain.connect(
-                audioContext.destination
-            );
+        const result =
+            await response.json();
 
 
-            oscillator.frequency.value =
-                700;
+        if(
+            !response.ok
+        ){
 
-
-            gain.gain.setValueAtTime(
-                0.12,
-                audioContext.currentTime
-            );
-
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.001,
-                audioContext.currentTime + 0.5
-            );
-
-
-            oscillator.start();
-
-
-            oscillator.stop(
-                audioContext.currentTime + 0.5
+            throw new Error(
+                result.error ||
+                "Не удалось скрыть заказ"
             );
 
         }
 
-        catch (error) {
 
-            console.log(
-                "Звук недоступен"
-            );
+        closeModal();
 
-        }
+        loadOrders();
+
+    }catch(error){
+
+        alert(
+            error.message
+        );
 
     }
 
+}
 
-    /* ЗАЩИТА HTML */
 
-    function escapeHtml(text) {
+/*
+==================================================
+MODAL
+==================================================
+*/
 
-        return String(
-            text || ""
+function openModal(
+    title,
+    text,
+    action
+){
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        title;
+
+
+    document.getElementById(
+        "modalText"
+    ).textContent =
+        text;
+
+
+    modalAction =
+        action;
+
+
+    document
+        .getElementById(
+            "modal"
         )
+        .classList
+        .add(
+            "active"
+        );
+
+}
+
+
+document.getElementById(
+    "modalConfirm"
+).onclick =
+    () => {
+
+        if(
+            modalAction
+        ){
+
+            modalAction();
+
+        }
+
+    };
+
+
+function closeModal(){
+
+    document
+        .getElementById(
+            "modal"
+        )
+        .classList
+        .remove(
+            "active"
+        );
+
+    modalAction =
+        null;
+
+}
+
+
+/*
+==================================================
+БЕЗОПАСНЫЙ ВЫВОД
+==================================================
+*/
+
+function escapeHtml(
+    text
+){
+
+    return String(
+        text ?? ""
+    )
+
         .replaceAll(
             "&",
             "&amp;"
         )
+
         .replaceAll(
             "<",
             "&lt;"
         )
+
         .replaceAll(
             ">",
             "&gt;"
         )
+
         .replaceAll(
             '"',
             "&quot;"
         )
+
         .replaceAll(
             "'",
             "&#039;"
         );
 
-    }
+}
 
 
-    /* ЗАЩИТА ДЛЯ JS */
+function escapeAttribute(
+    text
+){
 
-    function escapeJs(text) {
-
-        return String(
-            text || ""
-        )
+    return String(
+        text ?? ""
+    )
         .replaceAll(
             "\\",
             "\\\\"
         )
         .replaceAll(
-            "'",
-            "\\'"
+            '"',
+            "&quot;"
         );
+
+}
+
+
+/*
+==================================================
+ENTER
+==================================================
+*/
+
+document.getElementById(
+    "passwordInput"
+).addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key ===
+            "Enter"
+        ){
+
+            login();
+
+        }
 
     }
+);
 
 
-    /* СОБЫТИЯ */
+/*
+==================================================
+АВТОВХОД
+==================================================
+*/
 
-    document
-        .getElementById(
-            "search"
-        )
-        .addEventListener(
-            "input",
-            renderOrders
-        );
+if(
+    sessionStorage.getItem(
+        "rirobuxAdmin"
+    ) ===
+    "true"
+){
 
+    showAdmin();
 
-    document
-        .getElementById(
-            "statusFilter"
-        )
-        .addEventListener(
-            "change",
-            renderOrders
-        );
-
-
-    document
-        .getElementById(
-            "sort"
-        )
-        .addEventListener(
-            "change",
-            renderOrders
-        );
-
-
-    /* ЗАГРУЗКА */
-
-    loadOrders();
-
-
-    /* АВТООБНОВЛЕНИЕ */
-
-    setInterval(
-        loadOrders,
-        3000
-    );
+}
 
 </script>
 
 </body>
+
 </html>
