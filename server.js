@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
 const PRICE_PER_ROBUX = 0.76;
 
 const REFERRAL_DISCOUNT = 5;
@@ -15,9 +16,9 @@ const ADMIN_PASSWORD =
     process.env.ADMIN_PASSWORD || "123456";
 
 
-/* =========================================
+/* =========================================================
    ПРОМОКОДЫ
-========================================= */
+========================================================= */
 
 const PROMO_CODES = {
     RITA5: 5,
@@ -44,81 +45,163 @@ const PROMO_CODES = {
 };
 
 
-/* =========================================
+/* =========================================================
    EXPRESS
-========================================= */
+========================================================= */
 
-app.use(express.json());
+app.use(
+    express.json({
+        limit: "1mb"
+    })
+);
 
 app.use(
     express.static(
-        path.join(__dirname, "public")
+        path.join(
+            __dirname,
+            "public"
+        )
     )
 );
 
 
-/* =========================================
+/* =========================================================
    DATA
-========================================= */
+========================================================= */
 
 const dataDir =
-    path.join(__dirname, "data");
+    path.join(
+        __dirname,
+        "data"
+    );
 
 const usersFile =
-    path.join(dataDir, "users.json");
+    path.join(
+        dataDir,
+        "users.json"
+    );
 
 const accountsFile =
-    path.join(dataDir, "accounts.json");
+    path.join(
+        dataDir,
+        "accounts.json"
+    );
+
+const sessionsFile =
+    path.join(
+        dataDir,
+        "sessions.json"
+    );
 
 
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, {
-        recursive: true
-    });
+if (
+    !fs.existsSync(
+        dataDir
+    )
+) {
+
+    fs.mkdirSync(
+        dataDir,
+        {
+            recursive: true
+        }
+    );
+
 }
 
-if (!fs.existsSync(usersFile)) {
+
+if (
+    !fs.existsSync(
+        usersFile
+    )
+) {
+
     fs.writeFileSync(
         usersFile,
         "[]",
         "utf8"
     );
+
 }
 
-if (!fs.existsSync(accountsFile)) {
+
+if (
+    !fs.existsSync(
+        accountsFile
+    )
+) {
+
     fs.writeFileSync(
         accountsFile,
         "[]",
         "utf8"
     );
+
 }
 
 
-/* =========================================
-   JSON
-========================================= */
+if (
+    !fs.existsSync(
+        sessionsFile
+    )
+) {
 
-function readJson(file) {
+    fs.writeFileSync(
+        sessionsFile,
+        "[]",
+        "utf8"
+    );
+
+}
+
+
+/* =========================================================
+   JSON HELPERS
+========================================================= */
+
+function readJson(
+    file
+) {
+
     try {
-        const data =
-            JSON.parse(
-                fs.readFileSync(
-                    file,
-                    "utf8"
-                )
+
+        const raw =
+            fs.readFileSync(
+                file,
+                "utf8"
             );
 
-        return Array.isArray(data)
-            ? data
+        const parsed =
+            JSON.parse(
+                raw
+            );
+
+        return Array.isArray(
+            parsed
+        )
+            ? parsed
             : [];
+
     } catch {
+
         return [];
+
     }
+
 }
 
-function writeJson(file, data) {
+
+function writeJson(
+    file,
+    data
+) {
+
+    const tempFile =
+        file + ".tmp";
+
+
     fs.writeFileSync(
-        file,
+        tempFile,
         JSON.stringify(
             data,
             null,
@@ -126,97 +209,314 @@ function writeJson(file, data) {
         ),
         "utf8"
     );
+
+
+    fs.renameSync(
+        tempFile,
+        file
+    );
+
 }
+
+
+/* =========================================================
+   USERS / ACCOUNTS
+========================================================= */
 
 function getUsers() {
-    return readJson(usersFile);
+
+    return readJson(
+        usersFile
+    ).map(
+        normalizeOrder
+    );
+
 }
 
-function saveUsers(users) {
+
+function saveUsers(
+    users
+) {
+
     writeJson(
         usersFile,
         users
     );
+
 }
+
 
 function getAccounts() {
-    return readJson(accountsFile);
+
+    return readJson(
+        accountsFile
+    );
+
 }
 
-function saveAccounts(accounts) {
+
+function saveAccounts(
+    accounts
+) {
+
     writeJson(
         accountsFile,
         accounts
     );
+
 }
 
 
-/* =========================================
-   HELPERS
-========================================= */
+/* =========================================================
+   NORMALIZE ORDER
+========================================================= */
 
-function createId(prefix) {
+function normalizeOrder(
+    order
+) {
+
+    const result = {
+        ...order
+    };
+
+
+    if (
+        !Array.isArray(
+            result.messages
+        )
+    ) {
+
+        result.messages = [];
+
+    }
+
+
+    if (
+        typeof result.hiddenForProfile !==
+        "boolean"
+    ) {
+
+        result.hiddenForProfile =
+            false;
+
+    }
+
+
+    if (
+        typeof result.updatedAt !==
+        "number"
+    ) {
+
+        result.updatedAt =
+            Date.now();
+
+    }
+
+
+    if (
+        typeof result.discountPercent !==
+        "number"
+    ) {
+
+        result.discountPercent =
+            0;
+
+    }
+
+
+    if (
+        typeof result.discountAmount !==
+        "number"
+    ) {
+
+        result.discountAmount =
+            0;
+
+    }
+
+
+    if (
+        typeof result.basePrice !==
+        "number"
+    ) {
+
+        result.basePrice =
+            Number(
+                result.price ||
+                0
+            );
+
+    }
+
+
+    if (
+        typeof result.promoCode !==
+        "string"
+    ) {
+
+        result.promoCode =
+            "";
+
+    }
+
+
+    if (
+        typeof result.referralCode !==
+        "string"
+    ) {
+
+        result.referralCode =
+            "";
+
+    }
+
+
+    if (
+        typeof result.referrerAccountId !==
+        "string"
+    ) {
+
+        result.referrerAccountId =
+            "";
+
+    }
+
+
+    if (
+        typeof result.referralDiscount !==
+        "number"
+    ) {
+
+        result.referralDiscount =
+            0;
+
+    }
+
+
+    if (
+        typeof result.referralBonus !==
+        "number"
+    ) {
+
+        result.referralBonus =
+            0;
+
+    }
+
+
+    if (
+        typeof result.referralCount !==
+        "number"
+    ) {
+
+        result.referralCount =
+            0;
+
+    }
+
+
+    if (
+        typeof result.accountId !==
+        "string"
+    ) {
+
+        result.accountId =
+            "";
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function createId(
+    prefix
+) {
+
     return (
         prefix +
         "-" +
         Date.now() +
         "-" +
         crypto
-            .randomBytes(6)
-            .toString("hex")
+            .randomBytes(
+                6
+            )
+            .toString(
+                "hex"
+            )
     );
+
 }
+
 
 function currentDate() {
-    return new Date().toLocaleString(
-        "ru-RU"
-    );
+
+    return new Date()
+        .toLocaleString(
+            "ru-RU"
+        );
+
 }
 
-function normalizePromoCode(code) {
+
+function normalizePromoCode(
+    code
+) {
+
     return String(
         code || ""
     )
         .trim()
         .toUpperCase();
+
 }
 
-function getPromoDiscount(code) {
+
+function getPromoDiscount(
+    code
+) {
+
     return (
         PROMO_CODES[
-            normalizePromoCode(code)
+            normalizePromoCode(
+                code
+            )
         ] || 0
     );
-}
 
-function generateReferralCode(accountId) {
-    const clean =
-        String(accountId)
-            .replace(
-                /[^a-zA-Z0-9]/g,
-                ""
-            )
-            .toUpperCase();
-
-    return (
-        "RI" +
-        clean.slice(-8)
-    );
 }
 
 
-/* =========================================
+/* =========================================================
    PASSWORD HASH
-========================================= */
+========================================================= */
 
-function hashPassword(password) {
+function hashPassword(
+    password
+) {
+
     return new Promise(
-        (resolve, reject) => {
+        (
+            resolve,
+            reject
+        ) => {
 
             const salt =
                 crypto
-                    .randomBytes(16)
-                    .toString("hex");
+                    .randomBytes(
+                        16
+                    )
+                    .toString(
+                        "hex"
+                    );
+
 
             crypto.scrypt(
                 password,
@@ -227,53 +527,84 @@ function hashPassword(password) {
                     derivedKey
                 ) => {
 
-                    if (error) {
-                        reject(error);
+                    if (
+                        error
+                    ) {
+
+                        reject(
+                            error
+                        );
+
                         return;
+
                     }
+
 
                     resolve(
                         salt +
                         ":" +
-                        derivedKey.toString(
-                            "hex"
-                        )
+                        derivedKey
+                            .toString(
+                                "hex"
+                            )
                     );
+
                 }
             );
+
         }
     );
+
 }
+
 
 function verifyPassword(
     password,
     storedHash
 ) {
+
     return new Promise(
-        (resolve, reject) => {
+        (
+            resolve,
+            reject
+        ) => {
 
             try {
 
                 const parts =
                     String(
-                        storedHash || ""
-                    ).split(":");
+                        storedHash ||
+                        ""
+                    )
+                        .split(
+                            ":"
+                        );
+
 
                 if (
-                    parts.length !== 2
+                    parts.length !==
+                    2
                 ) {
-                    resolve(false);
+
+                    resolve(
+                        false
+                    );
+
                     return;
+
                 }
+
 
                 const salt =
                     parts[0];
+
 
                 const storedKey =
                     Buffer.from(
                         parts[1],
                         "hex"
                     );
+
 
                 crypto.scrypt(
                     password,
@@ -284,18 +615,32 @@ function verifyPassword(
                         derivedKey
                     ) => {
 
-                        if (error) {
-                            reject(error);
+                        if (
+                            error
+                        ) {
+
+                            reject(
+                                error
+                            );
+
                             return;
+
                         }
+
 
                         if (
                             storedKey.length !==
                             derivedKey.length
                         ) {
-                            resolve(false);
+
+                            resolve(
+                                false
+                            );
+
                             return;
+
                         }
+
 
                         resolve(
                             crypto.timingSafeEqual(
@@ -303,253 +648,525 @@ function verifyPassword(
                                 derivedKey
                             )
                         );
+
                     }
                 );
 
             } catch {
-                resolve(false);
+
+                resolve(
+                    false
+                );
+
             }
+
         }
     );
+
 }
 
 
-/* =========================================
-   ПОКУПАТЕЛИ — СЕССИИ
-========================================= */
+/* =========================================================
+   PERSISTENT SESSIONS
+========================================================= */
 
-const sessions =
-    new Map();
+function getSessions() {
 
-function createUserSession(accountId) {
+    return readJson(
+        sessionsFile
+    );
+
+}
+
+
+function saveSessions(
+    sessions
+) {
+
+    writeJson(
+        sessionsFile,
+        sessions
+    );
+
+}
+
+
+function createSession(
+    type,
+    ownerId
+) {
+
     const token =
         crypto
-            .randomBytes(32)
-            .toString("hex");
+            .randomBytes(
+                32
+            )
+            .toString(
+                "hex"
+            );
 
-    sessions.set(
+
+    const sessions =
+        getSessions();
+
+
+    sessions.push({
+
         token,
-        {
-            accountId,
-            createdAt: Date.now()
-        }
+
+        type,
+
+        ownerId,
+
+        createdAt:
+            Date.now(),
+
+        lastUsedAt:
+            Date.now()
+
+    });
+
+
+    saveSessions(
+        sessions
     );
+
 
     return token;
+
 }
 
-function getUserByToken(req) {
-    const header =
-        req.headers.authorization || "";
+
+function findSession(
+    token
+) {
 
     if (
-        !header.startsWith("Bearer ")
+        !token
     ) {
+
         return null;
+
     }
 
-    const token =
-        header
-            .slice(7)
-            .trim();
 
-    const session =
-        sessions.get(token);
+    const sessions =
+        getSessions();
 
-    if (!session) {
-        return null;
-    }
 
     return (
-        getAccounts().find(
-            account =>
-                account.id ===
-                session.accountId
-        ) || null
+        sessions.find(
+            session =>
+                session.token ===
+                token
+        ) ||
+        null
     );
+
 }
+
+
+function deleteSession(
+    token
+) {
+
+    if (
+        !token
+    ) {
+
+        return;
+
+    }
+
+
+    const sessions =
+        getSessions();
+
+
+    const filtered =
+        sessions.filter(
+            session =>
+                session.token !==
+                token
+        );
+
+
+    saveSessions(
+        filtered
+    );
+
+}
+
+
+function getBearerToken(
+    req
+) {
+
+    const header =
+        req.headers.authorization ||
+        "";
+
+
+    if (
+        !header.startsWith(
+            "Bearer "
+        )
+    ) {
+
+        return null;
+
+    }
+
+
+    return header
+        .slice(7)
+        .trim() ||
+        null;
+
+}
+
+
+/* =========================================================
+   BUYER AUTH
+========================================================= */
+
+function getBuyerFromRequest(
+    req
+) {
+
+    const token =
+        getBearerToken(
+            req
+        );
+
+
+    const session =
+        findSession(
+            token
+        );
+
+
+    if (
+        !session ||
+        session.type !==
+        "user"
+    ) {
+
+        return null;
+
+    }
+
+
+    const accounts =
+        getAccounts();
+
+
+    const account =
+        accounts.find(
+            item =>
+                item.id ===
+                session.ownerId
+        );
+
+
+    if (!account) {
+
+        deleteSession(
+            token
+        );
+
+        return null;
+
+    }
+
+
+    const sessions =
+        getSessions();
+
+
+    const current =
+        sessions.find(
+            item =>
+                item.token ===
+                token
+        );
+
+
+    if (current) {
+
+        current.lastUsedAt =
+            Date.now();
+
+        saveSessions(
+            sessions
+        );
+
+    }
+
+
+    return account;
+
+}
+
 
 function requireAuth(
     req,
     res,
     next
 ) {
+
     const account =
-        getUserByToken(req);
+        getBuyerFromRequest(
+            req
+        );
+
 
     if (!account) {
+
         return res
             .status(401)
             .json({
                 error:
                     "Требуется вход в аккаунт RiRobux"
             });
+
     }
+
 
     req.account =
         account;
 
+
     next();
+
 }
 
 
-/* =========================================
-   АДМИН — СЕССИИ
-========================================= */
+/* =========================================================
+   ADMIN AUTH
+========================================================= */
 
-const adminSessions =
-    new Map();
+function isAdmin(
+    req
+) {
 
-function createAdminSession() {
     const token =
-        crypto
-            .randomBytes(32)
-            .toString("hex");
+        getBearerToken(
+            req
+        );
 
-    adminSessions.set(
-        token,
-        {
-            createdAt: Date.now()
-        }
-    );
 
-    return token;
-}
+    const session =
+        findSession(
+            token
+        );
 
-function getAdminToken(req) {
-    const header =
-        req.headers.authorization || "";
 
     if (
-        !header.startsWith("Bearer ")
+        !session ||
+        session.type !==
+        "admin"
     ) {
-        return null;
+
+        return false;
+
     }
 
-    return header
-        .slice(7)
-        .trim();
+
+    const sessions =
+        getSessions();
+
+
+    const current =
+        sessions.find(
+            item =>
+                item.token ===
+                token
+        );
+
+
+    if (current) {
+
+        current.lastUsedAt =
+            Date.now();
+
+        saveSessions(
+            sessions
+        );
+
+    }
+
+
+    return true;
+
 }
 
-function isAdmin(req) {
-    const token =
-        getAdminToken(req);
-
-    return (
-        !!token &&
-        adminSessions.has(token)
-    );
-}
 
 function requireAdmin(
     req,
     res,
     next
 ) {
-    if (!isAdmin(req)) {
+
+    if (
+        !isAdmin(
+            req
+        )
+    ) {
+
         return res
             .status(401)
             .json({
                 error:
                     "Требуется вход администратора"
             });
+
     }
 
+
     next();
+
 }
 
 
-/* =========================================
-   АДМИН — ВХОД
-========================================= */
+/* =========================================================
+   ADMIN LOGIN
+========================================================= */
 
 app.post(
     "/api/admin/login",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const password =
             String(
-                req.body.password || ""
+                req.body.password ||
+                ""
             );
+
 
         if (
             password !==
             ADMIN_PASSWORD
         ) {
+
             return res
                 .status(401)
                 .json({
                     error:
                         "Неверный пароль"
                 });
+
         }
 
+
         const token =
-            createAdminSession();
+            createSession(
+                "admin",
+                "admin"
+            );
+
 
         res.json({
-            success: true,
+
+            success:
+                true,
+
             token
+
         });
+
     }
 );
 
+
+/* =========================================================
+   ADMIN ME
+========================================================= */
 
 app.get(
     "/api/admin/me",
     requireAdmin,
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         res.json({
-            admin: true
+
+            admin:
+                true
+
         });
+
     }
 );
 
+
+/* =========================================================
+   ADMIN LOGOUT
+========================================================= */
 
 app.post(
     "/api/admin/logout",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const token =
-            getAdminToken(req);
-
-        if (token) {
-            adminSessions.delete(
-                token
+            getBearerToken(
+                req
             );
-        }
+
+
+        deleteSession(
+            token
+        );
+
 
         res.json({
-            success: true
+            success:
+                true
         });
+
     }
 );
 
 
-/* =========================================
-   РЕГИСТРАЦИЯ
-========================================= */
+/* =========================================================
+   REGISTER
+========================================================= */
 
 app.post(
     "/api/auth/register",
-    async (req, res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
 
             const username =
                 String(
-                    req.body.username || ""
+                    req.body.username ||
+                    ""
                 ).trim();
+
 
             const robloxUsername =
                 String(
-                    req.body.robloxUsername || ""
+                    req.body.robloxUsername ||
+                    ""
                 ).trim();
+
 
             const password =
                 String(
-                    req.body.password || ""
+                    req.body.password ||
+                    ""
                 );
 
 
@@ -557,12 +1174,14 @@ app.post(
                 username.length < 3 ||
                 username.length > 30
             ) {
+
                 return res
                     .status(400)
                     .json({
                         error:
                             "Никнейм должен содержать от 3 до 30 символов"
                     });
+
             }
 
 
@@ -571,12 +1190,14 @@ app.post(
                     username
                 )
             ) {
+
                 return res
                     .status(400)
                     .json({
                         error:
                             "В никнейме разрешены буквы, цифры, _, - и ."
                     });
+
             }
 
 
@@ -584,24 +1205,28 @@ app.post(
                 !robloxUsername ||
                 robloxUsername.length > 40
             ) {
+
                 return res
                     .status(400)
                     .json({
                         error:
                             "Введите Roblox Username"
                     });
+
             }
 
 
             if (
                 password.length < 6
             ) {
+
                 return res
                     .status(400)
                     .json({
                         error:
                             "Пароль RiRobux должен содержать минимум 6 символов"
                     });
+
             }
 
 
@@ -614,17 +1239,22 @@ app.post(
                     account =>
                         account.username
                             .toLowerCase() ===
-                        username.toLowerCase()
+                        username
+                            .toLowerCase()
                 );
 
 
-            if (exists) {
+            if (
+                exists
+            ) {
+
                 return res
                     .status(409)
                     .json({
                         error:
                             "Такой никнейм уже занят"
                     });
+
             }
 
 
@@ -657,20 +1287,23 @@ app.post(
                 account
             );
 
+
             saveAccounts(
                 accounts
             );
 
 
             const token =
-                createUserSession(
+                createSession(
+                    "user",
                     account.id
                 );
 
 
             res.json({
 
-                success: true,
+                success:
+                    true,
 
                 token,
 
@@ -692,12 +1325,15 @@ app.post(
 
             });
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
 
             console.error(
                 "Ошибка регистрации:",
                 error
             );
+
 
             res
                 .status(500)
@@ -705,29 +1341,37 @@ app.post(
                     error:
                         "Ошибка регистрации"
                 });
+
         }
+
     }
 );
 
 
-/* =========================================
-   ВХОД
-========================================= */
+/* =========================================================
+   LOGIN
+========================================================= */
 
 app.post(
     "/api/auth/login",
-    async (req, res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
 
             const username =
                 String(
-                    req.body.username || ""
+                    req.body.username ||
+                    ""
                 ).trim();
+
 
             const password =
                 String(
-                    req.body.password || ""
+                    req.body.password ||
+                    ""
                 );
 
 
@@ -736,17 +1380,20 @@ app.post(
                     item =>
                         item.username
                             .toLowerCase() ===
-                        username.toLowerCase()
+                        username
+                            .toLowerCase()
                 );
 
 
             if (!account) {
+
                 return res
                     .status(401)
                     .json({
                         error:
                             "Неверный никнейм или пароль"
                     });
+
             }
 
 
@@ -758,24 +1405,28 @@ app.post(
 
 
             if (!valid) {
+
                 return res
                     .status(401)
                     .json({
                         error:
                             "Неверный никнейм или пароль"
                     });
+
             }
 
 
             const token =
-                createUserSession(
+                createSession(
+                    "user",
                     account.id
                 );
 
 
             res.json({
 
-                success: true,
+                success:
+                    true,
 
                 token,
 
@@ -797,12 +1448,15 @@ app.post(
 
             });
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
 
             console.error(
                 "Ошибка входа:",
                 error
             );
+
 
             res
                 .status(500)
@@ -810,19 +1464,24 @@ app.post(
                     error:
                         "Ошибка входа"
                 });
+
         }
+
     }
 );
 
 
-/* =========================================
+/* =========================================================
    ME
-========================================= */
+========================================================= */
 
 app.get(
     "/api/auth/me",
     requireAuth,
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         res.json({
 
@@ -839,153 +1498,67 @@ app.get(
                 req.account.createdAt
 
         });
+
     }
 );
 
 
-/* =========================================
+/* =========================================================
    LOGOUT
-========================================= */
+========================================================= */
 
 app.post(
     "/api/auth/logout",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
-        const header =
-            req.headers.authorization || "";
-
-        if (
-            header.startsWith("Bearer ")
-        ) {
-
-            sessions.delete(
-                header
-                    .slice(7)
-                    .trim()
-            );
-        }
-
-        res.json({
-            success: true
-        });
-    }
-);
-
-
-/* =========================================
-   ПРОМОКОД
-========================================= */
-
-app.post(
-    "/api/promos/validate",
-    (req, res) => {
-
-        const amount =
-            Math.floor(
-                Number(
-                    req.body.robux
-                )
-            );
-
-        const code =
-            normalizePromoCode(
-                req.body.code
+        const token =
+            getBearerToken(
+                req
             );
 
 
-        if (
-            !Number.isFinite(amount) ||
-            amount < 1
-        ) {
-            return res
-                .status(400)
-                .json({
-                    error:
-                        "Неверное количество Robux"
-                });
-        }
-
-
-        const discount =
-            getPromoDiscount(
-                code
-            );
-
-
-        if (!discount) {
-            return res
-                .status(400)
-                .json({
-                    error:
-                        "Такого промокода нет"
-                });
-        }
-
-
-        const basePrice =
-            Math.round(
-                amount *
-                PRICE_PER_ROBUX *
-                100
-            ) / 100;
-
-
-        const discountAmount =
-            Math.round(
-                basePrice *
-                discount /
-                100 *
-                100
-            ) / 100;
-
-
-        const finalPrice =
-            Math.round(
-                (
-                    basePrice -
-                    discountAmount
-                ) *
-                100
-            ) / 100;
+        deleteSession(
+            token
+        );
 
 
         res.json({
 
-            success: true,
-
-            promoCode:
-                code,
-
-            discountPercent:
-                discount,
-
-            basePrice,
-
-            discountAmount,
-
-            finalPrice
+            success:
+                true
 
         });
+
     }
 );
 
 
-/* =========================================
-   РЕФЕРАЛЫ
-========================================= */
+/* =========================================================
+   REFERRALS
+========================================================= */
 
 app.get(
     "/api/referrals",
     requireAuth,
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const users =
             getUsers();
 
 
-        const code =
+        const accountId =
+            req.account.id;
+
+
+        const referralCode =
             generateReferralCode(
-                req.account.id
+                accountId
             );
 
 
@@ -993,7 +1566,7 @@ app.get(
             users.filter(
                 order =>
                     order.referrerAccountId ===
-                    req.account.id
+                    accountId
             );
 
 
@@ -1001,11 +1574,11 @@ app.get(
             users.filter(
                 order =>
                     order.accountId ===
-                    req.account.id
+                    accountId
             );
 
 
-        const bonus =
+        const bonusRobux =
             ownOrders.reduce(
                 (
                     total,
@@ -1013,7 +1586,8 @@ app.get(
                 ) =>
                     total +
                     Number(
-                        order.referralBonus || 0
+                        order.referralBonus ||
+                        0
                     ),
                 0
             );
@@ -1021,43 +1595,107 @@ app.get(
 
         res.json({
 
-            referralCode:
-                code,
+            referralCode,
 
             referralLink:
                 "https://rirobux.onrender.com/?ref=" +
                 encodeURIComponent(
-                    code
+                    referralCode
                 ),
 
             invitedCount:
                 invited.length,
 
-            bonusRobux:
-                bonus,
+            bonusRobux,
 
             invitedDiscount:
                 REFERRAL_DISCOUNT
 
         });
+
     }
 );
 
 
-/* =========================================
+function generateReferralCode(
+    accountId
+) {
+
+    const clean =
+        String(
+            accountId ||
+            ""
+        )
+            .replace(
+                /[^a-zA-Z0-9]/g,
+                ""
+            )
+            .toUpperCase();
+
+
+    return (
+        "RI" +
+        clean.slice(
+            -8
+        )
+    );
+
+}
+
+
+function findAccountByReferralCode(
+    accounts,
+    code
+) {
+
+    const normalized =
+        String(
+            code ||
+            ""
+        )
+            .trim()
+            .toUpperCase();
+
+
+    if (!normalized) {
+
+        return null;
+
+    }
+
+
+    return (
+        accounts.find(
+            account =>
+                generateReferralCode(
+                    account.id
+                ) ===
+                normalized
+        ) ||
+        null
+    );
+
+}
+
+
+/* =========================================================
    CREATE ORDER
-========================================= */
+========================================================= */
 
 app.post(
     "/api/users",
     requireAuth,
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         try {
 
             const username =
                 String(
-                    req.body.username || ""
+                    req.body.username ||
+                    ""
                 ).trim();
 
 
@@ -1085,25 +1723,31 @@ app.post(
 
 
             if (!username) {
+
                 return res
                     .status(400)
                     .json({
                         error:
                             "Введите Roblox Username"
                     });
+
             }
 
 
             if (
-                !Number.isFinite(amount) ||
+                !Number.isFinite(
+                    amount
+                ) ||
                 amount < 1
             ) {
+
                 return res
                     .status(400)
                     .json({
                         error:
-                            "Неверное количество Robux"
+                            "Введите правильное количество Robux"
                     });
+
             }
 
 
@@ -1124,12 +1768,9 @@ app.post(
 
 
             const referrer =
-                accounts.find(
-                    account =>
-                        generateReferralCode(
-                            account.id
-                        ) ===
-                        referralCode
+                findAccountByReferralCode(
+                    accounts,
+                    referralCode
                 );
 
 
@@ -1137,7 +1778,8 @@ app.post(
                 !!referrer &&
                 referrer.id !==
                     req.account.id &&
-                buyerOrders.length === 0;
+                buyerOrders.length ===
+                    0;
 
 
             const promoPercent =
@@ -1330,12 +1972,15 @@ app.post(
                 order
             );
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
 
             console.error(
                 "Ошибка создания заказа:",
                 error
             );
+
 
             res
                 .status(500)
@@ -1343,19 +1988,24 @@ app.post(
                     error:
                         "Не удалось создать заказ"
                 });
+
         }
+
     }
 );
 
 
-/* =========================================
-   МОИ ЗАКАЗЫ
-========================================= */
+/* =========================================================
+   MY ORDERS
+========================================================= */
 
 app.get(
     "/api/my/orders",
     requireAuth,
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const orders =
             getUsers().filter(
@@ -1369,39 +2019,73 @@ app.get(
         res.json(
             orders
         );
+
     }
 );
 
 
-/* =========================================
-   АДМИН — ЗАКАЗЫ
-========================================= */
+/* =========================================================
+   ALL ORDERS FOR ADMIN
+========================================================= */
 
 app.get(
-    "/api/users",
+    "/api/admin/orders",
     requireAdmin,
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         res.json(
             getUsers()
         );
+
     }
 );
 
 
-/* =========================================
-   ОДИН ЗАКАЗ
-========================================= */
+/*
+Старый endpoint админки.
+Оставляем для совместимости.
+*/
+
+app.get(
+    "/api/users",
+    requireAdmin,
+    (
+        req,
+        res
+    ) => {
+
+        res.json(
+            getUsers()
+        );
+
+    }
+);
+
+
+/* =========================================================
+   ONE ORDER
+========================================================= */
 
 app.get(
     "/api/users/:id",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const admin =
-            isAdmin(req);
+            isAdmin(
+                req
+            );
+
 
         const account =
-            getUserByToken(req);
+            getBuyerFromRequest(
+                req
+            );
 
 
         if (
@@ -1415,6 +2099,7 @@ app.get(
                     error:
                         "Требуется авторизация"
                 });
+
         }
 
 
@@ -1457,23 +2142,32 @@ app.get(
         res.json(
             order
         );
+
     }
 );
 
 
-/* =========================================
-   СООБЩЕНИЯ
-========================================= */
+/* =========================================================
+   MESSAGES
+========================================================= */
 
 app.post(
     "/api/users/:id/messages",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const admin =
-            isAdmin(req);
+            isAdmin(
+                req
+            );
+
 
         const account =
-            getUserByToken(req);
+            getBuyerFromRequest(
+                req
+            );
 
 
         if (
@@ -1487,6 +2181,26 @@ app.post(
                     error:
                         "Требуется авторизация"
                 });
+
+        }
+
+
+        const text =
+            String(
+                req.body.text ||
+                ""
+            ).trim();
+
+
+        if (!text) {
+
+            return res
+                .status(400)
+                .json({
+                    error:
+                        "Введите сообщение"
+                });
+
         }
 
 
@@ -1510,6 +2224,7 @@ app.post(
                     error:
                         "Заказ не найден"
                 });
+
         }
 
 
@@ -1525,23 +2240,19 @@ app.post(
                     error:
                         "Нет доступа к этому чату"
                 });
+
         }
 
 
-        const text =
-            String(
-                req.body.text || ""
-            ).trim();
+        if (
+            !Array.isArray(
+                order.messages
+            )
+        ) {
 
+            order.messages =
+                [];
 
-        if (!text) {
-
-            return res
-                .status(400)
-                .json({
-                    error:
-                        "Введите сообщение"
-                });
         }
 
 
@@ -1568,17 +2279,6 @@ app.post(
         };
 
 
-        if (
-            !Array.isArray(
-                order.messages
-            )
-        ) {
-
-            order.messages = [];
-
-        }
-
-
         order.messages.push(
             message
         );
@@ -1596,23 +2296,32 @@ app.post(
         res.json(
             message
         );
+
     }
 );
 
 
-/* =========================================
-   УДАЛИТЬ СООБЩЕНИЕ
-========================================= */
+/* =========================================================
+   DELETE MESSAGE
+========================================================= */
 
 app.delete(
     "/api/users/:orderId/messages/:messageId",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const admin =
-            isAdmin(req);
+            isAdmin(
+                req
+            );
+
 
         const account =
-            getUserByToken(req);
+            getBuyerFromRequest(
+                req
+            );
 
 
         if (
@@ -1626,6 +2335,7 @@ app.delete(
                     error:
                         "Требуется авторизация"
                 });
+
         }
 
 
@@ -1649,6 +2359,7 @@ app.delete(
                     error:
                         "Заказ не найден"
                 });
+
         }
 
 
@@ -1664,6 +2375,7 @@ app.delete(
                     error:
                         "Нет доступа"
                 });
+
         }
 
 
@@ -1689,33 +2401,41 @@ app.delete(
 
 
         res.json({
-            success: true
+            success:
+                true
         });
+
     }
 );
 
 
-/* =========================================
-   АДМИН — СТАТУС
-========================================= */
+/* =========================================================
+   ADMIN STATUS
+========================================================= */
 
 app.patch(
     "/api/users/:id/status",
     requireAdmin,
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const allowedStatuses = [
+
             "Новая заявка",
             "В работе",
             "Выполняется",
             "Выполнено",
             "Отменена"
+
         ];
 
 
         const status =
             String(
-                req.body.status || ""
+                req.body.status ||
+                ""
             );
 
 
@@ -1731,6 +2451,7 @@ app.patch(
                     error:
                         "Неверный статус"
                 });
+
         }
 
 
@@ -1754,11 +2475,13 @@ app.patch(
                     error:
                         "Заказ не найден"
                 });
+
         }
 
 
         order.status =
             status;
+
 
         order.updatedAt =
             Date.now();
@@ -1772,18 +2495,22 @@ app.patch(
         res.json(
             order
         );
+
     }
 );
 
 
-/* =========================================
-   АДМИН — СКРЫТЬ ЗАКАЗ
-========================================= */
+/* =========================================================
+   ADMIN HIDE
+========================================================= */
 
 app.post(
     "/api/users/:id/hide",
     requireAdmin,
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         const users =
             getUsers();
@@ -1805,11 +2532,13 @@ app.post(
                     error:
                         "Заказ не найден"
                 });
+
         }
 
 
         order.hiddenForProfile =
             true;
+
 
         order.updatedAt =
             Date.now();
@@ -1821,23 +2550,31 @@ app.post(
 
 
         res.json({
-            success: true
+
+            success:
+                true
+
         });
+
     }
 );
 
 
-/* =========================================
+/* =========================================================
    HEALTH
-========================================= */
+========================================================= */
 
 app.get(
     "/api/health",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         res.json({
 
-            ok: true,
+            ok:
+                true,
 
             service:
                 "RiRobux",
@@ -1854,16 +2591,20 @@ app.get(
                 true,
 
             adminAuth:
+                true,
+
+            persistentSessions:
                 true
 
         });
+
     }
 );
 
 
-/* =========================================
+/* =========================================================
    START
-========================================= */
+========================================================= */
 
 app.listen(
     PORT,
@@ -1897,7 +2638,12 @@ app.listen(
         );
 
         console.log(
+            "💾 Постоянные сессии: включены"
+        );
+
+        console.log(
             "🔐 Пароли: crypto.scrypt"
         );
+
     }
 );
