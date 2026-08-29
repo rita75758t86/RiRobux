@@ -1,18 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RiRobux — Профиль</title>
 
 <style>
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -23,55 +16,29 @@
 body{
     min-height:100vh;
     color:#fff;
-
     background:
-        radial-gradient(
-            circle at 15% 10%,
-            rgba(124,58,237,.28),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 85% 70%,
-            rgba(37,99,235,.20),
-            transparent 35%
-        ),
-        linear-gradient(
-            135deg,
-            #03040d,
-            #0b0e25,
-            #070313
-        );
+        radial-gradient(circle at 15% 10%,rgba(124,58,237,.28),transparent 30%),
+        radial-gradient(circle at 85% 70%,rgba(37,99,235,.20),transparent 35%),
+        linear-gradient(135deg,#03040d,#0b0e25,#070313);
 }
 
 header{
     position:sticky;
     top:0;
     z-index:100;
-
     display:flex;
     align-items:center;
     justify-content:space-between;
-
     gap:20px;
-
-    padding:
-        16px 6%;
-
-    background:
-        rgba(5,7,20,.82);
-
-    border-bottom:
-        1px solid
-        rgba(167,139,250,.20);
-
-    backdrop-filter:
-        blur(20px);
+    padding:16px 6%;
+    background:rgba(5,7,20,.82);
+    border-bottom:1px solid rgba(167,139,250,.20);
+    backdrop-filter:blur(20px);
 }
 
 .logo{
     color:#fff;
     text-decoration:none;
-
     font-size:28px;
     font-weight:900;
 }
@@ -86,98 +53,52 @@ header{
 }
 
 .header-button{
-    padding:
-        11px 15px;
-
+    padding:11px 15px;
     border-radius:12px;
-
     color:#fff;
-
     text-decoration:none;
-
-    border:
-        1px solid
-        rgba(255,255,255,.09);
-
-    background:
-        rgba(255,255,255,.05);
-
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.09);
     cursor:pointer;
 }
 
 .logout-button{
     border:0;
-
-    background:
-        rgba(220,38,38,.15);
-
+    background:rgba(220,38,38,.15);
     color:#fecaca;
 }
 
 main{
     max-width:1100px;
-
     margin:auto;
-
-    padding:
-        50px 20px 90px;
+    padding:50px 20px 90px;
 }
-
-
-/* =========================
-   PROFILE HEADER
-========================= */
 
 .profile-card{
     padding:30px;
-
     border-radius:26px;
-
-    background:
-        rgba(15,18,48,.88);
-
-    border:
-        1px solid
-        rgba(139,92,246,.25);
-
-    box-shadow:
-        0 25px 80px
-        rgba(0,0,0,.30);
+    background:rgba(15,18,48,.88);
+    border:1px solid rgba(139,92,246,.25);
+    box-shadow:0 25px 80px rgba(0,0,0,.30);
 }
 
 .profile-top{
     display:flex;
-
     align-items:center;
-
     gap:20px;
-
     flex-wrap:wrap;
 }
 
 .avatar{
     width:70px;
     height:70px;
-
     display:flex;
-
     align-items:center;
     justify-content:center;
-
     border-radius:20px;
-
     font-size:32px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #2563eb
-        );
-
-    box-shadow:
-        0 15px 40px
-        rgba(124,58,237,.30);
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
+    box-shadow:0 15px 40px rgba(124,58,237,.30);
 }
 
 .profile-title{
@@ -190,45 +111,138 @@ main{
 
 .profile-title p{
     margin-top:7px;
-
     color:#929bb8;
 }
 
 .roblox-name{
     margin-top:5px;
-
     color:#c4b5fd;
-
     font-size:14px;
 }
 
+/* LEVEL */
 
-/* =========================
-   STATS
-========================= */
+.level-card{
+    margin-top:25px;
+    padding:25px;
+    border-radius:22px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(124,58,237,.17),
+            rgba(37,99,235,.08)
+        );
+    border:1px solid rgba(167,139,250,.24);
+}
+
+.level-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.level-name{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:25px;
+    font-weight:900;
+}
+
+.level-icon{
+    font-size:30px;
+}
+
+.level-description{
+    margin-top:6px;
+    color:#929bb8;
+    font-size:13px;
+}
+
+.level-number{
+    color:#aeb6d1;
+    font-size:13px;
+}
+
+.progress-label{
+    display:flex;
+    justify-content:space-between;
+    margin-top:22px;
+    color:#929bb8;
+    font-size:12px;
+}
+
+.progress-bar{
+    height:13px;
+    margin-top:9px;
+    overflow:hidden;
+    border-radius:20px;
+    background:rgba(255,255,255,.07);
+}
+
+.progress-fill{
+    width:0%;
+    height:100%;
+    border-radius:20px;
+    background:linear-gradient(90deg,#7c3aed,#2563eb);
+    box-shadow:0 0 25px rgba(124,58,237,.55);
+    transition:width .7s ease;
+}
+
+.level-next{
+    margin-top:10px;
+    color:#858da9;
+    font-size:12px;
+}
+
+.levels-list{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-top:18px;
+}
+
+.level-mini{
+    padding:13px;
+    border-radius:14px;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.06);
+    opacity:.55;
+}
+
+.level-mini.active{
+    opacity:1;
+    border-color:rgba(167,139,250,.4);
+    background:rgba(124,58,237,.08);
+}
+
+.level-mini-name{
+    font-weight:800;
+    font-size:13px;
+}
+
+.level-mini-range{
+    margin-top:5px;
+    color:#858da9;
+    font-size:11px;
+}
+
+/* STATS */
 
 .stats{
     display:grid;
-
-    grid-template-columns:
-        repeat(4,1fr);
-
+    grid-template-columns:repeat(4,1fr);
     gap:14px;
-
     margin-top:25px;
 }
 
 .stat{
     padding:20px;
-
     border-radius:18px;
-
-    background:
-        rgba(255,255,255,.025);
-
-    border:
-        1px solid
-        rgba(255,255,255,.06);
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.06);
 }
 
 .stat-icon{
@@ -237,250 +251,160 @@ main{
 
 .stat-number{
     margin-top:8px;
-
     color:#c4b5fd;
-
     font-size:26px;
-
     font-weight:900;
 }
 
 .stat-label{
     margin-top:5px;
-
     color:#858da9;
-
     font-size:12px;
 }
 
-
-/* =========================
-   REFERRAL
-========================= */
+/* SECTION */
 
 .section{
     margin-top:25px;
 }
 
 .section-title{
-    font-size:23px;
-
     margin-bottom:14px;
+    font-size:23px;
 }
+
+/* REFERRAL */
 
 .referral-card{
     padding:25px;
-
     border-radius:22px;
-
-    background:
-        rgba(13,16,43,.86);
-
-    border:
-        1px solid
-        rgba(139,92,246,.24);
+    background:rgba(13,16,43,.86);
+    border:1px solid rgba(139,92,246,.24);
 }
 
 .referral-description{
     color:#929bb8;
-
     line-height:1.6;
 }
 
 .referral-link-box{
     display:flex;
-
     gap:10px;
-
     margin-top:18px;
 }
 
 .referral-link{
     flex:1;
-
     min-width:0;
-
     padding:14px;
-
     border-radius:13px;
-
     color:#ddd6fe;
-
-    background:
-        rgba(255,255,255,.04);
-
-    border:
-        1px solid
-        rgba(255,255,255,.07);
-
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.07);
     overflow:hidden;
-
     text-overflow:ellipsis;
-
     white-space:nowrap;
 }
 
 .copy-referral{
-    padding:
-        0 17px;
-
+    padding:0 17px;
     border:0;
-
     border-radius:13px;
-
-    color:white;
-
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #2563eb
-        );
-
+    color:#fff;
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
     cursor:pointer;
-
     font-weight:bold;
 }
 
 .referral-stats{
     display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
+    grid-template-columns:1fr 1fr;
     gap:12px;
-
     margin-top:15px;
 }
 
 .referral-stat{
     padding:14px;
-
     border-radius:14px;
-
-    background:
-        rgba(255,255,255,.025);
+    background:rgba(255,255,255,.025);
 }
 
 .referral-stat span{
     display:block;
-
     color:#858da9;
-
     font-size:12px;
 }
 
 .referral-stat strong{
     display:block;
-
     margin-top:5px;
-
     color:#86efac;
-
     font-size:18px;
 }
 
-
-/* =========================
-   ORDERS
-========================= */
+/* ORDERS */
 
 .orders{
     display:grid;
-
     gap:15px;
 }
 
 .order{
     padding:22px;
-
     border-radius:20px;
-
-    background:
-        rgba(13,16,43,.86);
-
-    border:
-        1px solid
-        rgba(139,92,246,.22);
+    background:rgba(13,16,43,.86);
+    border:1px solid rgba(139,92,246,.22);
 }
 
 .order-top{
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
-
     gap:10px;
-
     flex-wrap:wrap;
 }
 
 .order-number{
     font-size:18px;
-
     font-weight:bold;
 }
 
 .status{
-    padding:
-        7px 12px;
-
+    padding:7px 12px;
     border-radius:20px;
-
-    background:
-        rgba(124,58,237,.15);
-
+    background:rgba(124,58,237,.15);
     color:#ddd6fe;
-
     font-size:12px;
 }
 
 .order-grid{
     display:grid;
-
-    grid-template-columns:
-        repeat(4,1fr);
-
+    grid-template-columns:repeat(4,1fr);
     gap:10px;
-
     margin-top:16px;
 }
 
 .info{
     padding:13px;
-
     border-radius:13px;
-
-    background:
-        rgba(255,255,255,.025);
-
+    background:rgba(255,255,255,.025);
     color:#858da9;
-
     font-size:12px;
 }
 
 .info strong{
     display:block;
-
     margin-top:5px;
-
-    color:white;
-
+    color:#fff;
     font-size:15px;
 }
 
 .promo{
     margin-top:13px;
-
     padding:12px 14px;
-
     border-radius:12px;
-
     color:#c4b5fd;
-
-    background:
-        rgba(124,58,237,.08);
+    background:rgba(124,58,237,.08);
 }
 
 .promo b{
@@ -488,87 +412,51 @@ main{
 }
 
 .order-actions{
-    display:flex;
-
-    gap:10px;
-
     margin-top:15px;
-
-    flex-wrap:wrap;
 }
 
 .order-button{
-    padding:
-        11px 14px;
-
-    border:0;
-
+    display:inline-block;
+    padding:11px 14px;
     border-radius:11px;
-
-    color:white;
-
+    color:#fff;
     text-decoration:none;
-
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #2563eb
-        );
-
-    cursor:pointer;
-
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
     font-weight:bold;
 }
 
 .empty{
     padding:45px 20px;
-
     text-align:center;
-
     color:#8f96b1;
 }
 
 .error{
     padding:18px;
-
     border-radius:15px;
-
     color:#fecaca;
-
-    background:
-        rgba(220,38,38,.12);
+    background:rgba(220,38,38,.12);
 }
-
-
-/* =========================
-   MOBILE
-========================= */
 
 @media(max-width:850px){
 
     .stats{
-        grid-template-columns:
-            repeat(2,1fr);
+        grid-template-columns:repeat(2,1fr);
     }
 
     .order-grid{
-        grid-template-columns:
-            repeat(2,1fr);
+        grid-template-columns:repeat(2,1fr);
     }
 
+    .levels-list{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 
 @media(max-width:600px){
 
     header{
-        padding:
-            15px 18px;
-    }
-
-    .header-button{
-        padding:
-            10px 11px;
+        padding:15px 18px;
     }
 
     .profile-card{
@@ -579,34 +467,28 @@ main{
         font-size:26px;
     }
 
-    .stats{
-        grid-template-columns:
-            1fr;
-    }
-
-    .order-grid{
-        grid-template-columns:
-            1fr;
+    .stats,
+    .order-grid,
+    .levels-list{
+        grid-template-columns:1fr;
     }
 
     .referral-link-box{
-        flex-direction:
-            column;
+        flex-direction:column;
     }
 
     .copy-referral{
-        padding:
-            14px;
+        padding:14px;
     }
 
+    .header-button{
+        padding:10px 11px;
+    }
 }
-
 </style>
-
 </head>
 
 <body>
-
 
 <header>
 
@@ -640,11 +522,6 @@ main{
 
 <main>
 
-
-<!-- =========================
-     PROFILE
-========================= -->
-
 <section class="profile-card">
 
     <div class="profile-top">
@@ -666,13 +543,146 @@ main{
             <div
                 class="roblox-name"
                 id="robloxUsername"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- LEVEL -->
+
+    <div class="level-card">
+
+        <div class="level-top">
+
+            <div>
+
+                <div class="level-name">
+
+                    <span
+                        class="level-icon"
+                        id="levelIcon"
+                    >
+                        🌱
+                    </span>
+
+                    <span id="levelName">
+                        Новичок
+                    </span>
+
+                </div>
+
+                <div
+                    class="level-description"
+                    id="levelDescription"
+                >
+                    Начальный уровень
+                </div>
+
+            </div>
+
+
+            <div
+                class="level-number"
+                id="levelRobux"
             >
+                0 Robux
+            </div>
+
+        </div>
+
+
+        <div class="progress-label">
+
+            <span id="levelCurrent">
+                0 Robux
+            </span>
+
+            <span id="levelTarget">
+                500 Robux
+            </span>
+
+        </div>
+
+
+        <div class="progress-bar">
+
+            <div
+                class="progress-fill"
+                id="levelProgress"
+            ></div>
+
+        </div>
+
+
+        <div
+            class="level-next"
+            id="levelNext"
+        >
+            До следующего уровня: 500 Robux
+        </div>
+
+
+        <div class="levels-list">
+
+            <div
+                class="level-mini active"
+                data-level="Новичок"
+            >
+                <div class="level-mini-name">
+                    🌱 Новичок
+                </div>
+                <div class="level-mini-range">
+                    0–499 Robux
+                </div>
+            </div>
+
+
+            <div
+                class="level-mini"
+                data-level="Покупатель"
+            >
+                <div class="level-mini-name">
+                    ⭐ Покупатель
+                </div>
+                <div class="level-mini-range">
+                    500–1999 Robux
+                </div>
+            </div>
+
+
+            <div
+                class="level-mini"
+                data-level="VIP"
+            >
+                <div class="level-mini-name">
+                    💎 VIP
+                </div>
+                <div class="level-mini-range">
+                    2000–4999 Robux
+                </div>
+            </div>
+
+
+            <div
+                class="level-mini"
+                data-level="LEGEND"
+            >
+                <div class="level-mini-name">
+                    👑 LEGEND
+                </div>
+                <div class="level-mini-range">
+                    5000+ Robux
+                </div>
             </div>
 
         </div>
 
     </div>
 
+
+    <!-- STATS -->
 
     <div class="stats">
 
@@ -760,9 +770,7 @@ main{
 </section>
 
 
-<!-- =========================
-     REFERRAL
-========================= -->
+<!-- REFERRAL -->
 
 <section class="section">
 
@@ -841,9 +849,7 @@ main{
 </section>
 
 
-<!-- =========================
-     ORDERS
-========================= -->
+<!-- ORDERS -->
 
 <section class="section">
 
@@ -865,17 +871,14 @@ main{
 
 </section>
 
-
 </main>
 
 
 <script>
 
-/*
-==================================================
-AUTH
-==================================================
-*/
+/* =========================================
+   AUTH
+========================================= */
 
 const token =
     localStorage.getItem(
@@ -898,91 +901,45 @@ let orders =
     [];
 
 
-/*
-==================================================
-ELEMENTS
-==================================================
-*/
-
-const profileUsername =
-    document.getElementById(
-        "profileUsername"
-    );
-
-const robloxUsername =
-    document.getElementById(
-        "robloxUsername"
-    );
-
-const ordersCount =
-    document.getElementById(
-        "ordersCount"
-    );
-
-const robuxCount =
-    document.getElementById(
-        "robuxCount"
-    );
-
-const spentCount =
-    document.getElementById(
-        "spentCount"
-    );
-
-const bonusCount =
-    document.getElementById(
-        "bonusCount"
-    );
-
-const ordersBox =
-    document.getElementById(
-        "orders"
-    );
-
-const referralLink =
-    document.getElementById(
-        "referralLink"
-    );
-
-const invitedCount =
-    document.getElementById(
-        "invitedCount"
-    );
-
-const bonusRobux =
-    document.getElementById(
-        "bonusRobux"
-    );
-
-
-/*
-==================================================
-MONEY
-==================================================
-*/
+/* =========================================
+   HELPERS
+========================================= */
 
 function money(
     value
-) {
+){
 
     return Number(
         value || 0
     ).toLocaleString(
         "ru-RU",
         {
-            maximumFractionDigits:
-                2
+            maximumFractionDigits:2
         }
     ) + " ₽";
 
 }
 
 
-/*
-==================================================
-AUTH USER
-==================================================
-*/
+function escapeHtml(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================
+   USER
+========================================= */
 
 async function loadCurrentUser(){
 
@@ -1001,14 +958,10 @@ async function loadCurrentUser(){
             );
 
 
-        if (
-            !response.ok
-        ) {
-
+        if (!response.ok) {
             throw new Error(
                 "Сессия закончилась"
             );
-
         }
 
 
@@ -1024,16 +977,22 @@ async function loadCurrentUser(){
         );
 
 
-        profileUsername.textContent =
+        document.getElementById(
+            "profileUsername"
+        ).textContent =
             currentUser.username;
 
 
-        robloxUsername.textContent =
+        document.getElementById(
+            "robloxUsername"
+        ).textContent =
             "🎮 Roblox: " +
             currentUser.robloxUsername;
 
 
-    } catch(error) {
+        updateLevel();
+
+    } catch {
 
         localStorage.removeItem(
             "rirobuxAuthToken"
@@ -1051,11 +1010,200 @@ async function loadCurrentUser(){
 }
 
 
-/*
-==================================================
-ORDERS
-==================================================
-*/
+/* =========================================
+   LEVEL
+========================================= */
+
+function updateLevel(){
+
+    if (
+        !currentUser ||
+        !currentUser.level
+    ) {
+        return;
+    }
+
+
+    const level =
+        currentUser.level;
+
+
+    document.getElementById(
+        "levelIcon"
+    ).textContent =
+        level.icon;
+
+
+    document.getElementById(
+        "levelName"
+    ).textContent =
+        level.name;
+
+
+    document.getElementById(
+        "levelRobux"
+    ).textContent =
+        Number(
+            level.totalRobux
+        ).toLocaleString(
+            "ru-RU"
+        ) +
+        " Robux";
+
+
+    document.getElementById(
+        "levelCurrent"
+    ).textContent =
+        Number(
+            level.totalRobux
+        ).toLocaleString(
+            "ru-RU"
+        ) +
+        " Robux";
+
+
+    const descriptions = {
+
+        "Новичок":
+            "Начальный уровень",
+
+        "Покупатель":
+            "Ты уже постоянный покупатель",
+
+        "VIP":
+            "Особый уровень клиента",
+
+        "LEGEND":
+            "Максимальный уровень"
+
+    };
+
+
+    document.getElementById(
+        "levelDescription"
+    ).textContent =
+        descriptions[
+            level.name
+        ] ||
+        "Уровень покупателя";
+
+
+    document
+        .querySelectorAll(
+            ".level-mini"
+        )
+        .forEach(
+            element => {
+
+                element.classList.toggle(
+                    "active",
+                    element.dataset.level ===
+                    level.name
+                );
+
+            }
+        );
+
+
+    if (
+        level.next === null
+    ){
+
+        document.getElementById(
+            "levelTarget"
+        ).textContent =
+            "MAX";
+
+
+        document.getElementById(
+            "levelProgress"
+        ).style.width =
+            "100%";
+
+
+        document.getElementById(
+            "levelNext"
+        ).textContent =
+            "👑 Максимальный уровень достигнут";
+
+
+        return;
+
+    }
+
+
+    const current =
+        Number(
+            level.totalRobux
+        );
+
+
+    const minimum =
+        Number(
+            level.min
+        );
+
+
+    const next =
+        Number(
+            level.next
+        );
+
+
+    const progress =
+        (
+            (
+                current -
+                minimum
+            ) /
+            (
+                next -
+                minimum
+            )
+        ) *
+        100;
+
+
+    document.getElementById(
+        "levelTarget"
+    ).textContent =
+        next.toLocaleString(
+            "ru-RU"
+        ) +
+        " Robux";
+
+
+    document.getElementById(
+        "levelProgress"
+    ).style.width =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                progress
+            )
+        ) +
+        "%";
+
+
+    document.getElementById(
+        "levelNext"
+    ).textContent =
+        "До следующего уровня: " +
+        Math.max(
+            0,
+            next - current
+        ).toLocaleString(
+            "ru-RU"
+        ) +
+        " Robux";
+
+}
+
+
+/* =========================================
+   ORDERS
+========================================= */
 
 async function loadOrders(){
 
@@ -1074,9 +1222,7 @@ async function loadOrders(){
             );
 
 
-        if (
-            !response.ok
-        ) {
+        if (!response.ok) {
 
             throw new Error(
                 "Не удалось загрузить заказы"
@@ -1093,10 +1239,11 @@ async function loadOrders(){
 
         updateStats();
 
-
     } catch(error) {
 
-        ordersBox.innerHTML =
+        document.getElementById(
+            "orders"
+        ).innerHTML =
             `
             <div class="error">
                 ❌ ${escapeHtml(
@@ -1110,11 +1257,9 @@ async function loadOrders(){
 }
 
 
-/*
-==================================================
-STATS
-==================================================
-*/
+/* =========================================
+   STATS
+========================================= */
 
 function updateStats(){
 
@@ -1134,7 +1279,8 @@ function updateStats(){
             ) =>
                 sum +
                 Number(
-                    order.robux || 0
+                    order.robux ||
+                    0
                 ),
             0
         );
@@ -1148,13 +1294,14 @@ function updateStats(){
             ) =>
                 sum +
                 Number(
-                    order.price || 0
+                    order.price ||
+                    0
                 ),
             0
         );
 
 
-    const totalBonus =
+    const bonus =
         orders.reduce(
             (
                 sum,
@@ -1162,55 +1309,72 @@ function updateStats(){
             ) =>
                 sum +
                 Number(
-                    order.referralBonus || 0
+                    order.referralBonus ||
+                    0
                 ),
             0
         );
 
 
-    ordersCount.textContent =
+    document.getElementById(
+        "ordersCount"
+    ).textContent =
         orders.length;
 
 
-    robuxCount.textContent =
+    document.getElementById(
+        "robuxCount"
+    ).textContent =
         totalRobux.toLocaleString(
             "ru-RU"
         );
 
 
-    spentCount.textContent =
+    document.getElementById(
+        "spentCount"
+    ).textContent =
         money(
             totalSpent
         );
 
 
-    bonusCount.textContent =
-        totalBonus.toLocaleString(
+    document.getElementById(
+        "bonusCount"
+    ).textContent =
+        bonus.toLocaleString(
             "ru-RU"
         );
 
 }
 
 
-/*
-==================================================
-ORDERS UI
-==================================================
-*/
+/* =========================================
+   ORDERS UI
+========================================= */
 
 function renderOrders(){
 
+    const box =
+        document.getElementById(
+            "orders"
+        );
+
+
     if (
-        orders.length ===
-        0
+        orders.length === 0
     ){
 
-        ordersBox.innerHTML =
+        box.innerHTML =
             `
             <div class="empty">
-                📦 Заказов пока нет.<br><br>
+
+                📦 Заказов пока нет.
+
+                <br><br>
+
                 Перейдите на главную,
                 чтобы купить Robux.
+
             </div>
             `;
 
@@ -1219,7 +1383,7 @@ function renderOrders(){
     }
 
 
-    ordersBox.innerHTML =
+    box.innerHTML =
         "";
 
 
@@ -1241,13 +1405,15 @@ function renderOrders(){
 
                 const hasPromo =
                     Number(
-                        order.discountPercent || 0
+                        order.discountPercent ||
+                        0
                     ) > 0;
 
 
                 const hasReferral =
                     Number(
-                        order.referralDiscount || 0
+                        order.referralDiscount ||
+                        0
                     ) > 0;
 
 
@@ -1286,11 +1452,14 @@ function renderOrders(){
                             💎 Robux
 
                             <strong>
+
                                 ${Number(
-                                    order.robux || 0
+                                    order.robux ||
+                                    0
                                 ).toLocaleString(
                                     "ru-RU"
                                 )}
+
                             </strong>
 
                         </div>
@@ -1301,9 +1470,11 @@ function renderOrders(){
                             💰 Цена
 
                             <strong>
+
                                 ${money(
                                     order.price
                                 )}
+
                             </strong>
 
                         </div>
@@ -1314,10 +1485,12 @@ function renderOrders(){
                             📅 Дата
 
                             <strong>
+
                                 ${escapeHtml(
                                     order.createdAt ||
                                     "—"
                                 )}
+
                             </strong>
 
                         </div>
@@ -1328,10 +1501,12 @@ function renderOrders(){
                             🎮 Roblox
 
                             <strong>
+
                                 ${escapeHtml(
                                     order.username ||
                                     currentUser.robloxUsername
                                 )}
+
                             </strong>
 
                         </div>
@@ -1341,48 +1516,47 @@ function renderOrders(){
 
                     ${
                         hasPromo
-                        ?
-                        `
-                        <div class="promo">
+                            ? `
+                            <div class="promo">
 
-                            🎁 Промокод:
-                            <b>
-                                ${escapeHtml(
-                                    order.promoCode
-                                )}
-                            </b>
+                                🎁 Промокод:
 
-                            · Скидка
-                            <b>
-                                ${Number(
-                                    order.discountPercent
-                                )}%
-                            </b>
+                                <b>
+                                    ${escapeHtml(
+                                        order.promoCode
+                                    )}
+                                </b>
 
-                        </div>
-                        `
-                        :
-                        ""
+                                · Скидка
+
+                                <b>
+                                    ${Number(
+                                        order.discountPercent
+                                    )}%
+                                </b>
+
+                            </div>
+                            `
+                            : ""
                     }
 
 
                     ${
                         hasReferral
-                        ?
-                        `
-                        <div class="promo">
+                            ? `
+                            <div class="promo">
 
-                            👥 Реферальная скидка:
-                            <b>
-                                ${money(
-                                    order.referralDiscount
-                                )}
-                            </b>
+                                👥 Реферальная скидка:
 
-                        </div>
-                        `
-                        :
-                        ""
+                                <b>
+                                    ${money(
+                                        order.referralDiscount
+                                    )}
+                                </b>
+
+                            </div>
+                            `
+                            : ""
                     }
 
 
@@ -1402,7 +1576,7 @@ function renderOrders(){
                     `;
 
 
-                ordersBox.appendChild(
+                box.appendChild(
                     element
                 );
 
@@ -1412,11 +1586,9 @@ function renderOrders(){
 }
 
 
-/*
-==================================================
-REFERRAL
-==================================================
-*/
+/* =========================================
+   REFERRALS
+========================================= */
 
 async function loadReferral(){
 
@@ -1435,14 +1607,8 @@ async function loadReferral(){
             );
 
 
-        if (
-            !response.ok
-        ) {
-
-            throw new Error(
-                "Не удалось загрузить реферальную систему"
-            );
-
+        if (!response.ok) {
+            throw new Error();
         }
 
 
@@ -1450,230 +1616,193 @@ async function loadReferral(){
             await response.json();
 
 
-        referralLink.textContent =
+        document.getElementById(
+            "referralLink"
+        ).textContent =
             data.referralLink;
 
 
-        invitedCount.textContent =
+        document.getElementById(
+            "invitedCount"
+        ).textContent =
             Number(
-                data.invitedCount || 0
+                data.invitedCount ||
+                0
             );
 
 
-        bonusRobux.textContent =
+        document.getElementById(
+            "bonusRobux"
+        ).textContent =
             Number(
-                data.bonusRobux || 0
+                data.bonusRobux ||
+                0
             ).toLocaleString(
                 "ru-RU"
             ) +
             " Robux";
 
+    } catch {
 
-    } catch(error) {
-
-        referralLink.textContent =
-            "Реферальная ссылка пока недоступна.";
+        document.getElementById(
+            "referralLink"
+        ).textContent =
+            "Ссылка недоступна";
 
     }
 
 }
 
 
-/*
-==================================================
-COPY
-==================================================
-*/
+/* =========================================
+   COPY
+========================================= */
 
-document
-    .getElementById(
-        "copyReferral"
-    )
-    .addEventListener(
-        "click",
-        async () => {
+document.getElementById(
+    "copyReferral"
+).addEventListener(
+    "click",
+    async () => {
 
-            const text =
-                referralLink.textContent;
+        const text =
+            document.getElementById(
+                "referralLink"
+            ).textContent;
 
 
-            if(
-                !text ||
-                text.startsWith(
-                    "Реферальная"
-                )
-            ){
+        if (
+            !text ||
+            text ===
+            "Загрузка..." ||
+            text ===
+            "Ссылка недоступна"
+        ) {
+            return;
+        }
 
-                return;
 
-            }
+        try {
 
-
-            try {
-
-                await navigator
-                    .clipboard
-                    .writeText(
-                        text
-                    );
-
-            } catch {
-
-                const textarea =
-                    document.createElement(
-                        "textarea"
-                    );
-
-                textarea.value =
-                    text;
-
-                document.body.appendChild(
-                    textarea
+            await navigator
+                .clipboard
+                .writeText(
+                    text
                 );
 
-                textarea.select();
+        } catch {
 
-                document.execCommand(
-                    "copy"
-                );
-
-                textarea.remove();
-
-            }
-
-
-            const button =
-                document.getElementById(
-                    "copyReferral"
+            const textarea =
+                document.createElement(
+                    "textarea"
                 );
 
 
-            button.textContent =
-                "✅ Скопировано";
+            textarea.value =
+                text;
 
 
-            setTimeout(
-                () => {
-
-                    button.textContent =
-                        "📋 Скопировать";
-
-                },
-                1500
+            document.body.appendChild(
+                textarea
             );
+
+
+            textarea.select();
+
+
+            document.execCommand(
+                "copy"
+            );
+
+
+            textarea.remove();
 
         }
-    );
 
 
-/*
-==================================================
-LOGOUT
-==================================================
-*/
-
-document
-    .getElementById(
-        "logoutButton"
-    )
-    .addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                await fetch(
-                    "/api/auth/logout",
-                    {
-                        method:
-                            "POST",
-
-                        headers:{
-                            "Authorization":
-                                "Bearer " +
-                                token
-                        }
-                    }
-                );
-
-            } catch {
-
-                /*
-                Даже если сервер недоступен,
-                локальную сессию удаляем.
-                */
-
-            }
-
-
-            localStorage.removeItem(
-                "rirobuxAuthToken"
-            );
-
-            localStorage.removeItem(
-                "rirobuxAccount"
+        const button =
+            document.getElementById(
+                "copyReferral"
             );
 
 
-            window.location.href =
-                "auth.html";
-
-        }
-    );
+        button.textContent =
+            "✅ Скопировано";
 
 
-/*
-==================================================
-ESCAPE
-==================================================
-*/
+        setTimeout(
+            () => {
 
-function escapeHtml(
-    text
-){
+                button.textContent =
+                    "📋 Скопировать";
 
-    return String(
-        text ?? ""
-    )
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
+            },
+            1500
         );
 
-}
+    }
+);
 
 
-/*
-==================================================
-START
-==================================================
-*/
+/* =========================================
+   LOGOUT
+========================================= */
+
+document.getElementById(
+    "logoutButton"
+).addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            await fetch(
+                "/api/auth/logout",
+                {
+                    method:
+                        "POST",
+
+                    headers:{
+                        "Authorization":
+                            "Bearer " +
+                            token
+                    }
+                }
+            );
+
+        } catch {}
+
+
+        localStorage.removeItem(
+            "rirobuxAuthToken"
+        );
+
+
+        localStorage.removeItem(
+            "rirobuxAccount"
+        );
+
+
+        window.location.href =
+            "auth.html";
+
+    }
+);
+
+
+/* =========================================
+   START
+========================================= */
 
 async function start(){
 
     await loadCurrentUser();
 
-    if(
+    if (
         !currentUser
-    ){
+    ) {
         return;
     }
+
 
     await Promise.all([
         loadOrders(),
@@ -1681,6 +1810,7 @@ async function start(){
     ]);
 
 }
+
 
 start();
 
