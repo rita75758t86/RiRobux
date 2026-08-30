@@ -23,66 +23,37 @@
 
 body{
     min-height:100vh;
-
     display:flex;
-
     align-items:center;
     justify-content:center;
-
     padding:20px;
-
     color:#fff;
 
     background:
-        radial-gradient(
-            circle at 20% 10%,
-            rgba(124,58,237,.28),
-            transparent 30%
-        ),
-
-        radial-gradient(
-            circle at 85% 75%,
-            rgba(37,99,235,.20),
-            transparent 35%
-        ),
-
-        linear-gradient(
-            135deg,
-            #03040d,
-            #0b0e25,
-            #070313
-        );
+        radial-gradient(circle at 20% 10%,rgba(124,58,237,.28),transparent 30%),
+        radial-gradient(circle at 85% 75%,rgba(37,99,235,.20),transparent 35%),
+        linear-gradient(135deg,#03040d,#0b0e25,#070313);
 }
 
 .auth-box{
     width:100%;
-
     max-width:470px;
-
     padding:32px;
-
     border-radius:28px;
 
-    background:
-        rgba(15,18,48,.90);
+    background:rgba(15,18,48,.92);
 
     border:
         1px solid
         rgba(139,92,246,.35);
 
     box-shadow:
-        0 30px 100px
-        rgba(0,0,0,.50),
-
-        0 0 70px
-        rgba(124,58,237,.10);
+        0 30px 100px rgba(0,0,0,.5);
 }
 
 .logo{
     text-align:center;
-
     font-size:34px;
-
     font-weight:900;
 }
 
@@ -92,61 +63,36 @@ body{
 
 .subtitle{
     margin-top:10px;
-
     text-align:center;
-
     color:#939bb8;
-
     line-height:1.6;
 }
 
 .tabs{
     display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
+    grid-template-columns:1fr 1fr;
     gap:8px;
-
     margin-top:28px;
 }
 
 .tab{
     padding:12px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.08);
-
+    border:1px solid rgba(255,255,255,.08);
     border-radius:12px;
-
     color:#aeb5d0;
-
-    background:
-        rgba(255,255,255,.04);
-
+    background:rgba(255,255,255,.04);
     cursor:pointer;
-
     font-weight:bold;
 }
 
 .tab.active{
     color:#fff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #2563eb
-        );
-
-    border-color:
-        rgba(167,139,250,.5);
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
+    border-color:rgba(167,139,250,.5);
 }
 
 .form{
     display:none;
-
     margin-top:24px;
 }
 
@@ -160,147 +106,90 @@ body{
 
 label{
     display:block;
-
     margin-bottom:8px;
-
     color:#dfe2f2;
-
     font-weight:bold;
-
     font-size:14px;
 }
 
 input{
     width:100%;
-
     padding:15px 16px;
-
     border-radius:14px;
-
-    border:
-        1px solid
-        rgba(139,92,246,.32);
-
+    border:1px solid rgba(139,92,246,.32);
     outline:none;
-
     color:#fff;
-
-    background:
-        rgba(4,6,20,.78);
-
+    background:rgba(4,6,20,.78);
     font-size:16px;
 }
 
 input:focus{
     border-color:#a78bfa;
-
-    box-shadow:
-        0 0 25px
-        rgba(124,58,237,.18);
+    box-shadow:0 0 25px rgba(124,58,237,.18);
 }
 
 .hint{
     margin-top:8px;
-
     color:#858da9;
-
     font-size:12px;
-
     line-height:1.6;
 }
 
 .security-note{
     margin-top:16px;
-
     padding:14px;
-
     border-radius:14px;
-
     color:#ddd6fe;
-
-    background:
-        rgba(124,58,237,.09);
-
-    border:
-        1px solid
-        rgba(124,58,237,.15);
-
+    background:rgba(124,58,237,.09);
+    border:1px solid rgba(124,58,237,.15);
     line-height:1.6;
-
     font-size:13px;
 }
 
 .submit{
     width:100%;
-
     margin-top:22px;
-
     padding:16px;
-
     border:0;
-
     border-radius:14px;
-
     color:#fff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #2563eb
-        );
-
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
     cursor:pointer;
-
     font-weight:bold;
-
     font-size:16px;
+}
+
+.submit:disabled{
+    opacity:.6;
+    cursor:not-allowed;
 }
 
 .message{
     display:none;
-
     margin-top:14px;
-
     padding:12px;
-
     border-radius:12px;
-
     font-size:13px;
-
     line-height:1.5;
 }
 
 .message.error{
     color:#fecaca;
-
-    background:
-        rgba(220,38,38,.12);
+    background:rgba(220,38,38,.12);
 }
 
 .message.success{
     color:#bbf7d0;
-
-    background:
-        rgba(22,163,74,.12);
+    background:rgba(22,163,74,.12);
 }
 
 .back{
     display:block;
-
     margin-top:18px;
-
     text-align:center;
-
     color:#9ea7c5;
-
     text-decoration:none;
-
     font-size:14px;
-}
-
-.back:hover{
-    color:#fff;
 }
 
 @media(max-width:500px){
@@ -355,7 +244,7 @@ input:focus{
 
 
     <!-- =========================
-         ВХОД
+         LOGIN
     ========================== -->
 
     <div
@@ -401,13 +290,12 @@ input:focus{
 
         <div class="security-note">
 
-            🔒 <b>Важно:</b>
-            пароль от Roblox здесь не нужен.
+            🔒 Пароль от Roblox здесь не нужен.
 
             <br>
 
             RiRobux никогда не запрашивает
-            пароль от вашего аккаунта Roblox.
+            пароль от вашего Roblox-аккаунта.
 
         </div>
 
@@ -430,7 +318,7 @@ input:focus{
 
 
     <!-- =========================
-         РЕГИСТРАЦИЯ
+         REGISTER
     ========================== -->
 
     <div
@@ -455,12 +343,7 @@ input:focus{
 
 
         <div class="hint">
-
-            Придумайте имя для аккаунта RiRobux.
-
-            Оно не обязано совпадать
-            с Roblox Username.
-
+            Придумайте никнейм для RiRobux.
         </div>
 
 
@@ -478,12 +361,8 @@ input:focus{
             >
 
             <div class="hint">
-
-                🎮 Укажите только никнейм
-                (Username) вашего аккаунта Roblox.
-
-                Пароль от Roblox нам не нужен.
-
+                🎮 Только Username Roblox.
+                Пароль Roblox не нужен.
             </div>
 
         </div>
@@ -503,12 +382,7 @@ input:focus{
             >
 
             <div class="hint">
-
-                🔒 Это отдельный пароль для RiRobux.
-
-                Он <b>не должен</b> быть паролем
-                от Roblox.
-
+                🔒 Это отдельный пароль RiRobux.
             </div>
 
         </div>
@@ -532,10 +406,8 @@ input:focus{
 
         <div class="security-note">
 
-            🛡️ <b>Безопасность:</b>
-
-            мы не просим и не сохраняем
-            пароль от вашего Roblox-аккаунта.
+            🛡️ RiRobux не запрашивает
+            пароль от Roblox.
 
         </div>
 
@@ -561,13 +433,17 @@ input:focus{
         href="index.html"
         class="back"
     >
-        ← Вернуться на главную
+        ← На главную
     </a>
 
 </div>
 
 
 <script>
+
+/* =========================================
+   TABS
+========================================= */
 
 const loginTab =
     document.getElementById(
@@ -589,10 +465,6 @@ const registerForm =
         "registerForm"
     );
 
-
-/* =========================
-   ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
-========================= */
 
 loginTab.addEventListener(
     "click",
@@ -642,117 +514,184 @@ registerTab.addEventListener(
 );
 
 
-/* =========================
-   ВХОД
-========================= */
+/* =========================================
+   UNIVERSAL RESPONSE
+========================================= */
 
-document.getElementById(
-    "loginButton"
-).addEventListener(
-    "click",
-    async () => {
+async function readResponse(
+    response
+){
 
-        const username =
-            document
-                .getElementById(
-                    "loginUsername"
-                )
-                .value
-                .trim();
-
-        const password =
-            document
-                .getElementById(
-                    "loginPassword"
-                )
-                .value;
+    const text =
+        await response.text();
 
 
-        const error =
-            document.getElementById(
-                "loginError"
+    let data = null;
+
+
+    try{
+
+        data =
+            JSON.parse(
+                text
             );
 
+    }catch{
+
+        throw new Error(
+            "Сервер вернул некорректный ответ. Обнови страницу и попробуй снова."
+        );
+
+    }
+
+
+    if(
+        !response.ok
+    ){
+
+        throw new Error(
+            data.error ||
+            "Произошла ошибка."
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+async function login(){
+
+    const username =
+        document
+            .getElementById(
+                "loginUsername"
+            )
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById(
+                "loginPassword"
+            )
+            .value;
+
+
+    const error =
+        document.getElementById(
+            "loginError"
+        );
+
+
+    const button =
+        document.getElementById(
+            "loginButton"
+        );
+
+
+    error.style.display =
+        "none";
+
+
+    if(
+        !username
+    ){
+
+        error.textContent =
+            "Введите никнейм RiRobux.";
 
         error.style.display =
-            "none";
+            "block";
+
+        return;
+
+    }
 
 
-        if (!username) {
+    if(
+        !password
+    ){
 
-            error.textContent =
-                "Введите никнейм RiRobux.";
+        error.textContent =
+            "Введите пароль.";
 
-            error.style.display =
-                "block";
+        error.style.display =
+            "block";
 
-            return;
+        return;
 
-        }
-
-
-        if (!password) {
-
-            error.textContent =
-                "Введите пароль.";
-
-            error.style.display =
-                "block";
-
-            return;
-
-        }
+    }
 
 
-        try {
+    button.disabled =
+        true;
 
-            const response =
-                await fetch(
-                    "/api/auth/login",
-                    {
-
-                        method:
-                            "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            JSON.stringify({
-
-                                username:
-                                    username,
-
-                                password:
-                                    password
-
-                            })
-
-                    }
-                );
+    button.textContent =
+        "⏳ Входим...";
 
 
-            const data =
-                await response.json();
+    try{
 
+        const response =
+            await fetch(
+                "/api/auth/login",
+                {
 
-            if (!response.ok) {
+                    method:
+                        "POST",
 
-                throw new Error(
-                    data.error ||
-                    "Не удалось войти."
-                );
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
 
-            }
+                    body:
+                        JSON.stringify({
 
+                            username,
 
-            localStorage.setItem(
-                "rirobuxAuthToken",
-                data.token
+                            password
+
+                        })
+
+                }
             );
 
+
+        const data =
+            await readResponse(
+                response
+            );
+
+
+        if(
+            !data.token
+        ){
+
+            throw new Error(
+                "Сервер не выдал токен авторизации."
+            );
+
+        }
+
+
+        localStorage.setItem(
+            "rirobuxAuthToken",
+            data.token
+        );
+
+
+        if(
+            data.user
+        ){
 
             localStorage.setItem(
                 "rirobuxAccount",
@@ -761,197 +700,231 @@ document.getElementById(
                 )
             );
 
-
-            window.location.href =
-                "profile.html";
-
-
-        } catch(error) {
-
-            error.textContent =
-                error.message;
-
-            error.style.display =
-                "block";
-
         }
 
-    }
-);
 
+        /*
+        После входа возвращаемся туда,
+        откуда пользователь пришёл.
+        */
 
-/* =========================
-   РЕГИСТРАЦИЯ
-========================= */
-
-document.getElementById(
-    "registerButton"
-).addEventListener(
-    "click",
-    async () => {
-
-        const username =
-            document
-                .getElementById(
-                    "registerUsername"
-                )
-                .value
-                .trim();
-
-        const robloxUsername =
-            document
-                .getElementById(
-                    "robloxUsername"
-                )
-                .value
-                .trim();
-
-        const password =
-            document
-                .getElementById(
-                    "registerPassword"
-                )
-                .value;
-
-        const password2 =
-            document
-                .getElementById(
-                    "registerPassword2"
-                )
-                .value;
-
-
-        const error =
-            document.getElementById(
-                "registerError"
+        const savedReturn =
+            sessionStorage.getItem(
+                "rirobuxReturnUrl"
             );
+
+
+        sessionStorage.removeItem(
+            "rirobuxReturnUrl"
+        );
+
+
+        window.location.href =
+            savedReturn ||
+            "profile.html";
+
+
+    }catch(error){
+
+        error.textContent =
+            error.message;
 
 
         error.style.display =
-            "none";
+            "block";
+
+    }finally{
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "🔐 Войти";
+
+    }
+
+}
 
 
-        if (!username) {
+/* =========================================
+   REGISTER
+========================================= */
 
-            error.textContent =
-                "Введите никнейм RiRobux.";
+async function register(){
 
-            error.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        if (!robloxUsername) {
-
-            error.textContent =
-                "Введите Roblox Username.";
-
-            error.style.display =
-                "block";
-
-            return;
-
-        }
+    const username =
+        document
+            .getElementById(
+                "registerUsername"
+            )
+            .value
+            .trim();
 
 
-        if (!password) {
-
-            error.textContent =
-                "Придумайте пароль RiRobux.";
-
-            error.style.display =
-                "block";
-
-            return;
-
-        }
+    const robloxUsername =
+        document
+            .getElementById(
+                "robloxUsername"
+            )
+            .value
+            .trim();
 
 
-        if (
-            password.length < 6
-        ) {
-
-            error.textContent =
-                "Пароль должен содержать минимум 6 символов.";
-
-            error.style.display =
-                "block";
-
-            return;
-
-        }
+    const password =
+        document
+            .getElementById(
+                "registerPassword"
+            )
+            .value;
 
 
-        if (
-            password !== password2
-        ) {
-
-            error.textContent =
-                "Пароли не совпадают.";
-
-            error.style.display =
-                "block";
-
-            return;
-
-        }
+    const password2 =
+        document
+            .getElementById(
+                "registerPassword2"
+            )
+            .value;
 
 
-        try {
-
-            const response =
-                await fetch(
-                    "/api/auth/register",
-                    {
-
-                        method:
-                            "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            JSON.stringify({
-
-                                username:
-                                    username,
-
-                                robloxUsername:
-                                    robloxUsername,
-
-                                password:
-                                    password
-
-                            })
-
-                    }
-                );
+    const error =
+        document.getElementById(
+            "registerError"
+        );
 
 
-            const data =
-                await response.json();
+    const button =
+        document.getElementById(
+            "registerButton"
+        );
 
 
-            if (!response.ok) {
-
-                throw new Error(
-                    data.error ||
-                    "Не удалось зарегистрироваться."
-                );
-
-            }
+    error.style.display =
+        "none";
 
 
-            localStorage.setItem(
-                "rirobuxAuthToken",
-                data.token
+    if(
+        !username
+    ){
+
+        error.textContent =
+            "Введите никнейм RiRobux.";
+
+        error.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    if(
+        !robloxUsername
+    ){
+
+        error.textContent =
+            "Введите Roblox Username.";
+
+        error.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    if(
+        password.length < 6
+    ){
+
+        error.textContent =
+            "Пароль должен содержать минимум 6 символов.";
+
+        error.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    if(
+        password !== password2
+    ){
+
+        error.textContent =
+            "Пароли не совпадают.";
+
+        error.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "⏳ Создаём...";
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/auth/register",
+                {
+
+                    method:
+                        "POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            username,
+
+                            robloxUsername,
+
+                            password
+
+                        })
+
+                }
             );
 
+
+        const data =
+            await readResponse(
+                response
+            );
+
+
+        if(
+            !data.token
+        ){
+
+            throw new Error(
+                "Сервер не выдал токен авторизации."
+            );
+
+        }
+
+
+        localStorage.setItem(
+            "rirobuxAuthToken",
+            data.token
+        );
+
+
+        if(
+            data.user
+        ){
 
             localStorage.setItem(
                 "rirobuxAccount",
@@ -960,73 +933,103 @@ document.getElementById(
                 )
             );
 
-
-            window.location.href =
-                "profile.html";
-
-
-        } catch(error) {
-
-            error.textContent =
-                error.message;
-
-            error.style.display =
-                "block";
-
         }
 
+
+        window.location.href =
+            "profile.html";
+
+
+    }catch(error){
+
+        error.textContent =
+            error.message;
+
+
+        error.style.display =
+            "block";
+
+    }finally{
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "✨ Создать аккаунт";
+
     }
-);
+
+}
 
 
-/* =========================
+/* =========================================
+   BUTTONS
+========================================= */
+
+document
+    .getElementById(
+        "loginButton"
+    )
+    .addEventListener(
+        "click",
+        login
+    );
+
+
+document
+    .getElementById(
+        "registerButton"
+    )
+    .addEventListener(
+        "click",
+        register
+    );
+
+
+/* =========================================
    ENTER
-========================= */
+========================================= */
 
-document.getElementById(
-    "loginPassword"
-).addEventListener(
-    "keydown",
-    event => {
+document
+    .getElementById(
+        "loginPassword"
+    )
+    .addEventListener(
+        "keydown",
+        event => {
 
-        if (
-            event.key ===
-            "Enter"
-        ) {
+            if(
+                event.key ===
+                "Enter"
+            ){
 
-            document
-                .getElementById(
-                    "loginButton"
-                )
-                .click();
+                login();
 
-        }
-
-    }
-);
-
-
-document.getElementById(
-    "registerPassword2"
-).addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key ===
-            "Enter"
-        ) {
-
-            document
-                .getElementById(
-                    "registerButton"
-                )
-                .click();
+            }
 
         }
+    );
 
-    }
-);
+
+document
+    .getElementById(
+        "registerPassword2"
+    )
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if(
+                event.key ===
+                "Enter"
+            ){
+
+                register();
+
+            }
+
+        }
+    );
 
 </script>
 
